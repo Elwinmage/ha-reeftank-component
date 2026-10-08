@@ -1,0 +1,15 @@
+{
+  "domain": "reeftank",
+  "name": "ReefTank",
+  "after_dependencies": ["frontend"],
+  "codeowners": ["@Elwinmage"],
+  "config_flow": true,
+  "dependencies": ["http", "websocket_api"],
+  "documentation": "https://github.com/Elwinmage/ha-reeftank-component",
+  "integration_type": "service",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/Elwinmage/ha-reeftank-component/issues",
+  "requirements": [],
+  "single_config_entry": true,
+  "version": "v0.1.0"
+}

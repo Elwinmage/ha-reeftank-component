@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank jest już skonfigurowany."
+    },
+    "step": {
+      "user": {
+        "title": "Dodaj ReefTank",
+        "description": "ReefTank przechowuje Twoje akwaria dla widoku akwarium ha-reef-card. Akwaria tworzy się i edytuje z poziomu karty."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Karmienie",
+        "state_attributes": {
+          "event_type": {
+            "name": "Karmienie",
+            "state": {
+              "feeder": "Karmnik",
+              "shortcut": "Skrót karmienia",
+              "manual": "Ręczne"
+            }
+          },
+          "source": {
+            "name": "Źródło"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Koralowce",
+        "state_attributes": {
+          "species": {
+            "name": "Gatunki"
+          },
+          "species_count": {
+            "name": "Liczba gatunków"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Karmienia dzisiaj",
+        "state_attributes": {
+          "day": {
+            "name": "Dzień"
+          }
+        }
+      },
+      "fish": {
+        "name": "Ryby",
+        "state_attributes": {
+          "species": {
+            "name": "Gatunki"
+          },
+          "species_count": {
+            "name": "Liczba gatunków"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank nie jest skonfigurowany."
+    },
+    "unknown_aquarium": {
+      "message": "Nieznane akwarium: {aquarium}."
+    },
+    "unknown_line": {
+      "message": "Żaden wiersz inwentarza nie pasuje do {line}."
+    },
+    "unknown_source": {
+      "message": "Nieznane źródło karmienia: {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Ryba",
+        "invertebrate": "Bezkręgowiec"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Nakarm",
+      "description": "Rejestruje karmienie akwarium (wyzwala zdarzenie karmienia i animuje ryby na karcie).",
+      "fields": {
+        "aquarium": {
+          "name": "Akwarium",
+          "description": "Nazwa, id lub id urządzenia akwarium."
+        },
+        "source": {
+          "name": "Źródło",
+          "description": "Id źródła karmienia (opcjonalnie): ryby gromadzą się w jego punkcie karmienia."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Dodaj obsadę",
+      "description": "Dodaje zwierzęta do inwentarza akwarium (łączone z wierszem tego samego gatunku).",
+      "fields": {
+        "aquarium": {
+          "name": "Akwarium",
+          "description": "Nazwa, id lub id urządzenia akwarium."
+        },
+        "count": {
+          "name": "Liczba",
+          "description": "Liczba zwierząt do dodania."
+        },
+        "kind": {
+          "name": "Rodzaj",
+          "description": "Ryba lub bezkręgowiec."
+        },
+        "note": {
+          "name": "Notatka",
+          "description": "Dowolny tekst zapisany z wierszem inwentarza."
+        },
+        "size_cm": {
+          "name": "Zakres rozmiaru (cm)",
+          "description": "Minimalny i maksymalny rozmiar w cm: [min, max]."
+        },
+        "species": {
+          "name": "Gatunek",
+          "description": "Id gatunku w katalogu lub dowolna nazwa."
+        },
+        "water": {
+          "name": "Zbiornik",
+          "description": "Zbiornik akwarium (domyślnie główny)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Usuń obsadę",
+      "description": "Usuwa zwierzęta z wiersza inwentarza (straty, oddanie); pusty wiersz znika.",
+      "fields": {
+        "aquarium": {
+          "name": "Akwarium",
+          "description": "Nazwa, id lub id urządzenia akwarium."
+        },
+        "count": {
+          "name": "Liczba",
+          "description": "Liczba zwierząt do usunięcia."
+        },
+        "line_id": {
+          "name": "Id wiersza",
+          "description": "Id wiersza inwentarza (lub podaj gatunek)."
+        },
+        "species": {
+          "name": "Gatunek",
+          "description": "Gatunek wiersza, gdy nie podano id wiersza."
+        }
+      }
+    }
+  }
+}

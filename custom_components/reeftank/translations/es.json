@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank ya está configurado."
+    },
+    "step": {
+      "user": {
+        "title": "Añadir ReefTank",
+        "description": "ReefTank guarda sus acuarios para la vista de acuario de ha-reef-card. Los acuarios se crean y editan desde la tarjeta."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Alimentación",
+        "state_attributes": {
+          "event_type": {
+            "name": "Alimentación",
+            "state": {
+              "feeder": "Comedero",
+              "shortcut": "Atajo de alimentación",
+              "manual": "Manual"
+            }
+          },
+          "source": {
+            "name": "Origen"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Corales",
+        "state_attributes": {
+          "species": {
+            "name": "Especies"
+          },
+          "species_count": {
+            "name": "Número de especies"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Alimentaciones de hoy",
+        "state_attributes": {
+          "day": {
+            "name": "Día"
+          }
+        }
+      },
+      "fish": {
+        "name": "Peces",
+        "state_attributes": {
+          "species": {
+            "name": "Especies"
+          },
+          "species_count": {
+            "name": "Número de especies"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank no está configurado."
+    },
+    "unknown_aquarium": {
+      "message": "Acuario desconocido: {aquarium}."
+    },
+    "unknown_line": {
+      "message": "Ninguna línea del inventario corresponde a {line}."
+    },
+    "unknown_source": {
+      "message": "Fuente de alimentación desconocida: {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Pez",
+        "invertebrate": "Invertebrado"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Alimentar",
+      "description": "Registra una alimentación del acuario (dispara su evento de alimentación y anima los peces en la tarjeta).",
+      "fields": {
+        "aquarium": {
+          "name": "Acuario",
+          "description": "Nombre, id o id de dispositivo del acuario."
+        },
+        "source": {
+          "name": "Origen",
+          "description": "Id de la fuente de alimentación (opcional): los peces se reúnen en su punto de alimentación."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Añadir fauna",
+      "description": "Añade animales al inventario del acuario (agrupados con la línea de la misma especie).",
+      "fields": {
+        "aquarium": {
+          "name": "Acuario",
+          "description": "Nombre, id o id de dispositivo del acuario."
+        },
+        "count": {
+          "name": "Cantidad",
+          "description": "Número de animales a añadir."
+        },
+        "kind": {
+          "name": "Tipo",
+          "description": "Pez o invertebrado."
+        },
+        "note": {
+          "name": "Nota",
+          "description": "Texto libre guardado con la línea del inventario."
+        },
+        "size_cm": {
+          "name": "Rango de tamaño (cm)",
+          "description": "Tamaño mínimo y máximo, en cm: [min, max]."
+        },
+        "species": {
+          "name": "Especie",
+          "description": "Id de la especie en el catálogo, o cualquier nombre."
+        },
+        "water": {
+          "name": "Depósito",
+          "description": "Depósito del acuario (el principal por defecto)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Retirar fauna",
+      "description": "Retira animales de una línea del inventario (bajas, cesiones); la línea desaparece al quedar vacía.",
+      "fields": {
+        "aquarium": {
+          "name": "Acuario",
+          "description": "Nombre, id o id de dispositivo del acuario."
+        },
+        "count": {
+          "name": "Cantidad",
+          "description": "Número de animales a retirar."
+        },
+        "line_id": {
+          "name": "Id de línea",
+          "description": "Id de la línea del inventario (o indique la especie)."
+        },
+        "species": {
+          "name": "Especie",
+          "description": "Especie de la línea, si no se indica id de línea."
+        }
+      }
+    }
+  }
+}

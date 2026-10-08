@@ -1,0 +1,81 @@
+feed:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    source:
+      required: false
+      example: "f1"
+      selector:
+        text:
+
+livestock_add:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    water:
+      required: false
+      default: main
+      selector:
+        text:
+    species:
+      required: true
+      example: chromis_viridis
+      selector:
+        text:
+    count:
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box
+    kind:
+      required: false
+      default: fish
+      selector:
+        select:
+          translation_key: livestock_kind
+          options:
+            - fish
+            - invertebrate
+    size_cm:
+      required: false
+      example: "[5, 8]"
+      selector:
+        object:
+    note:
+      required: false
+      selector:
+        text:
+
+livestock_remove:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    line_id:
+      required: false
+      selector:
+        text:
+    species:
+      required: false
+      example: chromis_viridis
+      selector:
+        text:
+    count:
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          max: 10000
+          mode: box

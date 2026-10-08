@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank is al ingesteld."
+    },
+    "step": {
+      "user": {
+        "title": "ReefTank toevoegen",
+        "description": "ReefTank bewaart uw aquaria voor de aquariumweergave van ha-reef-card. Aquaria worden in de kaart aangemaakt en bewerkt."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Voedering",
+        "state_attributes": {
+          "event_type": {
+            "name": "Voedering",
+            "state": {
+              "feeder": "Voerautomaat",
+              "shortcut": "Voedersnelkoppeling",
+              "manual": "Handmatig"
+            }
+          },
+          "source": {
+            "name": "Bron"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Koralen",
+        "state_attributes": {
+          "species": {
+            "name": "Soorten"
+          },
+          "species_count": {
+            "name": "Aantal soorten"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Voederingen vandaag",
+        "state_attributes": {
+          "day": {
+            "name": "Dag"
+          }
+        }
+      },
+      "fish": {
+        "name": "Vissen",
+        "state_attributes": {
+          "species": {
+            "name": "Soorten"
+          },
+          "species_count": {
+            "name": "Aantal soorten"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank is niet ingesteld."
+    },
+    "unknown_aquarium": {
+      "message": "Onbekend aquarium: {aquarium}."
+    },
+    "unknown_line": {
+      "message": "Geen inventarisregel komt overeen met {line}."
+    },
+    "unknown_source": {
+      "message": "Onbekende voederbron: {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Vis",
+        "invertebrate": "Ongewervelde"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Voeren",
+      "description": "Registreert een voedering van het aquarium (activeert de voedergebeurtenis en animeert de vissen in de kaart).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "source": {
+          "name": "Bron",
+          "description": "Id van de voederbron (optioneel): de vissen verzamelen zich bij het voederpunt."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Bewoners toevoegen",
+      "description": "Voegt dieren toe aan de inventaris van het aquarium (samengevoegd met de regel van dezelfde soort).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "count": {
+          "name": "Aantal",
+          "description": "Aantal toe te voegen dieren."
+        },
+        "kind": {
+          "name": "Type",
+          "description": "Vis of ongewervelde."
+        },
+        "note": {
+          "name": "Notitie",
+          "description": "Vrije tekst bij de inventarisregel."
+        },
+        "size_cm": {
+          "name": "Groottebereik (cm)",
+          "description": "Minimale en maximale grootte in cm: [min, max]."
+        },
+        "species": {
+          "name": "Soort",
+          "description": "Catalogus-id van de soort, of een vrije naam."
+        },
+        "water": {
+          "name": "Bak",
+          "description": "Bak van het aquarium (standaard de hoofdbak)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Bewoners verwijderen",
+      "description": "Verwijdert dieren uit een inventarisregel (verlies, afstaan); een lege regel verdwijnt.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "count": {
+          "name": "Aantal",
+          "description": "Aantal te verwijderen dieren."
+        },
+        "line_id": {
+          "name": "Regel-id",
+          "description": "Id van de inventarisregel (of geef de soort op)."
+        },
+        "species": {
+          "name": "Soort",
+          "description": "Soort van de regel als er geen regel-id is opgegeven."
+        }
+      }
+    }
+  }
+}

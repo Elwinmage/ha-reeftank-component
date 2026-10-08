@@ -1,0 +1,17 @@
+{
+  "entity": {
+    "event": {
+      "feeding": { "default": "mdi:shaker-outline" }
+    },
+    "sensor": {
+      "corals": { "default": "mdi:flower-pollen" },
+      "feedings_today": { "default": "mdi:counter" },
+      "fish": { "default": "mdi:fish" }
+    }
+  },
+  "services": {
+    "feed": { "service": "mdi:shaker-outline" },
+    "livestock_add": { "service": "mdi:plus-circle-outline" },
+    "livestock_remove": { "service": "mdi:minus-circle-outline" }
+  }
+}

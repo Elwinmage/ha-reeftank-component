@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank ist bereits eingerichtet."
+    },
+    "step": {
+      "user": {
+        "title": "ReefTank hinzufügen",
+        "description": "ReefTank speichert Ihre Aquarien für die Aquarienansicht von ha-reef-card. Aquarien werden in der Karte erstellt und bearbeitet."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Fütterung",
+        "state_attributes": {
+          "event_type": {
+            "name": "Fütterung",
+            "state": {
+              "feeder": "Futterautomat",
+              "shortcut": "Fütterungs-Shortcut",
+              "manual": "Manuell"
+            }
+          },
+          "source": {
+            "name": "Quelle"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Korallen",
+        "state_attributes": {
+          "species": {
+            "name": "Arten"
+          },
+          "species_count": {
+            "name": "Anzahl der Arten"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Fütterungen heute",
+        "state_attributes": {
+          "day": {
+            "name": "Tag"
+          }
+        }
+      },
+      "fish": {
+        "name": "Fische",
+        "state_attributes": {
+          "species": {
+            "name": "Arten"
+          },
+          "species_count": {
+            "name": "Anzahl der Arten"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank ist nicht eingerichtet."
+    },
+    "unknown_aquarium": {
+      "message": "Unbekanntes Aquarium: {aquarium}."
+    },
+    "unknown_line": {
+      "message": "Keine Bestandszeile entspricht {line}."
+    },
+    "unknown_source": {
+      "message": "Unbekannte Futterquelle: {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Fisch",
+        "invertebrate": "Wirbelloses"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Füttern",
+      "description": "Erfasst eine Fütterung des Aquariums (löst sein Fütterungsereignis aus und animiert die Fische in der Karte).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, ID oder Geräte-ID des Aquariums."
+        },
+        "source": {
+          "name": "Quelle",
+          "description": "ID der Futterquelle (optional): Die Fische sammeln sich an ihrem Futterplatz."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Besatz hinzufügen",
+      "description": "Fügt dem Bestand des Aquariums Tiere hinzu (mit der Zeile derselben Art zusammengeführt).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, ID oder Geräte-ID des Aquariums."
+        },
+        "count": {
+          "name": "Anzahl",
+          "description": "Anzahl der hinzuzufügenden Tiere."
+        },
+        "kind": {
+          "name": "Art des Tiers",
+          "description": "Fisch oder Wirbelloses."
+        },
+        "note": {
+          "name": "Notiz",
+          "description": "Freitext zur Bestandszeile."
+        },
+        "size_cm": {
+          "name": "Größenbereich (cm)",
+          "description": "Minimale und maximale Größe in cm: [min, max]."
+        },
+        "species": {
+          "name": "Art",
+          "description": "Katalog-ID der Art oder ein beliebiger Name."
+        },
+        "water": {
+          "name": "Becken",
+          "description": "Becken des Aquariums (standardmäßig das Hauptbecken)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Besatz entfernen",
+      "description": "Entfernt Tiere aus einer Bestandszeile (Verluste, Abgabe); leere Zeilen werden gelöscht.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, ID oder Geräte-ID des Aquariums."
+        },
+        "count": {
+          "name": "Anzahl",
+          "description": "Anzahl der zu entfernenden Tiere."
+        },
+        "line_id": {
+          "name": "Zeilen-ID",
+          "description": "ID der Bestandszeile (oder die Art angeben)."
+        },
+        "species": {
+          "name": "Art",
+          "description": "Art der Zeile, wenn keine Zeilen-ID angegeben ist."
+        }
+      }
+    }
+  }
+}

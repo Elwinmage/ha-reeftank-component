@@ -1,0 +1,70 @@
+{
+  "kind": "fish",
+  "frame": [
+    256,
+    128
+  ],
+  "columns": 8,
+  "clips": {
+    "swim": {
+      "from": 0,
+      "to": 23,
+      "fps": 24,
+      "loop": true
+    },
+    "turn": {
+      "from": 24,
+      "to": 31,
+      "fps": 24,
+      "loop": false
+    },
+    "idle": {
+      "from": 32,
+      "to": 43,
+      "fps": 12,
+      "loop": true
+    }
+  },
+  "atlas": {
+    "1x": "demo_damselfish.webp"
+  },
+  "facing": "right",
+  "demo": true,
+  "size_cm": [
+    5,
+    8
+  ],
+  "behavior": {
+    "profile": "shoal",
+    "depth": [
+      0.15,
+      0.85
+    ],
+    "band": [
+      0.1,
+      0.7
+    ],
+    "speed_cm_s": [
+      4,
+      12
+    ],
+    "turn_rate": 2.5,
+    "shoal": {
+      "cohesion": 1.0,
+      "alignment": 0.8,
+      "separation": 1.2
+    }
+  },
+  "night": "hide",
+  "feeding_response": 0.9,
+  "names": {
+    "en": "Demo damselfish",
+    "fr": "Demoiselle (démo)",
+    "de": "Riffbarsch (Demo)",
+    "es": "Damisela (demo)",
+    "it": "Castagnola (demo)",
+    "nl": "Juffertje (demo)",
+    "pl": "Garbik (demo)",
+    "pt": "Donzela (demo)"
+  }
+}

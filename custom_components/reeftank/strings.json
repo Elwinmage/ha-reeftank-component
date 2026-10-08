@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank is already configured."
+    },
+    "step": {
+      "user": {
+        "title": "Add ReefTank",
+        "description": "ReefTank stores your aquariums for the aquarium view of ha-reef-card. Aquariums are created and edited from the card."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Feeding",
+        "state_attributes": {
+          "event_type": {
+            "name": "Feeding",
+            "state": {
+              "feeder": "Feeder",
+              "shortcut": "Feeding shortcut",
+              "manual": "Manual"
+            }
+          },
+          "source": {
+            "name": "Source"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Corals",
+        "state_attributes": {
+          "species": {
+            "name": "Species"
+          },
+          "species_count": {
+            "name": "Number of species"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Feedings today",
+        "state_attributes": {
+          "day": {
+            "name": "Day"
+          }
+        }
+      },
+      "fish": {
+        "name": "Fish",
+        "state_attributes": {
+          "species": {
+            "name": "Species"
+          },
+          "species_count": {
+            "name": "Number of species"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank is not set up."
+    },
+    "unknown_aquarium": {
+      "message": "Unknown aquarium: {aquarium}."
+    },
+    "unknown_line": {
+      "message": "No inventory line matches {line}."
+    },
+    "unknown_source": {
+      "message": "Unknown feeding source: {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Fish",
+        "invertebrate": "Invertebrate"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Feed",
+      "description": "Records a feeding of an aquarium (fires its feeding event and animates the fish in the card).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "source": {
+          "name": "Source",
+          "description": "Id of the feeding source (optional): the fish gather at its feeding point."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Add livestock",
+      "description": "Adds animals to the inventory of an aquarium (merged with the line of the same species).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "count": {
+          "name": "Count",
+          "description": "Number of animals to add."
+        },
+        "kind": {
+          "name": "Kind",
+          "description": "Fish or invertebrate."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Free text kept with the inventory line."
+        },
+        "size_cm": {
+          "name": "Size range (cm)",
+          "description": "Minimum and maximum size, in cm: [min, max]."
+        },
+        "species": {
+          "name": "Species",
+          "description": "Catalog id of the species, or any name."
+        },
+        "water": {
+          "name": "Water",
+          "description": "Water of the aquarium (main tank by default)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Remove livestock",
+      "description": "Removes animals from an inventory line (losses, rehoming); the line goes when empty.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "count": {
+          "name": "Count",
+          "description": "Number of animals to remove."
+        },
+        "line_id": {
+          "name": "Line id",
+          "description": "Id of the inventory line (or give the species)."
+        },
+        "species": {
+          "name": "Species",
+          "description": "Species of the line, when no line id is given."
+        }
+      }
+    }
+  }
+}

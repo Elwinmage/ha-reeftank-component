@@ -1,0 +1,160 @@
+{
+  "title": "ReefTank",
+  "config": {
+    "abort": {
+      "single_instance_allowed": "ReefTank est déjà configuré."
+    },
+    "step": {
+      "user": {
+        "title": "Ajouter ReefTank",
+        "description": "ReefTank enregistre vos aquariums pour la vue aquarium de ha-reef-card. Les aquariums se créent et se modifient depuis la carte."
+      }
+    }
+  },
+  "entity": {
+    "event": {
+      "feeding": {
+        "name": "Nourrissage",
+        "state_attributes": {
+          "event_type": {
+            "name": "Nourrissage",
+            "state": {
+              "feeder": "Distributeur",
+              "shortcut": "Raccourci nourrissage",
+              "manual": "Manuel"
+            }
+          },
+          "source": {
+            "name": "Source"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "corals": {
+        "name": "Coraux",
+        "state_attributes": {
+          "species": {
+            "name": "Espèces"
+          },
+          "species_count": {
+            "name": "Nombre d'espèces"
+          }
+        }
+      },
+      "feedings_today": {
+        "name": "Nourrissages du jour",
+        "state_attributes": {
+          "day": {
+            "name": "Jour"
+          }
+        }
+      },
+      "fish": {
+        "name": "Poissons",
+        "state_attributes": {
+          "species": {
+            "name": "Espèces"
+          },
+          "species_count": {
+            "name": "Nombre d'espèces"
+          }
+        }
+      }
+    }
+  },
+  "exceptions": {
+    "not_loaded": {
+      "message": "ReefTank n'est pas configuré."
+    },
+    "unknown_aquarium": {
+      "message": "Aquarium inconnu : {aquarium}."
+    },
+    "unknown_line": {
+      "message": "Aucune ligne d'inventaire ne correspond à {line}."
+    },
+    "unknown_source": {
+      "message": "Source de nourrissage inconnue : {source}."
+    }
+  },
+  "selector": {
+    "livestock_kind": {
+      "options": {
+        "fish": "Poisson",
+        "invertebrate": "Invertébré"
+      }
+    }
+  },
+  "services": {
+    "feed": {
+      "name": "Nourrir",
+      "description": "Enregistre un nourrissage de l'aquarium (déclenche son événement de nourrissage et anime les poissons dans la carte).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Nom, identifiant ou identifiant d'appareil de l'aquarium."
+        },
+        "source": {
+          "name": "Source",
+          "description": "Identifiant de la source de nourrissage (facultatif) : les poissons se rassemblent à son point de nourrissage."
+        }
+      }
+    },
+    "livestock_add": {
+      "name": "Ajouter des animaux",
+      "description": "Ajoute des animaux à l'inventaire de l'aquarium (regroupés avec la ligne de la même espèce).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Nom, identifiant ou identifiant d'appareil de l'aquarium."
+        },
+        "count": {
+          "name": "Nombre",
+          "description": "Nombre d'animaux à ajouter."
+        },
+        "kind": {
+          "name": "Type",
+          "description": "Poisson ou invertébré."
+        },
+        "note": {
+          "name": "Note",
+          "description": "Texte libre conservé avec la ligne d'inventaire."
+        },
+        "size_cm": {
+          "name": "Plage de taille (cm)",
+          "description": "Taille minimale et maximale, en cm : [min, max]."
+        },
+        "species": {
+          "name": "Espèce",
+          "description": "Identifiant de l'espèce dans le catalogue, ou un nom libre."
+        },
+        "water": {
+          "name": "Bac",
+          "description": "Bac de l'aquarium (bac principal par défaut)."
+        }
+      }
+    },
+    "livestock_remove": {
+      "name": "Retirer des animaux",
+      "description": "Retire des animaux d'une ligne d'inventaire (pertes, cession) ; la ligne disparaît quand elle est vide.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Nom, identifiant ou identifiant d'appareil de l'aquarium."
+        },
+        "count": {
+          "name": "Nombre",
+          "description": "Nombre d'animaux à retirer."
+        },
+        "line_id": {
+          "name": "Identifiant de ligne",
+          "description": "Identifiant de la ligne d'inventaire (ou indiquez l'espèce)."
+        },
+        "species": {
+          "name": "Espèce",
+          "description": "Espèce de la ligne, si aucun identifiant de ligne n'est donné."
+        }
+      }
+    }
+  }
+}

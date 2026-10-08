@@ -1,0 +1,115 @@
+fail_fast: true
+repos:
+  - repo: local
+    hooks:
+      - id: display_banner
+        name: Header Banner
+        language: system
+        verbose: true
+        pass_filenames: false
+        entry: bash -c 'echo -e "\033[1;36m========================================================================\n                   EXÉCUTION DES VÉRIFICATIONS PRE-COMMIT\n                   $(date)\n========================================================================\033[0m"'
+      - id: check-packages-versions
+        #  ne pas oublier le -v : pre-commit run check-packages-versions --all-files -v
+        name: Afficher les versions des dépendances
+        entry: >-
+           python -c "import sys, importlib.metadata; print(f'Python {sys.version.split()[0]:<33} = {sys.version.split()[0]}'); pkgs=['colorama','pyright','pytest-homeassistant-custom-component','numpy','pytest','pytest-asyncio','pytest-cov']; [print(f'{pkg:<40} = {importlib.metadata.version(pkg)}') for pkg in pkgs]"
+        language: python
+        pass_filenames: false
+        always_run: true
+        verbose: true
+        additional_dependencies:
+          - colorama>=0.4.6
+          - pyright>=1.1.414
+          - pytest-homeassistant-custom-component>=0.13.368
+          - numpy>=2.0
+          - pytest>=9.0.3
+          - pytest-asyncio>=1.4.0
+          - pytest-cov>=7.1.0
+
+  - repo: https://github.com/Elwinmage/create_ha_project
+    rev: v1.0.1
+    hooks:
+      - id: check-mdi
+
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v6.0.0
+    hooks:
+      - id: check-json
+      - id: trailing-whitespace
+
+  - repo: local
+    hooks:
+      - id: prettier
+        name: prettier
+        entry: prettier --write --log-level error
+        language: system
+        types: [json]
+
+      - id: hassfest
+        name: hassfest
+        # On appelle directement le fichier python par son chemin dans le conteneur
+        # entry: env PYTHONPATH=/usr/src/homeassistant python3 /usr/src/homeassistant/script/hassfest
+        entry: env PYTHONPATH=/usr/src/ha-hassfest python3 -m script.hassfest
+        language: system
+        args: ["--core-path", "/usr/src/ha-hassfest", "--integration-path", "custom_components/reeftank"]
+        pass_filenames: false
+        always_run: true
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    # Ruff version.
+    rev: v0.16.10
+    hooks:
+      # Run the linter.
+      - id: ruff-check
+        args: [--fix]
+        files: ^(custom_components/.*\.py|scripts/.*\.py|tests/.*\.py)$
+      # Run the formatter.
+      - id: ruff-format
+        files: ^(custom_components/.*\.py|scripts/.*\.py|tests/.*\.py)$
+
+  - repo: local
+    hooks:
+      - id : check_translation
+        name: Check Entities translations
+        entry: python scripts/check_translation.py
+        language: python
+        additional_dependencies:
+          # used by check_translation.py
+          - colorama>=0.4.6
+        pass_filenames: false
+
+      - id: pyright
+        name: pyright
+        entry: pyright
+        language: python
+        args: [--project, pyrightconfig.json]
+        additional_dependencies:
+          - pyright>=1.1.414
+          # Provide Home Assistant modules/types in the hook env.
+          - pytest-homeassistant-custom-component>=0.13.368
+          # Used by scripts/build_atlas.py
+          - numpy>=2.0
+          # used by check_translation.py
+          - colorama>=0.4.6
+        pass_filenames: false
+
+      - id: pytest
+        name: pytest (-q)
+        entry: pytest -q --cov=custom_components.reeftank --cov-report=xml:reports/coverage.xml --cov-report=term-missing --cov-report=html:reports/htmlcov --cov-config=.coveragerc
+        language: python
+        always_run: true
+        pass_filenames: false
+        additional_dependencies:
+          # Keep this minimal: only what's required to run the test suite.
+          - pytest>=9.0.3
+          - pytest-asyncio>=1.4.0
+          - pytest-cov>=7.1.0
+          - pytest-homeassistant-custom-component>=0.13.368
+          - numpy>=2.0
+
+      - id: display_coverage
+        name: 100% coverage
+        language: system
+        verbose: true
+        entry: bash -c "./scripts/coverage.sh "
+        pass_filenames: false
