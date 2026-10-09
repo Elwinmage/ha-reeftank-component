@@ -19,10 +19,29 @@ if str(project_root) not in sys.path:
 DOMAIN = "reeftank"
 
 
+MANIFEST_URL = (
+    "https://github.com/Elwinmage/reeftank-catalog/releases/latest/download/"
+    "manifest.json"
+)
+
+
 @pytest.fixture(autouse=True)
 def _auto_enable_custom_integrations(enable_custom_integrations: Any) -> None:
     """Load this repo's custom_components in the test instance."""
     return
+
+
+@pytest.fixture(autouse=True)
+def _isolated_config(hass: HomeAssistant, tmp_path: Path) -> None:
+    """Write <config>/reeftank/ in a fresh folder for every test."""
+    hass.config.config_dir = str(tmp_path / "config")
+
+
+@pytest.fixture(autouse=True)
+def _no_catalog_release(aioclient_mock: Any) -> Any:
+    """GitHub unreachable unless a test publishes a release."""
+    aioclient_mock.get(MANIFEST_URL, status=404)
+    return aioclient_mock
 
 
 def sample_document(**overrides: Any) -> dict[str, Any]:

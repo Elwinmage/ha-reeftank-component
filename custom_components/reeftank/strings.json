@@ -12,6 +12,11 @@
     }
   },
   "entity": {
+    "button": {
+      "check_catalog": {
+        "name": "Check for updates"
+      }
+    },
     "event": {
       "feeding": {
         "name": "Feeding",
@@ -64,6 +69,18 @@
     }
   },
   "exceptions": {
+    "catalog_check_failed": {
+      "message": "Catalog check failed: {error}"
+    },
+    "catalog_incompatible": {
+      "message": "Catalog {version} needs ReefTank {minimum} or newer: update the integration first."
+    },
+    "catalog_install_failed": {
+      "message": "Catalog install failed: {error}"
+    },
+    "catalog_unknown": {
+      "message": "The latest catalog release is not known yet (no connection to GitHub?)."
+    },
     "not_loaded": {
       "message": "ReefTank is not set up."
     },
@@ -153,6 +170,17 @@
         "species": {
           "name": "Species",
           "description": "Species of the line, when no line id is given."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Catalog updates",
+        "description": "The fish and coral species are downloaded from the ReefTank catalog and kept up to date.",
+        "data": {
+          "auto_update": "Install new catalog releases automatically"
         }
       }
     }

@@ -6,9 +6,9 @@ your tank, lit by your real lamps, populated with animated fish and corals, and
 carrying your devices and entities.
 
 > Status: **v0.1.0, first version** — everything below is implemented.
-> Tested with Home Assistant 2026.2. The bundled catalog holds two demo
-> species (`demo_damselfish`, `demo_euphyllia`) drawn by a script, waiting
-> for the real ones.
+> Tested with Home Assistant 2026.2 and 2026.10. The fish and coral species are
+> downloaded from the [ReefTank catalog](https://github.com/Elwinmage/reeftank-catalog)
+> and kept up to date by the `update.reeftank_catalog` entity (§14).
 
 ## Quick start
 
@@ -22,8 +22,10 @@ carrying your devices and entities.
    and entities on it (*Devices*), choose the lamps (*Light & flow*), add
    the livestock and save.
 
-Add your own species (see §10) under `<config>/reeftank/catalog/`: they
-appear in the editor without restarting.
+The species catalog is downloaded on the first start (an internet access to
+github.com is needed once), then updated automatically. Add your own species
+(see §10) under `<config>/reeftank/catalog/`: they appear in the editor
+without restarting, and win over catalog species with the same id.
 
 ---
 
@@ -162,7 +164,9 @@ One **aquarium** document per tank. Key rules:
       "sand_band": 0.12,
       "livestock": [
         { "id": "l1", "kind": "fish", "species": "chromis_viridis", "count": 7,
-          "size_cm": [5, 8], "added": "2026-03-14", "note": "" }
+          "size_cm": [5, 8], "added": "2026-03-14", "note": "" },
+        { "id": "l2", "kind": "fish", "species": "cryptocentrus_cinctus",
+          "count": 1, "home": [0.72, 0.9, 0.3] }
       ],
       "corals": [
         { "id": "c1", "species": "euphyllia_glabrescens", "view": "front",
@@ -190,8 +194,11 @@ One **aquarium** document per tank. Key rules:
       "image": "a1b2/front.webp",
       "regions": [
         { "water": "main",
-          "quad": [[0.08, 0.10], [0.92, 0.10], [0.92, 0.55], [0.08, 0.55]] }
+          "quad": [[0.08, 0.10], [0.92, 0.10], [0.92, 0.55], [0.08, 0.55]],
+          "sand": [[0.08, 0.50], [0.40, 0.48], [0.92, 0.49]],
+          "sand_back": [], "drawn": false }
       ],
+      "backdrop": { "mode": "photo", "rock": null, "sand": null },
       "decor": [
         { "id": "d1", "z": 0.2,
           "poly": [[0.10, 0.50], [0.18, 0.40], [0.25, 0.52]] }
@@ -225,6 +232,26 @@ Notes:
   right), `width` = Y (depth, front glass to back wall), `height` = Z.
 - `quad` is a 4-corner quadrilateral (photos are rarely shot square-on); the
   editor starts from a rectangle.
+- `sand` is where the sand meets the front glass, as seen on the picture: a
+  polyline of 2 points or more, left to right, following its bumps; empty,
+  the water's `sand_band` (share of the height) is used. Fish keep above it;
+  sand dwellers (`sand` profile) crawl on it.
+- `sand_back` is where the sand meets the back wall, as seen on the picture
+  (same form), for a picture showing the top of the sand: the sand surface
+  goes straight from the front line to the back one (a slope, a bank at the
+  back). Empty, the sand is as high at the back as at the front.
+- `livestock[].home` is where the animals of a line live (a burrow, a host
+  anemone), as `[u, v, z]` in the water: `u` along the front glass, `v` from
+  the surface down, `z` from the front glass back, each `0..1`. They stay
+  within the territory of their species (`behavior.territory_cm`). In water
+  space, so the same home works on every view of the water.
+- `regions[].drawn`: the water of that region is drawn (water, sand below
+  the sand line, decor polygons filled with rock) instead of shown from the
+  picture; the rest of the picture (stand, cabinet, wall) stays. The
+  textures are the view's `backdrop.rock` and `backdrop.sand` (catalog ids;
+  none: the first of the catalog, else a built-in texture). The editor keeps
+  the picture, to outline. (`backdrop.mode: "drawn"`, from a first version,
+  draws every region of the view.)
 - `lights[].x` is the lamp position along the tank, `0..1`. A light is either
   a `device_id` (ReefLED, G1/G2/virtual) or any `light` `entity_id` with colour
   and brightness.
@@ -251,10 +278,11 @@ render: static      # optional: lowers the aquarium's render level on this card
 |---|---|---|
 | Aquarium documents | `Store` → `.storage/reeftank` | Versioned, migrated, in HA backups |
 | Uploaded photos | `/config/reeftank/<aquarium_id>/` | In HA backups; served by a static path |
-| Bundled catalog | `custom_components/reeftank/catalog/` | Ships with the integration |
-| User catalog additions | `/config/reeftank/catalog/` | Custom species, merged over bundled ones |
+| Downloaded catalog | `/config/reeftank/pack/` | Species of the catalog releases, replaced by updates |
+| User catalog additions | `/config/reeftank/catalog/` | Custom species, merged over the downloaded ones |
 
-Static paths: `/reeftank/images/…` and `/reeftank/catalog/…`.
+Static paths: `/reeftank/images/…`, `/reeftank/catalog/pack/…` and
+`/reeftank/catalog/user/…`.
 
 ### Background photo uploads
 
@@ -270,7 +298,7 @@ User photos are normalised server-side before being stored:
 | Output | WebP, quality ~85 |
 
 Catalog assets (atlases, preset pictures) are not uploads: they are produced by
-the build script in their final format.
+the build script of reeftank-catalog in their final format.
 
 ## 5. Backend API
 
@@ -283,7 +311,8 @@ the build script in their final format.
 | `reeftank/aquarium/subscribe` | `{aquarium_id}` | the same payload now and on every change; `{deleted: true}` |
 | `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images_url}`; error `conflict` when the revision moved, `invalid_format` |
 | `reeftank/aquarium/delete` (admin) | `{aquarium_id}` | — (removes device, entities, pictures) |
-| `reeftank/catalog` | — | merged catalog (bundled + user), asset names turned into URLs |
+| `reeftank/catalog` | — | merged catalog (downloaded + user), asset names turned into URLs; `pack: {version, updating}` |
+| `reeftank/catalog/subscribe` | — | an event `{version}` each time a catalog release is installed |
 
 `entities` gives the entity ids of the aquarium's own entities (§6), so the
 card follows `event.<tank>_feeding` without guessing its name.
@@ -420,27 +449,19 @@ Technology: **Canvas 2D**, no WebGL library (keeps the card's dependencies to
 
 ### Authoring
 
-Source clips can be anything (APNG, MOV, PNG sequence). A build script
-(`scripts/build_atlas.py`, Pillow + numpy, ffmpeg for video files) converts
-them into the atlas and its descriptor. APNG is a **source** format, not a
-served one.
+Atlases are built from generated clips by `scripts/build_atlas.py` of the
+[reeftank-catalog](https://github.com/Elwinmage/reeftank-catalog) repository
+(automatic mode, batches, loops, turn detection): see its README. The same
+script builds your own species for `<config>/reeftank/catalog/`.
 
-```bash
-python scripts/build_atlas.py fish chromis_viridis \
-    --clip swim=clips/chromis_swim.apng \
-    --clip turn=clips/chromis_turn.apng:24 \
-    --meta clips/chromis.meta.json \
-    --out /config/reeftank/catalog/fish
-```
-
-`--clip name=source[:fps[:loop]]`; `swim`, `idle`, `day` and `night` loop by
-default. Frames are cropped to their common visible box and fitted into the
-frame size (`--frame WxH`). The meta file is merged into the descriptor
-(size, behaviour, names...).
-
-A coral clip is painted with its zones in **pure red, green and blue** (any
-shading), grey parts taking the fourth colour: the script splits it into the
-shade and mask atlases (§12).
+- `swim` loops; its rate follows the swimming speed.
+- `idle` (optional) plays when the fish barely moves, at its own rate;
+  `pingpong` suits clips generated as a forward-then-backward loop.
+- `turn` (optional) plays once, from the drawn way to the other one; the card
+  plays it as is or mirrored, and its length sets the turn duration
+  (0.25–3 s).
+- The card cross-fades for 0.15 s when a fish changes clip, which hides the
+  small pose differences between clips generated separately.
 
 ### Descriptor
 
@@ -449,13 +470,14 @@ shade and mask atlases (§12).
   "id": "chromis_viridis",
   "kind": "fish",
   "atlas": { "1x": "chromis_viridis.webp" },
-  "frame": [256, 128],
+  "frame": [224, 124],
   "columns": 8,
   "facing": "right",
+  "length_frac": 0.857,
   "clips": {
     "swim": { "from": 0, "to": 23, "fps": 24, "loop": true },
-    "turn": { "from": 24, "to": 31, "fps": 24 },
-    "idle": { "from": 32, "to": 43, "fps": 12, "loop": true }
+    "turn": { "from": 24, "to": 31, "fps": 24, "loop": false },
+    "idle": { "from": 32, "to": 43, "fps": 12, "loop": true, "pingpong": true }
   },
   "size_cm": [5, 8],
   "behavior": { "profile": "shoal", "depth": [0.2, 0.8], "band": [0.1, 0.7],
@@ -469,6 +491,8 @@ shade and mask atlases (§12).
 
 - `turn` is optional: without it, a turn is a horizontal squash from +1 to −1.
 - `facing` tells which way the source frames look.
+- `length_frac`: share of the frame width taken by the fish length (1 when
+  absent): the card scales the frame so that the fish has its size in cm.
 
 ## 11. Fish behaviour
 
@@ -589,21 +613,62 @@ catalog/
       preset.json       # match keys, dimensions, views (images, quads, decor)
       front.webp
   fish/
-    chromis_viridis/
+    siganus_vulpinus/
       species.json
-      chromis_viridis.webp
+      siganus_vulpinus.webp
+      thumb.webp        # small picture for the editor's lists
   corals/
     euphyllia_glabrescens/
       species.json
       euphyllia_glabrescens.shade.webp
       euphyllia_glabrescens.mask.png
+      thumb.webp
+  textures/
+    live_rock/
+      texture.json      # {"role": "rock" | "sand", "image": "live_rock.webp",
+                        #  "scale_cm": 30}: the picture covers 30 cm of tank
+      live_rock.webp    # tileable
 ```
 
 Folders are scanned on every `reeftank/catalog` call (no index to keep up to
-date); a folder name is the entry id. The user catalog
-(`/config/reeftank/catalog/`) has the same layout and overrides bundled
-entries with the same id. Nothing from the catalog goes in the card's JS
-bundle.
+date); a folder name is the entry id. Two catalogs are merged:
+
+- the **downloaded** one, `/config/reeftank/pack/`, from the releases of
+  [reeftank-catalog](https://github.com/Elwinmage/reeftank-catalog) (fish and
+  corals);
+- the **user** one, `/config/reeftank/catalog/` (same layout), whose entries
+  override downloaded ones with the same id.
+
+Nothing from the catalog goes in the card's JS bundle.
+
+### Catalog updates
+
+Every release of reeftank-catalog holds a `manifest.json` (format, version,
+minimum integration version, notes, and per entry: version, sha256, size,
+archive name) and one zip archive per entry.
+
+- **`update.reeftank_catalog`** (device *ReefTank catalog*) shows the
+  installed and the latest release, with its notes. The latest release is
+  checked every 12 hours (`…/releases/latest/download/manifest.json`, no API
+  rate limit).
+- **`button.reeftank_catalog_check_for_updates`** (same device, *Check for
+  updates*) checks right away; a release found is installed at once when
+  automatic updates are on.
+- **Automatic** by default: a new release is installed as soon as it is seen.
+  *Settings → Devices & services → ReefTank → Configure* turns it off; the
+  entity then waits for *Install*.
+- **Incremental**: only the entries whose sha256 changed are downloaded; the
+  others are copied from the installed pack.
+- **Safe**: archives are checked (size and sha256 from the manifest, flat file
+  names, `json`/`webp`/`png` only, bounded sizes, a descriptor that parses),
+  the new pack is prepared next to the old one, then put in its place in one
+  move: an interrupted update leaves the previous pack untouched.
+- A release needing a newer integration (`min_integration`) is not installed;
+  the entity says so.
+- A pack whose files are missing (a backup restored without it, a folder
+  deleted by hand) counts as not installed, and is downloaded again.
+- Cards refresh their catalog when a release is installed
+  (`reeftank/catalog/subscribe`).
 
 A preset is matched to a cloud aquarium on its model, then its series, then
 its dimensions (±3 cm):
@@ -647,11 +712,9 @@ pyright --project pyrightconfig.json
 python scripts/check_translation.py
 ```
 
-Regenerate the demo species with `python scripts/make_demo_assets.py`.
-
 Next steps:
 
-- real species clips (fish and corals) through `scripts/build_atlas.py`;
+- more species in reeftank-catalog;
 - Red Sea tank presets (`catalog/presets/`), once picture rights are clear;
 - optional caustics layer (`render.caustics`, stored but not drawn yet).
 
@@ -659,6 +722,6 @@ Next steps:
 
 - **Red Sea preset pictures**: redistribution rights of Red Sea product photos
   to be checked; fallback on own photos or drawn renders. (Fish and coral clips
-  are produced by the project and carry no such issue.)
+  are produced by the project, under CC BY 4.0 in reeftank-catalog.)
 - **Multiple cloud accounts** with the same aquarium name: disambiguation in
   the picker.

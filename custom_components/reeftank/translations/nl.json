@@ -12,6 +12,11 @@
     }
   },
   "entity": {
+    "button": {
+      "check_catalog": {
+        "name": "Zoeken naar updates"
+      }
+    },
     "event": {
       "feeding": {
         "name": "Voedering",
@@ -64,6 +69,18 @@
     }
   },
   "exceptions": {
+    "catalog_check_failed": {
+      "message": "Controle van de catalogus mislukt: {error}"
+    },
+    "catalog_incompatible": {
+      "message": "Catalogus {version} vereist ReefTank {minimum} of nieuwer: werk eerst de integratie bij."
+    },
+    "catalog_install_failed": {
+      "message": "Installatie van de catalogus mislukt: {error}"
+    },
+    "catalog_unknown": {
+      "message": "De nieuwste catalogusversie is nog niet bekend (geen verbinding met GitHub?)."
+    },
     "not_loaded": {
       "message": "ReefTank is niet ingesteld."
     },
@@ -153,6 +170,17 @@
         "species": {
           "name": "Soort",
           "description": "Soort van de regel als er geen regel-id is opgegeven."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Catalogusupdates",
+        "description": "De vis- en koraalsoorten worden gedownload uit de ReefTank-catalogus en up-to-date gehouden.",
+        "data": {
+          "auto_update": "Nieuwe catalogusversies automatisch installeren"
         }
       }
     }

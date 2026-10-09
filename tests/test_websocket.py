@@ -44,10 +44,9 @@ async def test_list_get_catalog(
 
     await ws.send_json_auto_id({"type": "reeftank/catalog"})
     msg = await ws.receive_json()
-    assert [e["id"] for e in msg["result"]["fish"]] == ["demo_damselfish"]
-    assert msg["result"]["fish"][0]["atlas"]["1x"].startswith(
-        "/reeftank/catalog/bundled/fish/"
-    )
+    # nothing downloaded yet (GitHub unreachable in the tests)
+    assert msg["result"]["fish"] == []
+    assert msg["result"]["pack"] == {"version": None, "updating": False}
 
 
 async def test_subscribe(

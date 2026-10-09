@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-import voluptuous as vol
 from homeassistant.components.websocket_api import async_register_command
 from homeassistant.components.websocket_api.connection import ActiveConnection
 from homeassistant.components.websocket_api.decorators import (
@@ -16,10 +15,12 @@ from homeassistant.components.websocket_api.messages import event_message
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
+from .compat import vol
 from .const import (
     DOMAIN,
     SIGNAL_AQUARIUM_UPDATED,
-    URL_CATALOG_BUNDLED,
+    SIGNAL_CATALOG_UPDATED,
+    URL_CATALOG_PACK,
     URL_CATALOG_USER,
     URL_IMAGES,
 )
@@ -50,6 +51,7 @@ def async_register_websocket(hass: HomeAssistant) -> None:
         ws_save,
         ws_delete,
         ws_catalog,
+        ws_catalog_subscribe,
     ):
         async_register_command(hass, command)
 
@@ -211,19 +213,44 @@ async def ws_delete(
 async def ws_catalog(
     hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]
 ) -> None:
-    """Return the merged asset catalog (bundled + user)."""
-    from . import BUNDLED_CATALOG
+    """Return the merged asset catalog (downloaded pack + user entries).
+
+    `pack` tells the installed release (null before the first download) and
+    whether an update is being installed.
+    """
     from .catalog import load_catalog
 
     data = _data(hass)
     if data is None:
         connection.send_error(msg["id"], ERR_NOT_LOADED, "reeftank is not set up")
         return
-    catalog = await hass.async_add_executor_job(
+    catalog: dict[str, Any] = await hass.async_add_executor_job(
         load_catalog,
-        BUNDLED_CATALOG,
-        URL_CATALOG_BUNDLED,
+        data.pack_root,
+        URL_CATALOG_PACK,
         data.user_catalog_root,
         URL_CATALOG_USER,
     )
+    installed = data.updater.installed
+    catalog["pack"] = {
+        "version": installed.version if installed else None,
+        "updating": data.updater.in_progress,
+    }
     connection.send_result(msg["id"], catalog)
+
+
+@websocket_command({vol.Required("type"): "reeftank/catalog/subscribe"})
+@callback
+def ws_catalog_subscribe(
+    hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Send an event each time a catalog release is installed."""
+
+    @callback
+    def _forward(version: str) -> None:
+        connection.send_message(event_message(msg["id"], {"version": version}))
+
+    connection.subscriptions[msg["id"]] = async_dispatcher_connect(
+        hass, SIGNAL_CATALOG_UPDATED, _forward
+    )
+    connection.send_result(msg["id"])

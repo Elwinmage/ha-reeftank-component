@@ -13,15 +13,16 @@ from pathlib import Path
 from typing import Any
 
 import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
-from homeassistant.components.http import StaticPathConfig
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.typing import ConfigType
+from homeassistant.loader import async_get_integration
 
+from .compat import StaticPathConfig, find_device, vol
 from .const import (
+    CATALOG_DEVICE_ID,
     DATA_DIR,
     DOMAIN,
     IMAGES_DIR,
@@ -29,8 +30,9 @@ from .const import (
     KEY_FEEDING,
     KEY_FEEDINGS_TODAY,
     KEY_FISH,
+    PACK_DIR,
     PLATFORMS,
-    URL_CATALOG_BUNDLED,
+    URL_CATALOG_PACK,
     URL_CATALOG_USER,
     URL_IMAGES,
     USER_CATALOG_DIR,
@@ -40,13 +42,12 @@ from .images import ImageUploadView, cleanup_orphans, delete_aquarium_images
 from .models import referenced_images
 from .services import async_register_services
 from .store import AquariumStore
+from .updater import CatalogUpdater
 from .websocket import async_register_websocket
 
 _LOGGER = logging.getLogger(__name__)
 
 CONFIG_SCHEMA = cv.config_entry_only_config_schema(DOMAIN)
-
-BUNDLED_CATALOG = Path(__file__).parent / "catalog"
 
 # Static paths and views cannot be unregistered: they are added once per
 # Home Assistant run, and look up the current runtime data when used.
@@ -61,6 +62,8 @@ class ReefTankData:
     store: AquariumStore
     images_root: Path
     user_catalog_root: Path
+    pack_root: Path
+    updater: CatalogUpdater
     feeding: FeedingManager = field(init=False)
 
     def __post_init__(self) -> None:
@@ -75,7 +78,7 @@ class ReefTankData:
         self.feeding.async_watch(doc["id"])
 
         dev_reg = dr.async_get(self.hass)
-        device = dev_reg.async_get_device(identifiers={(DOMAIN, doc["id"])})
+        device = find_device(dev_reg, (DOMAIN, doc["id"]))
         if device is not None and device.name != doc["name"]:
             dev_reg.async_update_device(device.id, name=doc["name"])
 
@@ -90,7 +93,7 @@ class ReefTankData:
             return False
         if remove_device:
             dev_reg = dr.async_get(self.hass)
-            device = dev_reg.async_get_device(identifiers={(DOMAIN, aquarium_id)})
+            device = find_device(dev_reg, (DOMAIN, aquarium_id))
             if device is not None:
                 dev_reg.async_remove_device(device.id)
         await self.hass.async_add_executor_job(
@@ -152,8 +155,9 @@ async def _async_register_http(hass: HomeAssistant, data: ReefTankData) -> None:
         [
             # Picture names are random and never rewritten: cacheable.
             StaticPathConfig(URL_IMAGES, str(data.images_root), cache_headers=True),
+            # The pack folder is replaced by updates, the path stays
             StaticPathConfig(
-                URL_CATALOG_BUNDLED, str(BUNDLED_CATALOG), cache_headers=False
+                URL_CATALOG_PACK, str(data.pack_root), cache_headers=False
             ),
             StaticPathConfig(
                 URL_CATALOG_USER, str(data.user_catalog_root), cache_headers=False
@@ -181,16 +185,32 @@ async def async_setup_entry(hass: HomeAssistant, entry: ReefTankConfigEntry) -> 
 
     images_root = Path(hass.config.path(DATA_DIR, IMAGES_DIR))
     user_catalog_root = Path(hass.config.path(DATA_DIR, USER_CATALOG_DIR))
-    await hass.async_add_executor_job(_make_dirs, images_root, user_catalog_root)
+    pack_root = Path(hass.config.path(DATA_DIR, PACK_DIR))
+    await hass.async_add_executor_job(
+        _make_dirs, images_root, user_catalog_root, pack_root
+    )
 
-    data = ReefTankData(hass, store, images_root, user_catalog_root)
+    integration = await async_get_integration(hass, DOMAIN)
+    updater = CatalogUpdater(hass, entry, pack_root, str(integration.version or "0"))
+    data = ReefTankData(hass, store, images_root, user_catalog_root, pack_root, updater)
     entry.runtime_data = data
 
     await _async_register_http(hass, data)
+    await updater.async_start()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     data.feeding.async_start()
     entry.async_on_unload(data.feeding.async_stop)
+    entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     return True
+
+
+async def _async_options_updated(
+    hass: HomeAssistant, entry: ReefTankConfigEntry
+) -> None:
+    """Automatic updates turned on: check right away."""
+    updater = entry.runtime_data.updater
+    if updater.auto_update:
+        await updater.coordinator.async_refresh()
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ReefTankConfigEntry) -> bool:
@@ -204,7 +224,12 @@ async def async_unload_entry(hass: HomeAssistant, entry: ReefTankConfigEntry) ->
 async def async_remove_config_entry_device(
     hass: HomeAssistant, entry: ReefTankConfigEntry, device: dr.DeviceEntry
 ) -> bool:
-    """Deleting an aquarium's device from the UI deletes the aquarium."""
+    """Deleting an aquarium's device from the UI deletes the aquarium.
+
+    The catalog's device stays: it carries the update entity.
+    """
+    if (DOMAIN, CATALOG_DEVICE_ID) in device.identifiers:
+        return False
     for domain, aquarium_id in device.identifiers:
         if domain == DOMAIN:
             # Home Assistant removes the device itself once this returns.

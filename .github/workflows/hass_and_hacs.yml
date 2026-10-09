@@ -15,7 +15,7 @@ jobs:
   validate-hassfest:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v6
       - name: Hassfest validation
         uses: home-assistant/actions/hassfest@master
 
@@ -23,7 +23,7 @@ jobs:
   validate-hacs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v6
       - name: HACS validation
         uses: hacs/action@main
         with:
@@ -41,7 +41,7 @@ jobs:
         ha-version: ["stable", "beta"]
 
     steps:
-      - uses: actions/checkout@v7
+      - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
@@ -65,14 +65,13 @@ jobs:
           # Installation des dépendances du manifest
           python -c "import json; print('\n'.join(json.load(open('custom_components/reeftank/manifest.json'))['requirements']))" > requirements_manifest.txt
           pip install -r requirements_manifest.txt
-          pip install "numpy>=2.0"
       - name: Run Pytest
         run: |
           pytest --cov=custom_components --cov-report=xml
 
       - name: Upload coverage to Codecov
         if: matrix.ha-version == 'stable'
-        uses: codecov/codecov-action@v7
+        uses: codecov/codecov-action@v6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           files: ./coverage.xml

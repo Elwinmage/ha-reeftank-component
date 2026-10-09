@@ -12,6 +12,11 @@
     }
   },
   "entity": {
+    "button": {
+      "check_catalog": {
+        "name": "Procurar atualizações"
+      }
+    },
     "event": {
       "feeding": {
         "name": "Alimentação",
@@ -64,6 +69,18 @@
     }
   },
   "exceptions": {
+    "catalog_check_failed": {
+      "message": "Falha na verificação do catálogo: {error}"
+    },
+    "catalog_incompatible": {
+      "message": "O catálogo {version} requer ReefTank {minimum} ou mais recente: atualize primeiro a integração."
+    },
+    "catalog_install_failed": {
+      "message": "Falha na instalação do catálogo: {error}"
+    },
+    "catalog_unknown": {
+      "message": "A versão mais recente do catálogo ainda não é conhecida (sem ligação ao GitHub?)."
+    },
     "not_loaded": {
       "message": "O ReefTank não está configurado."
     },
@@ -153,6 +170,17 @@
         "species": {
           "name": "Espécie",
           "description": "Espécie da linha, se não for indicado o id da linha."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Atualizações do catálogo",
+        "description": "As espécies de peixes e corais são transferidas do catálogo ReefTank e mantidas atualizadas.",
+        "data": {
+          "auto_update": "Instalar automaticamente as novas versões do catálogo"
         }
       }
     }

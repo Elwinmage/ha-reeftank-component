@@ -19,8 +19,7 @@ from collections.abc import Callable
 from copy import deepcopy
 from typing import Any, cast
 
-import voluptuous as vol
-
+from .compat import vol
 from .const import (
     DEFAULT_DEDUP_S,
     DEFAULT_FEED_DURATION_S,
@@ -28,7 +27,7 @@ from .const import (
     RENDER_FULL,
     RENDER_LEVELS,
     SCHEMA_VERSION,
-    URL_CATALOG_BUNDLED,
+    URL_CATALOG_PACK,
     URL_CATALOG_USER,
 )
 
@@ -39,7 +38,7 @@ _UPLOAD_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}/[A-Za-z0-9_-]{1,64}\.webp$")
 # A catalog picture (preset): served by the integration itself.
 _CATALOG_RE = re.compile(
     r"^(?:"
-    + re.escape(URL_CATALOG_BUNDLED)
+    + re.escape(URL_CATALOG_PACK)
     + "|"
     + re.escape(URL_CATALOG_USER)
     + r")/[A-Za-z0-9_./-]{1,200}$"
@@ -51,15 +50,23 @@ ROLE_FEEDING_POINT = "feeding_point"
 ELEMENT_KINDS = ("device", "entity", "marker")
 LIVESTOCK_KINDS = ("fish", "invertebrate")
 PHOTO_LIGHTS = ("white", "blue")
+#: What a view shows under its life: its photo, or a decor drawn from the
+#: outlines (water, sand and rock textures)
+BACKDROP_MODES = ("photo", "drawn")
 
 MAX_NAME = 100
 MAX_NOTE = 500
 MAX_POLY_POINTS = 400
+MAX_SAND_POINTS = 32
 
 
 def new_id(length: int = 8) -> str:
-    """Return a new short id (lowercase hex)."""
-    return secrets.token_hex(length // 2)
+    """Return a new short id (lowercase hex, starting with a letter).
+
+    Ids are object keys in the card: an all-digit one would be an integer
+    key, which JavaScript orders first (views would change order).
+    """
+    return secrets.choice("abcdef") + secrets.token_hex(length // 2)[1:]
 
 
 # ---------------------------------------------------------------------------
@@ -97,6 +104,25 @@ def _quad(value: Any) -> list[list[float]]:
     if not isinstance(value, list) or len(value) not in (0, 4):
         raise vol.Invalid("a quad has 4 corners (or none)")
     return [_point(p) for p in value]
+
+
+def _sand_line(value: Any) -> list[list[float]]:
+    """Where the sand meets the front glass, left to right: a polyline of 2
+    points or more, following its bumps (or nothing, to use the sand band of
+    the water)."""
+    if not isinstance(value, list) or (
+        value and not 2 <= len(value) <= MAX_SAND_POINTS
+    ):
+        raise vol.Invalid(f"a sand line has 2 to {MAX_SAND_POINTS} points (or none)")
+    return sorted((_point(p) for p in value), key=lambda p: p[0])
+
+
+def _water_point(value: Any) -> list[float]:
+    """A point of a water: [u, v, z], each 0..1 (along the glass, from the
+    surface down, from the front glass back)."""
+    if not isinstance(value, (list, tuple)) or len(value) != 3:
+        raise vol.Invalid(f"invalid water point: {value!r}")
+    return [_unit(v) for v in value]
 
 
 def _polygon(value: Any) -> list[list[float]]:
@@ -190,6 +216,9 @@ LIVESTOCK_SCHEMA = _with_id(
         vol.Optional("size_cm"): vol.Any(None, _size_range),
         vol.Optional("added"): vol.Any(None, _date),
         vol.Optional("note", default=""): _text(MAX_NOTE),
+        # Where the animals live (a burrow, a host anemone): they stay
+        # around it, within the territory of their species
+        vol.Optional("home"): vol.Any(None, _water_point),
     }
 )
 
@@ -226,6 +255,13 @@ REGION_SCHEMA = vol.Schema(
     {
         vol.Required("water"): _ident,
         vol.Optional("quad", default=list): _quad,
+        vol.Optional("sand", default=list): _sand_line,
+        # Where the sand meets the back wall, as seen on the picture: with
+        # the front line, the slope and the top of the sand
+        vol.Optional("sand_back", default=list): _sand_line,
+        # Drawn (water, sand, rock textures) instead of the photo; the rest
+        # of the picture stays
+        vol.Optional("drawn", default=False): bool,
     }
 )
 
@@ -261,10 +297,22 @@ HOTSPOT_SCHEMA = _with_id(
     }
 )
 
+BACKDROP_SCHEMA = vol.Schema(
+    {
+        # Former switch of the whole view: `drawn` draws every region (the
+        # regions now choose, with their own `drawn`)
+        vol.Optional("mode", default="photo"): vol.In(BACKDROP_MODES),
+        # Catalog textures (ids); none: the first one of the catalog
+        vol.Optional("rock"): vol.Any(None, _ident),
+        vol.Optional("sand"): vol.Any(None, _ident),
+    }
+)
+
 VIEW_SCHEMA = vol.Schema(
     {
         vol.Optional("name", default=""): _text(MAX_NAME),
         vol.Optional("image"): _image,
+        vol.Optional("backdrop", default=dict): BACKDROP_SCHEMA,
         vol.Optional("regions", default=list): [REGION_SCHEMA],
         vol.Optional("decor", default=list): [DECOR_SCHEMA],
         vol.Optional("elements", default=list): [ELEMENT_SCHEMA],

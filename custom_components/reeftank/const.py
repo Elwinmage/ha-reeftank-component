@@ -8,7 +8,12 @@ from homeassistant.const import Platform
 
 DOMAIN: Final = "reeftank"
 
-PLATFORMS: Final = [Platform.EVENT, Platform.SENSOR]
+PLATFORMS: Final = [
+    Platform.BUTTON,
+    Platform.EVENT,
+    Platform.SENSOR,
+    Platform.UPDATE,
+]
 
 MANUFACTURER: Final = "ReefTank"
 MODEL: Final = "Aquarium"
@@ -27,13 +32,26 @@ STORE_VERSION: Final = 1
 DATA_DIR: Final = "reeftank"
 IMAGES_DIR: Final = "images"
 USER_CATALOG_DIR: Final = "catalog"
+# The downloaded catalog (species of the reeftank-catalog releases).
+PACK_DIR: Final = "pack"
+
+# ---------------------------------------------------------------------------
+# Catalog updates
+# ---------------------------------------------------------------------------
+
+CATALOG_REPO: Final = "Elwinmage/reeftank-catalog"
+CATALOG_CHECK_HOURS: Final = 12
+# Device of the catalog update entity (cannot clash with an aquarium id)
+CATALOG_DEVICE_ID: Final = "__catalog__"
+CONF_AUTO_UPDATE: Final = "auto_update"
+DEFAULT_AUTO_UPDATE: Final = True
 
 # ---------------------------------------------------------------------------
 # HTTP paths
 # ---------------------------------------------------------------------------
 
 URL_IMAGES: Final = "/reeftank/images"
-URL_CATALOG_BUNDLED: Final = "/reeftank/catalog/bundled"
+URL_CATALOG_PACK: Final = "/reeftank/catalog/pack"
 URL_CATALOG_USER: Final = "/reeftank/catalog/user"
 URL_UPLOAD: Final = "/api/reeftank/upload/{aquarium_id}"
 
@@ -90,6 +108,8 @@ SIGNAL_AQUARIUM_UPDATED: Final = f"{DOMAIN}_aquarium_updated_{{}}"
 SIGNAL_AQUARIUMS_CHANGED: Final = f"{DOMAIN}_aquariums_changed"
 # A feeding was recorded (format with the aquarium id).
 SIGNAL_FEEDING: Final = f"{DOMAIN}_feeding_{{}}"
+# A catalog release was installed (with its version).
+SIGNAL_CATALOG_UPDATED: Final = f"{DOMAIN}_catalog_updated"
 
 # ---------------------------------------------------------------------------
 # Services

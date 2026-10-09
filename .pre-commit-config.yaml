@@ -12,7 +12,7 @@ repos:
         #  ne pas oublier le -v : pre-commit run check-packages-versions --all-files -v
         name: Afficher les versions des dépendances
         entry: >-
-           python -c "import sys, importlib.metadata; print(f'Python {sys.version.split()[0]:<33} = {sys.version.split()[0]}'); pkgs=['colorama','pyright','pytest-homeassistant-custom-component','numpy','pytest','pytest-asyncio','pytest-cov']; [print(f'{pkg:<40} = {importlib.metadata.version(pkg)}') for pkg in pkgs]"
+           python -c "import sys, importlib.metadata; print(f'Python {sys.version.split()[0]:<33} = {sys.version.split()[0]}'); pkgs=['colorama','pyright','pytest-homeassistant-custom-component','pytest','pytest-asyncio','pytest-cov']; [print(f'{pkg:<40} = {importlib.metadata.version(pkg)}') for pkg in pkgs]"
         language: python
         pass_filenames: false
         always_run: true
@@ -21,7 +21,6 @@ repos:
           - colorama>=0.4.6
           - pyright>=1.1.414
           - pytest-homeassistant-custom-component>=0.13.368
-          - numpy>=2.0
           - pytest>=9.0.3
           - pytest-asyncio>=1.4.0
           - pytest-cov>=7.1.0
@@ -87,8 +86,6 @@ repos:
           - pyright>=1.1.414
           # Provide Home Assistant modules/types in the hook env.
           - pytest-homeassistant-custom-component>=0.13.368
-          # Used by scripts/build_atlas.py
-          - numpy>=2.0
           # used by check_translation.py
           - colorama>=0.4.6
         pass_filenames: false
@@ -105,7 +102,6 @@ repos:
           - pytest-asyncio>=1.4.0
           - pytest-cov>=7.1.0
           - pytest-homeassistant-custom-component>=0.13.368
-          - numpy>=2.0
 
       - id: display_coverage
         name: 100% coverage

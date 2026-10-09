@@ -12,6 +12,11 @@
     }
   },
   "entity": {
+    "button": {
+      "check_catalog": {
+        "name": "Nach Updates suchen"
+      }
+    },
     "event": {
       "feeding": {
         "name": "Fütterung",
@@ -64,6 +69,18 @@
     }
   },
   "exceptions": {
+    "catalog_check_failed": {
+      "message": "Katalogprüfung fehlgeschlagen: {error}"
+    },
+    "catalog_incompatible": {
+      "message": "Katalog {version} benötigt ReefTank {minimum} oder neuer: zuerst die Integration aktualisieren."
+    },
+    "catalog_install_failed": {
+      "message": "Installation des Katalogs fehlgeschlagen: {error}"
+    },
+    "catalog_unknown": {
+      "message": "Die neueste Katalogversion ist noch nicht bekannt (keine Verbindung zu GitHub?)."
+    },
     "not_loaded": {
       "message": "ReefTank ist nicht eingerichtet."
     },
@@ -153,6 +170,17 @@
         "species": {
           "name": "Art",
           "description": "Art der Zeile, wenn keine Zeilen-ID angegeben ist."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Katalog-Aktualisierungen",
+        "description": "Die Fisch- und Korallenarten werden aus dem ReefTank-Katalog heruntergeladen und aktuell gehalten.",
+        "data": {
+          "auto_update": "Neue Katalogversionen automatisch installieren"
         }
       }
     }

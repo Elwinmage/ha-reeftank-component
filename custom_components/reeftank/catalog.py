@@ -1,15 +1,18 @@
-"""Asset catalog: fish and coral species, tank presets.
+"""Asset catalog: fish and coral species, textures, tank presets.
 
 Two catalogs are merged:
-- the bundled one, shipped in `custom_components/reeftank/catalog/`;
+- the pack, downloaded from the reeftank-catalog releases into
+  `<config>/reeftank/pack/` (see pack.py);
 - the user one, in `<config>/reeftank/catalog/`, same layout, whose entries
-  override bundled entries with the same id.
+  override pack entries with the same id.
 
 Layout (one folder per entry, named after its id):
 
     catalog/
       fish/<id>/species.json      + atlas pictures
       corals/<id>/species.json    + shade / mask atlases
+      textures/<id>/texture.json  + a tileable picture (rock, sand) for the
+                                    views drawn instead of their photo
       presets/<id>/preset.json    + view pictures
 
 Asset file names in the descriptors are relative to their folder; the
@@ -29,6 +32,7 @@ _LOGGER = logging.getLogger(__name__)
 KINDS: dict[str, str] = {
     "fish": "species.json",
     "corals": "species.json",
+    "textures": "texture.json",
     "presets": "preset.json",
 }
 
@@ -51,6 +55,8 @@ def _resolve_assets(entry: dict[str, Any], base_url: str, kind: str) -> None:
         entry["atlas"] = {
             k: _url(base_url, kind, entry_id, v) for k, v in atlas.items()
         }
+    if isinstance(entry.get("image"), str):
+        entry["image"] = _url(base_url, kind, entry_id, entry["image"])
     if isinstance(entry.get("thumbnail"), str):
         entry["thumbnail"] = _url(base_url, kind, entry_id, entry["thumbnail"])
     views = entry.get("views")
@@ -94,16 +100,16 @@ def scan_catalog(root: Path, base_url: str, source: str) -> dict[str, dict[str, 
 
 
 def load_catalog(
-    bundled_root: Path,
-    bundled_url: str,
+    pack_root: Path,
+    pack_url: str,
     user_root: Path,
     user_url: str,
 ) -> dict[str, list[dict[str, Any]]]:
-    """Merge the bundled and the user catalogs (user entries win)."""
-    bundled = scan_catalog(bundled_root, bundled_url, "bundled")
+    """Merge the pack and the user catalogs (user entries win)."""
+    pack = scan_catalog(pack_root, pack_url, "pack")
     user = scan_catalog(user_root, user_url, "user")
     merged: dict[str, list[dict[str, Any]]] = {}
     for kind in KINDS:
-        entries = {**bundled[kind], **user[kind]}
+        entries = {**pack[kind], **user[kind]}
         merged[kind] = [entries[k] for k in sorted(entries)]
     return merged

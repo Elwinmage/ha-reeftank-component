@@ -12,6 +12,11 @@
     }
   },
   "entity": {
+    "button": {
+      "check_catalog": {
+        "name": "Sprawdź aktualizacje"
+      }
+    },
     "event": {
       "feeding": {
         "name": "Karmienie",
@@ -64,6 +69,18 @@
     }
   },
   "exceptions": {
+    "catalog_check_failed": {
+      "message": "Sprawdzanie katalogu nie powiodło się: {error}"
+    },
+    "catalog_incompatible": {
+      "message": "Katalog {version} wymaga ReefTank {minimum} lub nowszego: najpierw zaktualizuj integrację."
+    },
+    "catalog_install_failed": {
+      "message": "Instalacja katalogu nie powiodła się: {error}"
+    },
+    "catalog_unknown": {
+      "message": "Najnowsza wersja katalogu nie jest jeszcze znana (brak połączenia z GitHub?)."
+    },
     "not_loaded": {
       "message": "ReefTank nie jest skonfigurowany."
     },
@@ -153,6 +170,17 @@
         "species": {
           "name": "Gatunek",
           "description": "Gatunek wiersza, gdy nie podano id wiersza."
+        }
+      }
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Aktualizacje katalogu",
+        "description": "Gatunki ryb i korali są pobierane z katalogu ReefTank i aktualizowane.",
+        "data": {
+          "auto_update": "Automatycznie instaluj nowe wersje katalogu"
         }
       }
     }

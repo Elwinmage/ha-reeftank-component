@@ -6,9 +6,9 @@ from copy import deepcopy
 from typing import Any
 
 import pytest
-import voluptuous as vol
 
 from custom_components.reeftank import models
+from custom_components.reeftank.compat import vol
 from custom_components.reeftank.models import (
     coral_counts,
     feeding_points,
@@ -26,6 +26,8 @@ def test_new_id_is_short_hex() -> None:
     assert len(value) == 8
     int(value, 16)
     assert models.new_id() != value
+    # never all digits (an integer key in JavaScript)
+    assert all(models.new_id()[0] in "abcdef" for _ in range(200))
 
 
 def test_valid_document_gets_defaults(document: dict[str, Any]) -> None:
@@ -48,6 +50,61 @@ def test_valid_document_gets_defaults(document: dict[str, Any]) -> None:
     assert doc["feeding"]["dedup_s"] == 120
     assert doc["feeding"]["duration_s"] == 45
     assert doc["views"]["cabinet"]["regions"][0]["quad"] == []
+    assert doc["views"]["cabinet"]["regions"][0]["sand"] == []
+    assert doc["views"]["cabinet"]["regions"][0]["drawn"] is False
+    assert doc["views"]["cabinet"]["regions"][0]["sand_back"] == []
+    assert doc["views"]["front"]["backdrop"] == {"mode": "photo"}
+    assert "home" not in main["livestock"][0]
+
+
+def test_sand_line_home_and_backdrop() -> None:
+    doc = validate_document(
+        {
+            "name": "T",
+            "waters": {
+                "main": {"livestock": [{"species": "goby", "home": [0.2, 1.4, "0.5"]}]}
+            },
+            "views": {
+                "front": {
+                    "regions": [
+                        {
+                            "water": "main",
+                            "sand": [[0.9, 0.8], [0.1, 0.85], [0.5, 0.75]],
+                            "sand_back": [[0.8, 0.6], [0.2, 0.62]],
+                            "drawn": True,
+                        }
+                    ],
+                    "backdrop": {"mode": "drawn", "rock": "live_rock", "sand": None},
+                }
+            },
+        }
+    )
+    # points sorted left to right, clamped
+    region = doc["views"]["front"]["regions"][0]
+    assert region["sand"] == [[0.1, 0.85], [0.5, 0.75], [0.9, 0.8]]
+    assert region["drawn"] is True
+    assert region["sand_back"] == [[0.2, 0.62], [0.8, 0.6]]
+    assert doc["waters"]["main"]["livestock"][0]["home"] == [0.2, 1.0, 0.5]
+    assert doc["views"]["front"]["backdrop"]["mode"] == "drawn"
+    for bad in (
+        {"regions": [{"water": "main", "sand": [[0, 0]]}]},
+        {"regions": [{"water": "main", "sand": [[0, 0]] * 33}]},
+        {"regions": [{"water": "main", "drawn": "yes"}]},
+        {"backdrop": {"mode": "painted"}},
+        {"backdrop": {"rock": "Bad Id"}},
+    ):
+        with pytest.raises(vol.Invalid):
+            validate_document(
+                {"name": "T", "waters": {"main": {}}, "views": {"v": bad}}
+            )
+    for home in ([0, 0], "here", [0, 0, "x"]):
+        with pytest.raises(vol.Invalid):
+            validate_document(
+                {
+                    "name": "T",
+                    "waters": {"main": {"livestock": [{"species": "a", "home": home}]}},
+                }
+            )
 
 
 def test_minimal_document() -> None:
@@ -113,7 +170,7 @@ def test_colours_dates_entities() -> None:
     "value",
     [
         "a1b2/0123abcd.webp",
-        "/reeftank/catalog/bundled/presets/reefer/front.webp",
+        "/reeftank/catalog/pack/presets/reefer/front.webp",
         "/reeftank/catalog/user/presets/x/a.webp",
     ],
 )
@@ -131,7 +188,7 @@ def test_empty_image_is_none() -> None:
     [
         "a1b2/x.png",
         "../etc/passwd",
-        "/reeftank/catalog/bundled/../../secrets.yaml",
+        "/reeftank/catalog/pack/../../secrets.yaml",
         "http://example.com/a.webp",
         12,
     ],
@@ -253,6 +310,6 @@ def test_livestock_remove(document: dict[str, Any]) -> None:
 def test_referenced_images_and_feeding_points(document: dict[str, Any]) -> None:
     doc = validate_document(document)
     assert referenced_images(doc) == {"a1b2/0123456789abcdef.webp"}
-    doc["views"]["cabinet"]["image"] = "/reeftank/catalog/bundled/presets/x/a.webp"
+    doc["views"]["cabinet"]["image"] = "/reeftank/catalog/pack/presets/x/a.webp"
     assert referenced_images(doc) == {"a1b2/0123456789abcdef.webp"}
     assert [e["id"] for e in feeding_points(doc)] == ["e2"]
