@@ -5,12 +5,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import homeassistant.helpers.config_validation as cv
-import voluptuous as vol
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import device_registry as dr
 from homeassistant.util import dt as dt_util
 
+from .compat import vol
 from .const import (
     ATTR_AQUARIUM,
     ATTR_COUNT,

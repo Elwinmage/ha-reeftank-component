@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 from conftest import state_of
-from homeassistant.components.update import ATTR_IN_PROGRESS
+from homeassistant.components.update.const import ATTR_IN_PROGRESS
 from homeassistant.core import HomeAssistant
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr
@@ -107,7 +107,7 @@ async def test_manual_install(
 ) -> None:
     # Options: no automatic install
     result = await hass.config_entries.options.async_init(entry.entry_id)
-    assert result["step_id"] == "init"
+    assert result.get("step_id") == "init"
     result = await hass.config_entries.options.async_configure(
         result["flow_id"], {"auto_update": False}
     )
