@@ -2,7 +2,7 @@
 
 An aquarium document is everything the card needs to draw one tank: its
 waters (main tank, sump...), its views (pictures), its livestock and the
-sources of its feeding events. See README.md, "Data model".
+sources of its feeding events. See doc/en/technical.md, "Data model".
 
 This module is pure: no Home Assistant object, so it is easy to test and
 the same rules apply whether a document comes from the card, a service call
