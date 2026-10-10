@@ -18,7 +18,6 @@ repos:
         always_run: true
         verbose: true
         additional_dependencies:
-          - scipy>=1.8.1
           - colorama>=0.4.6
           - pyright>=1.1.414
           - pytest-homeassistant-custom-component>=0.13.368
@@ -89,7 +88,6 @@ repos:
           - pytest-homeassistant-custom-component>=0.13.368
           # used by check_translation.py
           - colorama>=0.4.6
-          - scipy>=1.18.1
         pass_filenames: false
 
       - id: pytest
@@ -111,3 +109,19 @@ repos:
         verbose: true
         entry: bash -c "./scripts/coverage.sh "
         pass_filenames: false
+
+      - id: coverage_badge
+        name: Coverage badge
+        entry: genbadge coverage -l -i reports/coverage.xml -o badges/coverage.svg
+        language: python
+        pass_filenames: false
+        always_run: true
+        additional_dependencies:
+          - genbadge[coverage]>=1.1.1
+
+      - id: gen_readme
+        name: README and its translations up to date
+        entry: python scripts/gen_readme.py
+        language: python
+        pass_filenames: false
+        files: ^(scripts/gen_readme\.py|README\.md|doc/.*/README\..*\.md)$

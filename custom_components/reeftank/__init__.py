@@ -2,7 +2,7 @@
 
 Backs the aquarium view of ha-reef-card: stores the aquarium documents and
 their pictures, serves the asset catalog, records feedings and exposes the
-inventory as entities. See README.md for the architecture.
+inventory as entities. See doc/en/technical.md for the architecture.
 """
 
 from __future__ import annotations
