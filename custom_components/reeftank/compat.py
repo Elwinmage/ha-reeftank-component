@@ -9,7 +9,6 @@ ones Home Assistant catches always come from the same library.
 
 from __future__ import annotations
 
-from collections.abc import Iterable
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers import device_registry as dr
@@ -32,28 +31,22 @@ except ImportError:  # pragma: no cover - depends on the installed HA version
     )
 
 
-def all_devices(dev_reg: dr.DeviceRegistry) -> Iterable[dr.DeviceEntry]:
-    """Every device of the registry.
-
-    `devices` is a mapping by id before 2026.10, a plain collection since.
-    """
-    devices: Any = dev_reg.devices
-    return devices.values() if hasattr(devices, "values") else devices
-
-
 def find_device(
     dev_reg: dr.DeviceRegistry, identifier: tuple[str, str]
 ) -> dr.DeviceEntry | None:
     """The device carrying an identifier, whatever its config entry.
 
     `async_get_device(identifiers=...)` is deprecated since 2026.10 (an
-    identifier is only unique within a config entry) and its replacement
-    needs the entry; a plain scan works on every version.
+    identifier is only unique within a config entry): `async_get_devices`
+    replaces it. Before, `devices` is a mapping of the entries by id, scanned.
     """
-    for device in all_devices(dev_reg):
-        if identifier in device.identifiers:
-            return device
-    return None
+    lookup: Any = getattr(dev_reg, "async_get_devices", None)
+    if lookup is None:  # pragma: no cover - Home Assistant before 2026.10
+        devices: Any = dev_reg.devices
+        found = [d for d in devices.values() if identifier in d.identifiers]
+    else:
+        found = lookup(identifiers={identifier})
+    return found[0] if found else None
 
 
-__all__ = ["StaticPathConfig", "all_devices", "find_device", "vol"]
+__all__ = ["StaticPathConfig", "find_device", "vol"]

@@ -5,10 +5,10 @@ from __future__ import annotations
 from typing import Any
 
 import pytest
-import voluptuous as vol
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
+from custom_components.reeftank.compat import vol
 from custom_components.reeftank.const import (
     SIGNAL_AQUARIUM_ADDED,
     SIGNAL_AQUARIUM_UPDATED,

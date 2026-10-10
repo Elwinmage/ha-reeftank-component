@@ -90,6 +90,14 @@ class CatalogUpdateEntity(UpdateEntity):
         self._attr_in_progress = updater.in_progress
         self._attr_update_percentage = updater.progress
 
+    async def async_update(self) -> None:
+        """Check for a release now.
+
+        Called by `homeassistant.update_entity` and by *Check for updates* in
+        the settings; an automatic install follows when it is on.
+        """
+        await self._updater.coordinator.async_refresh()
+
     async def async_release_notes(self) -> str | None:
         """Notes of the latest release."""
         latest = self._updater.latest

@@ -18,6 +18,7 @@ repos:
         always_run: true
         verbose: true
         additional_dependencies:
+          - scipy>=1.8.1
           - colorama>=0.4.6
           - pyright>=1.1.414
           - pytest-homeassistant-custom-component>=0.13.368
@@ -88,6 +89,7 @@ repos:
           - pytest-homeassistant-custom-component>=0.13.368
           # used by check_translation.py
           - colorama>=0.4.6
+          - scipy>=1.18.1
         pass_filenames: false
 
       - id: pytest

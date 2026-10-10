@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import Any, cast
 
 import pytest
-import voluptuous as vol
 from homeassistant import config_entries
 from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
@@ -14,6 +13,7 @@ from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.reeftank import get_data
+from custom_components.reeftank.compat import find_device, vol
 from custom_components.reeftank.const import DOMAIN
 
 
@@ -38,7 +38,7 @@ async def test_device_follows_document(
     hass: HomeAssistant, entry: MockConfigEntry, saved: dict[str, Any]
 ) -> None:
     dev_reg = dr.async_get(hass)
-    device = dev_reg.async_get_device(identifiers={(DOMAIN, "a1b2")})
+    device = find_device(dev_reg, (DOMAIN, "a1b2"))
     assert device is not None and device.name == "Reefer 425"
     assert device.manufacturer == "ReefTank"
 
@@ -46,11 +46,11 @@ async def test_device_follows_document(
     assert doc is not None
     doc["name"] = "Big reef"
     await entry.runtime_data.async_save(doc)
-    device = dev_reg.async_get_device(identifiers={(DOMAIN, "a1b2")})
+    device = find_device(dev_reg, (DOMAIN, "a1b2"))
     assert device is not None and device.name == "Big reef"
 
     assert await entry.runtime_data.async_delete("a1b2") is True
-    assert dev_reg.async_get_device(identifiers={(DOMAIN, "a1b2")}) is None
+    assert find_device(dev_reg, (DOMAIN, "a1b2")) is None
     assert await entry.runtime_data.async_delete("a1b2") is False
 
 
@@ -62,7 +62,7 @@ async def test_remove_device_from_ui(
 ) -> None:
     assert await async_setup_component(hass, "config", {})
     dev_reg = dr.async_get(hass)
-    device = dev_reg.async_get_device(identifiers={(DOMAIN, "a1b2")})
+    device = find_device(dev_reg, (DOMAIN, "a1b2"))
     assert device is not None
     ws = await hass_ws_client(hass)
     await ws.send_json_auto_id(

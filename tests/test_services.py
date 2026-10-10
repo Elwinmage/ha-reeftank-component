@@ -11,6 +11,7 @@ from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from custom_components.reeftank.compat import find_device
 from custom_components.reeftank.const import DOMAIN, SIGNAL_FEEDING
 
 
@@ -27,7 +28,7 @@ async def test_feed(
     assert events == [{"kind": "shortcut", "source": "rs"}]
 
     entry.runtime_data.feeding._last.clear()
-    device = dr.async_get(hass).async_get_device(identifiers={(DOMAIN, "a1b2")})
+    device = find_device(dr.async_get(hass), (DOMAIN, "a1b2"))
     assert device is not None
     await hass.services.async_call(
         DOMAIN, "feed", {"aquarium": device.id}, blocking=True
