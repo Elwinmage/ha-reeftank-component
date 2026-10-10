@@ -2,7 +2,7 @@ name: GitHub Clone Count Update Everyday
 
 on:
   schedule:
-    - cron: "0 */24 * * *"
+    - cron: "0 0 * * *"
   workflow_dispatch:
 
 jobs:
@@ -10,12 +10,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
-
-      - name: gh login
-        run: echo "${{ secrets.SECRET_TOKEN }}" | gh auth login --with-token
+      - uses: actions/checkout@v4
 
       - name: parse latest clone count
+        env:
+          GH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
           curl --user "${{ github.actor }}:${{ secrets.SECRET_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
@@ -24,6 +23,8 @@ jobs:
 
       - name: create gist and download previous count
         id: set_id
+        env:
+          GH_TOKEN: ${{ secrets.SECRET_TOKEN }}
         run: |
           if gh secret list | grep -q "GIST_ID"
           then
@@ -36,7 +37,7 @@ jobs:
                 echo $gist_id | gh secret set GIST_ID
                 echo "GIST=$gist_id" >> $GITHUB_OUTPUT
                 cp clone.json clone_before.json
-                git rm --ignore-unmatch  CLONE.md
+                git rm --ignore-unmatch CLONE.md
               fi
           else
               echo "GIST_ID not found. Creating a gist..."
