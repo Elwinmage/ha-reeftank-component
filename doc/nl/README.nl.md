@@ -142,7 +142,7 @@ Een schermvullend venster, geopend vanuit de kaarteditor, met zes tabbladen (de 
 
 | Tabblad | Wat u er doet |
 |---|---|
-| **Aquarium** | Naam, afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau |
+| **Aquarium** | Naam, afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau, duisternis van het water 's nachts |
 | **Views** | De afbeeldingen; per water: omtrek, zandlijn (voor en achter), stenen met hun diepte, klikbare zones, getekende achtergrond en zijn texturen |
 | **Devices** | Uw apparaten en entiteiten per verdieping en ruimte, naar de afbeelding gesleept |
 | **Light & flow** | De lampen die elk water verlichten en hun positie; de pompen die het water bewegen |

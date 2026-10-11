@@ -356,6 +356,11 @@ RENDER_SCHEMA = vol.Schema(
             vol.Coerce(int), vol.Range(min=0, max=200)
         ),
         vol.Optional("caustics", default=False): bool,
+        # Darkness of the water with the lamps off (0: as by day). Capped
+        # below 1 so that the tank never turns black.
+        vol.Optional("night_darkness", default=0.55): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=0.95)
+        ),
     }
 )
 

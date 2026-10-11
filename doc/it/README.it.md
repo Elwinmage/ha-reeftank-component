@@ -142,7 +142,7 @@ Una finestra a schermo intero, aperta dall'editor della scheda, con sei schede:
 
 | Scheda | Cosa si fa |
 |---|---|
-| **Acquario** | Nome, dimensioni, l'acquario cloud corrispondente, luce con cui sono state scattate le foto, livello di resa |
+| **Acquario** | Nome, dimensioni, l'acquario cloud corrispondente, luce con cui sono state scattate le foto, livello di resa, oscurità dell'acqua di notte |
 | **Viste** | Le immagini; per ogni acqua: contorno, linea della sabbia (davanti e dietro), rocce e loro profondità, zone cliccabili, sfondo disegnato e sue texture |
 | **Dispositivi** | I vostri dispositivi ed entità per piano e area, trascinati sull'immagine |
 | **Luce e corrente** | Le lampade che illuminano ogni acqua e la loro posizione; le pompe che muovono l'acqua |

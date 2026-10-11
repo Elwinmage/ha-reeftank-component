@@ -142,7 +142,7 @@ Ein Vollbilddialog, aus dem Karteneditor geöffnet, mit sechs Reitern:
 
 | Reiter | Was man dort macht |
 |---|---|
-| **Aquarium** | Name, Maße, das passende Cloud-Aquarium, Licht, unter dem die Fotos entstanden, Darstellungsstufe |
+| **Aquarium** | Name, Maße, das passende Cloud-Aquarium, Licht, unter dem die Fotos entstanden, Darstellungsstufe, Dunkelheit des Wassers nachts |
 | **Ansichten** | Bilder; für jedes Wasser: Umriss, Sandlinie (vorne und hinten), Steine mit ihrer Tiefe, anklickbare Zonen, gezeichneter Hintergrund und seine Texturen |
 | **Geräte** | Ihre Geräte und Entitäten nach Etage und Bereich, auf das Bild gezogen |
 | **Licht & Strömung** | Lampen, die jedes Wasser beleuchten, und ihre Position; Pumpen, die das Wasser bewegen |

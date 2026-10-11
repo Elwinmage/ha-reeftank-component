@@ -142,7 +142,7 @@ Une fenêtre plein écran, ouverte depuis l'éditeur de la carte, en six onglets
 
 | Onglet | Ce qu'on y fait |
 |---|---|
-| **Aquarium** | Nom, dimensions, l'aquarium du cloud correspondant, lumière sous laquelle les photos ont été prises, niveau de rendu |
+| **Aquarium** | Nom, dimensions, l'aquarium du cloud correspondant, lumière sous laquelle les photos ont été prises, niveau de rendu, obscurité de l'eau la nuit |
 | **Vues** | Les images ; pour chaque eau : contour, ligne de sable (avant et arrière), roches et leur profondeur, zones cliquables, fond dessiné et ses textures |
 | **Appareils** | Vos appareils et entités par étage et par pièce, glissés sur l'image |
 | **Lumière et brassage** | Les lampes qui éclairent chaque eau et leur position ; les pompes qui font bouger l'eau |

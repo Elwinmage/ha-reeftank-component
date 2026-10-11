@@ -142,7 +142,7 @@ A full-screen dialog, opened from the card editor, with six tabs:
 
 | Tab | What you do there |
 |---|---|
-| **Aquarium** | Name, dimensions, the matching cloud aquarium, light the photos were taken under, render level |
+| **Aquarium** | Name, dimensions, the matching cloud aquarium, light the photos were taken under, render level, water darkness at night |
 | **Views** | Pictures; for each water: outline, sand line (front and back), rocks with their depth, clickable zones, drawn background and its textures |
 | **Devices** | Your devices and entities by floor and area, dragged onto the picture |
 | **Light & flow** | Lamps lighting each water and their position; pumps that make the water move |
