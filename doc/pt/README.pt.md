@@ -142,7 +142,7 @@ Uma janela em ecrã inteiro, aberta a partir do editor do cartão, com seis sepa
 
 | Separador | O que se faz lá |
 |---|---|
-| **Aquário** | Nome, dimensões, o aquário da nuvem correspondente, luz com que as fotos foram tiradas, nível de renderização |
+| **Aquário** | Nome, dimensões, o aquário da nuvem correspondente, luz com que as fotos foram tiradas, nível de renderização, escuridão da água à noite |
 | **Vistas** | As imagens; para cada água: contorno, linha da areia (frente e fundo), rochas e a sua profundidade, zonas clicáveis, fundo desenhado e as suas texturas |
 | **Dispositivos** | Os seus dispositivos e entidades por piso e divisão, arrastados para a imagem |
 | **Luz e corrente** | As lâmpadas que iluminam cada água e a sua posição; as bombas que movem a água |

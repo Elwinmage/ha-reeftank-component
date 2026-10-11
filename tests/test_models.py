@@ -37,7 +37,12 @@ def test_valid_document_gets_defaults(document: dict[str, Any]) -> None:
     assert doc["version"] == 1
     assert doc["revision"] == 0
     assert doc["photo_light"] == "white"
-    assert doc["render"] == {"level": "full", "max_fish": 30, "caustics": False}
+    assert doc["render"] == {
+        "level": "full",
+        "max_fish": 30,
+        "caustics": False,
+        "night_darkness": 0.55,
+    }
     assert doc["default_view"] == "front"
     main = doc["waters"]["main"]
     assert main["sand_band"] == 0.12
@@ -131,6 +136,19 @@ def test_missing_item_ids_are_generated() -> None:
 )
 def test_points_are_clamped(value: list[Any], expected: list[float]) -> None:
     assert models._point(value) == expected
+
+
+@pytest.mark.parametrize("value", [0, 0.3, "0.95"])
+def test_night_darkness(document: dict[str, Any], value: Any) -> None:
+    document["render"] = {"night_darkness": value}
+    assert validate_document(document)["render"]["night_darkness"] == float(value)
+
+
+@pytest.mark.parametrize("value", [-0.1, 0.96, 1, "dark"])
+def test_invalid_night_darkness(document: dict[str, Any], value: Any) -> None:
+    document["render"] = {"night_darkness": value}
+    with pytest.raises(vol.Invalid):
+        validate_document(document)
 
 
 @pytest.mark.parametrize("value", [[1], "ab", [None, 1], [float("nan"), 0]])

@@ -142,7 +142,7 @@ Pełnoekranowe okno, otwierane z edytora karty, z sześcioma zakładkami:
 
 | Zakładka | Co się w niej robi |
 |---|---|
-| **Akwarium** | Nazwa, wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania |
+| **Akwarium** | Nazwa, wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania, ciemność wody w nocy |
 | **Widoki** | Obrazy; dla każdej wody: obrys, linia piasku (przód i tył), skały i ich głębokość, strefy klikalne, rysowane tło i jego tekstury |
 | **Urządzenia** | Twoje urządzenia i encje według pięter i obszarów, przeciągane na obraz |
 | **Światło i przepływ** | Lampy oświetlające każdą wodę i ich położenie; pompy poruszające wodę |

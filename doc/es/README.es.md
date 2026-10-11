@@ -142,7 +142,7 @@ Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con seis
 
 | Pestaña | Qué se hace en ella |
 |---|---|
-| **Acuario** | Nombre, dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado |
+| **Acuario** | Nombre, dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado, oscuridad del agua de noche |
 | **Vistas** | Las imágenes; para cada agua: contorno, línea de arena (delante y detrás), rocas y su profundidad, zonas clicables, fondo dibujado y sus texturas |
 | **Dispositivos** | Sus dispositivos y entidades por planta y zona, arrastrados sobre la imagen |
 | **Luz y corriente** | Las lámparas que iluminan cada agua y su posición; las bombas que mueven el agua |
