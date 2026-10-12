@@ -126,6 +126,7 @@ One **aquarium** document per tank. Key rules:
   "cloud": { "provider": "redsea", "uid": "00000000-…" },
   "preset": "reefer-425-g2",
   "dimensions_cm": { "length": 121.9, "width": 60.9, "height": 40.6 },
+  "water_volume_l": 425,
   "photo_light": "white",
   "render": { "level": "full", "max_fish": 30, "caustics": false,
               "night_darkness": 0.55 },
@@ -206,6 +207,10 @@ Notes:
 
 - `dimensions_cm` uses the Red Sea cloud naming: `length` = X (front, left to
   right), `width` = Y (depth, front glass to back wall), `height` = Z.
+- `water_volume_l` is the net water volume in litres (tank and sump, without
+  rock and sand), optional. The editor pre-fills it from the cloud
+  aquarium's `net_water_volume` (converted from gallons when the cloud
+  account counts in gallons).
 - `quad` is a 4-corner quadrilateral (photos are rarely shot square-on); the
   editor starts from a rectangle.
 - `sand` is where the sand meets the front glass, as seen on the picture: a
@@ -341,9 +346,15 @@ removed with it (unique ids derived from the aquarium id).
 | `sensor.<tank>_corals` | Total coral count | `{species: count}`, `species_count` |
 | `event.<tank>_feeding` | Timestamp of the last feeding | `event_type`: `feeder` / `shortcut` / `manual`; `source` |
 | `sensor.<tank>_feedings_today` | Feedings since local midnight | — |
+| `sensor.<tank>_water_volume` | `water_volume_l` (L), unknown when unset | `cloud` (the document's), `device_ids` (devices placed on the views) |
 
 - The population history comes for free from the recorder on the count
   sensors.
+- `water_volume` lets another integration find the volume of the tank a
+  device belongs to without depending on reeftank: the redsea integration's
+  ReefDose dose regulation takes the sensor whose `device_ids` hold the
+  doser (or one of its heads), or whose `cloud` is the Red Sea cloud
+  aquarium of the doser.
 - `event.<tank>_feeding` is an `EventEntity`: its state *is* the last trigger
   time, restored across restarts, usable in automations.
 

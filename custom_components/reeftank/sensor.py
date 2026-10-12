@@ -6,9 +6,11 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import (
     RestoreSensor,
+    SensorDeviceClass,
     SensorEntity,
     SensorStateClass,
 )
+from homeassistant.const import UnitOfVolume
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
@@ -19,11 +21,12 @@ from .const import (
     KEY_CORALS,
     KEY_FEEDINGS_TODAY,
     KEY_FISH,
+    KEY_WATER_VOLUME,
     SIGNAL_AQUARIUM_ADDED,
     SIGNAL_FEEDING,
 )
 from .entity import ReefTankEntity
-from .models import coral_counts, fish_counts
+from .models import coral_counts, fish_counts, placed_devices
 
 if TYPE_CHECKING:
     from . import ReefTankConfigEntry, ReefTankData
@@ -44,6 +47,7 @@ async def async_setup_entry(
                 FishSensor(data, aquarium_id),
                 CoralSensor(data, aquarium_id),
                 FeedingsTodaySensor(data, aquarium_id),
+                WaterVolumeSensor(data, aquarium_id),
             ]
         )
 
@@ -147,3 +151,29 @@ class FeedingsTodaySensor(ReefTankEntity, RestoreSensor):
         """The count as the state, its day as an attribute (to restore it)."""
         self._attr_native_value = self._count
         self._attr_extra_state_attributes = {"day": self._day}
+
+
+class WaterVolumeSensor(ReefTankEntity, SensorEntity):
+    """Net water volume of an aquarium (L), unknown until set.
+
+    The attributes tell other integrations which aquarium this is: its
+    vendor cloud aquarium and the devices placed on its views. The redsea
+    integration finds the volume of a ReefDose's tank this way, without
+    depending on reeftank.
+    """
+
+    _attr_device_class = SensorDeviceClass.VOLUME_STORAGE
+    _attr_native_unit_of_measurement = UnitOfVolume.LITERS
+    _attr_suggested_display_precision = 0
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_WATER_VOLUME)
+
+    def _update_from_document(self) -> None:
+        """The volume as the state, the aquarium's links as attributes."""
+        self._attr_native_value = self._doc.get("water_volume_l")
+        self._attr_extra_state_attributes = {
+            "cloud": self._doc.get("cloud"),
+            "device_ids": placed_devices(self._doc),
+        }

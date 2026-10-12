@@ -1,3 +1,14 @@
+# UNRELEASED
+
+## MODIFICATIONS
+
+- Aquarium documents: new optional `water_volume_l`, the net water volume in
+  litres (tank and sump, without rock and sand).
+- New `sensor.<aquarium>_water_volume` (L, unknown until set), with the
+  document's `cloud` and the devices placed on its views (`device_ids`) as
+  attributes: the redsea integration's ReefDose dose regulation reads the
+  volume of a doser's tank from it.
+
 # v0.1.0
 
 First version.

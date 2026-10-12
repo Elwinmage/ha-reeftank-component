@@ -383,6 +383,11 @@ DOCUMENT_SCHEMA = vol.Schema(
         ),
         vol.Optional("preset"): vol.Any(None, vol.All(str, vol.Length(max=200))),
         vol.Optional("dimensions_cm"): vol.Any(None, DIMENSIONS_SCHEMA),
+        # Net water volume (L): tank + sump, without rock and sand. Shown by
+        # the water_volume sensor, read by dosing regulations (redsea).
+        vol.Optional("water_volume_l"): vol.Any(
+            None, vol.All(vol.Coerce(float), vol.Range(min=1, max=100000))
+        ),
         vol.Optional("photo_light", default="white"): vol.In(PHOTO_LIGHTS),
         vol.Optional("render", default=dict): RENDER_SCHEMA,
         vol.Optional("waters", default=dict): {_ident: WATER_SCHEMA},
@@ -584,3 +589,14 @@ def feeding_points(doc: dict[str, Any]) -> list[dict[str, Any]]:
         for element in view.get("elements", [])
         if ROLE_FEEDING_POINT in element.get("roles", [])
     ]
+
+
+def placed_devices(doc: dict[str, Any]) -> list[str]:
+    """Device ids placed on the views of an aquarium, in order, once each."""
+    found: list[str] = []
+    for view in doc.get("views", {}).values():
+        for element in view.get("elements", []):
+            device_id = element.get("device_id")
+            if device_id and device_id not in found:
+                found.append(device_id)
+    return found

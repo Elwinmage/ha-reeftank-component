@@ -65,6 +65,17 @@
             "name": "Número de espécies"
           }
         }
+      },
+      "water_volume": {
+        "name": "Volume de água",
+        "state_attributes": {
+          "cloud": {
+            "name": "Aquário na nuvem"
+          },
+          "device_ids": {
+            "name": "Dispositivos"
+          }
+        }
       }
     }
   },

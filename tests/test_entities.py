@@ -101,3 +101,24 @@ async def test_deleted_aquarium_entities_go(
     await hass.async_block_till_done()
     assert hass.states.get("sensor.reefer_425_fish") is None
     assert hass.states.get("event.reefer_425_feeding") is None
+
+
+async def test_water_volume_sensor(
+    hass: HomeAssistant, entry: MockConfigEntry, saved: dict[str, Any]
+) -> None:
+    volume = state_of(hass, "sensor.reefer_425_water_volume")
+    assert volume.state == "unknown"
+    assert volume.attributes["unit_of_measurement"] == "L"
+    assert volume.attributes["device_class"] == "volume_storage"
+    assert volume.attributes["cloud"] is None
+    assert volume.attributes["device_ids"] == ["led1", "feeder1"]
+
+    doc = entry.runtime_data.store.get("a1b2")
+    assert doc is not None
+    doc["water_volume_l"] = 425
+    doc["cloud"] = {"provider": "redsea", "uid": "aq-1"}
+    await entry.runtime_data.async_save(doc)
+    await hass.async_block_till_done()
+    volume = state_of(hass, "sensor.reefer_425_water_volume")
+    assert volume.state == "425.0"
+    assert volume.attributes["cloud"] == {"provider": "redsea", "uid": "aq-1"}

@@ -331,3 +331,30 @@ def test_referenced_images_and_feeding_points(document: dict[str, Any]) -> None:
     doc["views"]["cabinet"]["image"] = "/reeftank/catalog/pack/presets/x/a.webp"
     assert referenced_images(doc) == {"a1b2/0123456789abcdef.webp"}
     assert [e["id"] for e in feeding_points(doc)] == ["e2"]
+
+
+def test_water_volume(document: dict[str, Any]) -> None:
+    assert "water_volume_l" not in validate_document(document)
+    assert (
+        validate_document({**document, "water_volume_l": None})["water_volume_l"]
+        is None
+    )
+    assert (
+        validate_document({**document, "water_volume_l": "425"})["water_volume_l"]
+        == 425.0
+    )
+    for bad in (0, -5, 200000, "lots"):
+        with pytest.raises(vol.Invalid):
+            validate_document({**document, "water_volume_l": bad})
+
+
+def test_placed_devices(document: dict[str, Any]) -> None:
+    doc = validate_document(document)
+    assert models.placed_devices(doc) == ["led1", "feeder1"]
+    # Once each, whatever the view
+    doc["views"]["cabinet"]["elements"] = [
+        {"id": "e9", "kind": "device", "device_id": "led1", "pos": [0.1, 0.1]},
+        {"id": "e8", "kind": "device", "device_id": "doser", "pos": [0.2, 0.1]},
+    ]
+    assert models.placed_devices(doc) == ["led1", "feeder1", "doser"]
+    assert models.placed_devices({}) == []

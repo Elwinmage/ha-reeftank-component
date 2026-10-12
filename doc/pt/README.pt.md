@@ -171,6 +171,7 @@ Cada aquário é um dispositivo com:
 | `sensor.<aquarium>_corals` | Número de corais, por espécie nos atributos |
 | `event.<aquarium>_feeding` | Última alimentação, com o tipo (alimentador, atalho, manual) e a fonte |
 | `sensor.<aquarium>_feedings_today` | Alimentações desde a meia-noite |
+| `sensor.<aquarium>_water_volume` | Volume de água líquido (L), lido pela regulação da dosagem ReefDose da integração redsea |
 
 E o dispositivo *ReefTank catalog*:
 

@@ -171,6 +171,7 @@ Chaque aquarium est un appareil avec :
 | `sensor.<aquarium>_corals` | Nombre de coraux, par espèce dans les attributs |
 | `event.<aquarium>_feeding` | Dernier nourrissage, avec son type (nourrisseur, raccourci, manuel) et sa source |
 | `sensor.<aquarium>_feedings_today` | Nourrissages depuis minuit |
+| `sensor.<aquarium>_water_volume` | Volume d'eau net (L), lu par la régulation du dosage ReefDose de l'intégration redsea |
 
 Et l'appareil *ReefTank catalog* :
 

@@ -174,6 +174,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Number of corals, per species in the attributes",
         "e_feeding": "Last feeding, with its kind (feeder, shortcut, manual) and source",
         "e_today": "Feedings since midnight",
+        "e_volume": "Net water volume (L), read by the ReefDose dose regulation of the redsea integration",
         "entities_catalog": "And the *ReefTank catalog* device:",
         "e_update": "Installed and latest catalog release",
         "e_button": "Checks for a new release right away",
@@ -257,6 +258,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Nombre de coraux, par espèce dans les attributs",
         "e_feeding": "Dernier nourrissage, avec son type (nourrisseur, raccourci, manuel) et sa source",
         "e_today": "Nourrissages depuis minuit",
+        "e_volume": "Volume d'eau net (L), lu par la régulation du dosage ReefDose de l'intégration redsea",
         "entities_catalog": "Et l'appareil *ReefTank catalog* :",
         "e_update": "Version du catalogue installée et dernière publiée",
         "e_button": "Vérifie tout de suite si une nouvelle version existe",
@@ -340,6 +342,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Anzahl der Korallen, pro Art in den Attributen",
         "e_feeding": "Letzte Fütterung, mit Art (Futterautomat, Kurzbefehl, manuell) und Quelle",
         "e_today": "Fütterungen seit Mitternacht",
+        "e_volume": "Netto-Wasservolumen (L), von der ReefDose-Dosierregelung der redsea-Integration gelesen",
         "entities_catalog": "Und das Gerät *ReefTank catalog*:",
         "e_update": "Installierte und neueste Katalogversion",
         "e_button": "Prüft sofort, ob eine neue Version vorliegt",
@@ -423,6 +426,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Número de corales, por especie en los atributos",
         "e_feeding": "Última alimentación, con su tipo (comedero, atajo, manual) y su fuente",
         "e_today": "Alimentaciones desde medianoche",
+        "e_volume": "Volumen de agua neto (L), leído por la regulación de dosificación ReefDose de la integración redsea",
         "entities_catalog": "Y el dispositivo *ReefTank catalog*:",
         "e_update": "Versión del catálogo instalada y última publicada",
         "e_button": "Comprueba al momento si hay una versión nueva",
@@ -506,6 +510,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Numero di coralli, per specie negli attributi",
         "e_feeding": "Ultima alimentazione, con tipo (alimentatore, scorciatoia, manuale) e fonte",
         "e_today": "Alimentazioni dalla mezzanotte",
+        "e_volume": "Volume d'acqua netto (L), letto dalla regolazione del dosaggio ReefDose dell'integrazione redsea",
         "entities_catalog": "E il dispositivo *ReefTank catalog*:",
         "e_update": "Versione del catalogo installata e ultima pubblicata",
         "e_button": "Controlla subito se c'è una nuova versione",
@@ -589,6 +594,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Aantal koralen, per soort in de attributen",
         "e_feeding": "Laatste voedering, met soort (automaat, snelkoppeling, handmatig) en bron",
         "e_today": "Voederingen sinds middernacht",
+        "e_volume": "Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie",
         "entities_catalog": "En het apparaat *ReefTank catalog*:",
         "e_update": "Geïnstalleerde en nieuwste catalogusversie",
         "e_button": "Controleert meteen of er een nieuwe versie is",
@@ -672,6 +678,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Liczba koralowców, według gatunków w atrybutach",
         "e_feeding": "Ostatnie karmienie, z rodzajem (karmnik, skrót, ręczne) i źródłem",
         "e_today": "Karmienia od północy",
+        "e_volume": "Objętość wody netto (L), odczytywana przez regulację dozowania ReefDose integracji redsea",
         "entities_catalog": "Oraz urządzenie *ReefTank catalog*:",
         "e_update": "Zainstalowana i najnowsza wersja katalogu",
         "e_button": "Od razu sprawdza, czy jest nowa wersja",
@@ -755,6 +762,7 @@ T: dict[str, dict[str, str]] = {
         "e_corals": "Número de corais, por espécie nos atributos",
         "e_feeding": "Última alimentação, com o tipo (alimentador, atalho, manual) e a fonte",
         "e_today": "Alimentações desde a meia-noite",
+        "e_volume": "Volume de água líquido (L), lido pela regulação da dosagem ReefDose da integração redsea",
         "entities_catalog": "E o dispositivo *ReefTank catalog*:",
         "e_update": "Versão do catálogo instalada e mais recente",
         "e_button": "Verifica de imediato se há uma versão nova",
@@ -1004,6 +1012,7 @@ def render(code: str) -> str:
 | `sensor.<aquarium>_corals` | {t["e_corals"]} |
 | `event.<aquarium>_feeding` | {t["e_feeding"]} |
 | `sensor.<aquarium>_feedings_today` | {t["e_today"]} |
+| `sensor.<aquarium>_water_volume` | {t["e_volume"]} |
 
 {t["entities_catalog"]}
 

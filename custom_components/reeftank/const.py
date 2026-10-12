@@ -95,6 +95,7 @@ KEY_FISH: Final = "fish"
 KEY_CORALS: Final = "corals"
 KEY_FEEDING: Final = "feeding"
 KEY_FEEDINGS_TODAY: Final = "feedings_today"
+KEY_WATER_VOLUME: Final = "water_volume"
 
 # ---------------------------------------------------------------------------
 # Dispatcher signals

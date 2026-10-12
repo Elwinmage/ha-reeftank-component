@@ -65,6 +65,17 @@
             "name": "Liczba gatunków"
           }
         }
+      },
+      "water_volume": {
+        "name": "Objętość wody",
+        "state_attributes": {
+          "cloud": {
+            "name": "Akwarium w chmurze"
+          },
+          "device_ids": {
+            "name": "Urządzenia"
+          }
+        }
       }
     }
   },

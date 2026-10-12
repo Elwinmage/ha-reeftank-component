@@ -171,6 +171,7 @@ Każde akwarium jest urządzeniem z:
 | `sensor.<aquarium>_corals` | Liczba koralowców, według gatunków w atrybutach |
 | `event.<aquarium>_feeding` | Ostatnie karmienie, z rodzajem (karmnik, skrót, ręczne) i źródłem |
 | `sensor.<aquarium>_feedings_today` | Karmienia od północy |
+| `sensor.<aquarium>_water_volume` | Objętość wody netto (L), odczytywana przez regulację dozowania ReefDose integracji redsea |
 
 Oraz urządzenie *ReefTank catalog*:
 

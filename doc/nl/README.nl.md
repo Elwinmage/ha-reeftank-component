@@ -171,6 +171,7 @@ Elk aquarium is een apparaat met:
 | `sensor.<aquarium>_corals` | Aantal koralen, per soort in de attributen |
 | `event.<aquarium>_feeding` | Laatste voedering, met soort (automaat, snelkoppeling, handmatig) en bron |
 | `sensor.<aquarium>_feedings_today` | Voederingen sinds middernacht |
+| `sensor.<aquarium>_water_volume` | Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie |
 
 En het apparaat *ReefTank catalog*:
 

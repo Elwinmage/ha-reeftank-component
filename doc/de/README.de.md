@@ -171,6 +171,7 @@ Jedes Aquarium ist ein Gerät mit:
 | `sensor.<aquarium>_corals` | Anzahl der Korallen, pro Art in den Attributen |
 | `event.<aquarium>_feeding` | Letzte Fütterung, mit Art (Futterautomat, Kurzbefehl, manuell) und Quelle |
 | `sensor.<aquarium>_feedings_today` | Fütterungen seit Mitternacht |
+| `sensor.<aquarium>_water_volume` | Netto-Wasservolumen (L), von der ReefDose-Dosierregelung der redsea-Integration gelesen |
 
 Und das Gerät *ReefTank catalog*:
 
