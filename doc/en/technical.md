@@ -262,12 +262,21 @@ button.
 | What | Where | Why |
 |---|---|---|
 | Aquarium documents | `Store` → `.storage/reeftank` | Versioned, migrated, in HA backups |
-| Uploaded photos | `/config/reeftank/<aquarium_id>/` | In HA backups; served by a static path |
+| Uploaded photos | `/config/reeftank/images/<aquarium_id>/` | In HA backups; private, served to authenticated requests only |
 | Downloaded catalog | `/config/reeftank/pack/` | Species and textures of the catalog releases, replaced by updates |
 | User catalog additions | `/config/reeftank/catalog/` | Custom species, merged over the downloaded ones |
 
-Static paths: `/reeftank/images/…`, `/reeftank/catalog/pack/…` and
+Static paths (public species catalog): `/reeftank/catalog/pack/…` and
 `/reeftank/catalog/user/…`.
+
+Uploaded photos show the user's home (tank, cabinet, technical room): they
+are **not** a static path, which would serve them to anyone holding the URL.
+`GET /api/reeftank/images/<aquarium_id>/<file>.webp` is an authenticated view
+(`requires_auth`). An `<img>` cannot send the bearer token, so the WebSocket
+API hands out URLs signed with `async_sign_path` (`?authSig=…`): bound to the
+user's refresh token (revoked on logout) and valid 24 h (`images_ttl`). The
+card renews them with `reeftank/images/sign` before they expire, or on a
+`401` from an `<img>`. Responses are `Cache-Control: private`.
 
 ### Background photo uploads
 
@@ -292,18 +301,22 @@ produced by the scripts of reeftank-catalog in their final format.
 | Command | Payload | Returns |
 |---|---|---|
 | `reeftank/aquarium/list` | — | `[{id, name, revision, preset, cloud, render_level, views}]` |
-| `reeftank/aquarium/get` | `{aquarium_id}` | `{document, entities, images_url}` |
+| `reeftank/aquarium/get` | `{aquarium_id}` | `{document, entities, images, images_ttl}` |
 | `reeftank/aquarium/subscribe` | `{aquarium_id}` | the same payload now and on every change; `{deleted: true}` |
-| `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images_url}`; error `conflict` when the revision moved, `invalid_format` |
+| `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images, images_ttl}`; error `conflict` when the revision moved, `invalid_format` |
 | `reeftank/aquarium/delete` (admin) | `{aquarium_id}` | — (removes device, entities, pictures) |
+| `reeftank/images/sign` | `{paths: ["<aquarium_id>/<file>.webp", …]}` (≤ 64) | `{path: signed_url}`; invalid paths left out |
 | `reeftank/catalog` | — | merged catalog (downloaded + user), asset names turned into URLs; `pack: {version, updating}` |
 | `reeftank/catalog/subscribe` | — | an event `{version}` each time a catalog release is installed |
 
 `entities` gives the entity ids of the aquarium's own entities (§6), so the
-card follows `event.<tank>_feeding` without guessing its name.
+card follows `event.<tank>_feeding` without guessing its name. `images` maps
+each uploaded picture of the document (`views[].image`) to a URL signed for
+the current user, valid `images_ttl` seconds; catalog pictures keep their
+public catalog URL.
 
 Pictures are uploaded over HTTP (admin only): `POST /api/reeftank/upload/<aquarium_id>`,
-multipart field `file` → `{path, url, width, height}`. The aquarium may not
+multipart field `file` → `{path, url, width, height}` (`url` signed, as above). The aquarium may not
 exist yet: the editor gives a new aquarium its id before saving it.
 
 ### Services

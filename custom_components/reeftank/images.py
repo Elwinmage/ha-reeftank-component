@@ -2,11 +2,16 @@
 
 Every uploaded picture is re-encoded before it is stored:
 - EXIF orientation applied, then all metadata dropped (phone pictures carry
-  the GPS position of the house, and are served by a static path);
+  the GPS position of the house);
 - long edge capped, so a 12 Mpx photo never reaches a wall tablet;
 - WebP output.
 
 HEIC/HEIF pictures are accepted when `pillow-heif` is installed.
+
+The pictures show the user's home: they are only served to authenticated
+requests (`ImageView`). An `<img>` cannot send the bearer token, so the
+WebSocket API and the upload view hand out URLs signed for the user's
+refresh token (`signed_image_url`), valid IMAGE_URL_TTL.
 """
 
 from __future__ import annotations
@@ -16,16 +21,20 @@ import logging
 import secrets
 import shutil
 import time
+from collections.abc import Iterable
 from http import HTTPStatus
 from pathlib import Path
 from typing import Any
 
-from aiohttp import web
-from homeassistant.core import HomeAssistant
+from aiohttp import hdrs, web
+from homeassistant.components.http.auth import async_sign_path
+from homeassistant.components.http.const import KEY_HASS_REFRESH_TOKEN_ID
+from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.http import HomeAssistantView
 
 from .const import (
     DOMAIN,
+    IMAGE_URL_TTL,
     ORPHAN_GRACE_SECONDS,
     UPLOAD_MAX_BYTES,
     UPLOAD_MAX_EDGE,
@@ -33,7 +42,7 @@ from .const import (
     URL_IMAGES,
     URL_UPLOAD,
 )
-from .models import ID_RE
+from .models import ID_RE, UPLOAD_RE
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -128,8 +137,79 @@ def delete_aquarium_images(root: Path, aquarium_id: str) -> None:
 
 
 def image_url(path: str) -> str:
-    """URL a stored picture is served at."""
+    """URL a stored picture is served at (needs authentication)."""
     return f"{URL_IMAGES}/{path}"
+
+
+@callback
+def signed_image_url(
+    hass: HomeAssistant, path: str, refresh_token_id: str | None
+) -> str:
+    """URL of a stored picture usable without auth header, for one user.
+
+    The signature is bound to the refresh token: it stops working when the
+    user logs out or the token is revoked, and after IMAGE_URL_TTL.
+    """
+    return async_sign_path(
+        hass, image_url(path), IMAGE_URL_TTL, refresh_token_id=refresh_token_id
+    )
+
+
+@callback
+def signed_image_urls(
+    hass: HomeAssistant, paths: Iterable[str], refresh_token_id: str | None
+) -> dict[str, str]:
+    """Signed URLs of the valid uploaded pictures among `paths`."""
+    return {
+        path: signed_image_url(hass, path, refresh_token_id)
+        for path in sorted(set(paths))
+        if isinstance(path, str) and UPLOAD_RE.match(path)
+    }
+
+
+def _image_file(root: Path, aquarium_id: str, name: str) -> Path | None:
+    """The stored picture for a request, or None (never outside `root`)."""
+    if not UPLOAD_RE.match(f"{aquarium_id}/{name}"):
+        return None
+    file = root / aquarium_id / name
+    return file if file.is_file() else None
+
+
+class ImageView(HomeAssistantView):
+    """Serve the uploaded pictures to authenticated requests only.
+
+    Authentication is a bearer token or a signed URL (`authSig`), checked by
+    the Home Assistant auth middleware before `get` runs.
+    """
+
+    url = URL_IMAGES + "/{aquarium_id}/{name}"
+    name = "api:reeftank:image"
+    requires_auth = True
+
+    def __init__(self, data: Any) -> None:
+        """Bind the view to an object giving the current `images_root`."""
+        self._data = data
+
+    async def get(
+        self, request: web.Request, aquarium_id: str, name: str
+    ) -> web.StreamResponse:
+        """Return the picture, or 404 for anything else."""
+        hass: HomeAssistant = request.app["hass"]
+        file = await hass.async_add_executor_job(
+            _image_file, self._data.images_root, aquarium_id, name
+        )
+        if file is None:
+            return web.Response(status=HTTPStatus.NOT_FOUND)
+        return web.FileResponse(
+            file,
+            headers={
+                hdrs.CONTENT_TYPE: "image/webp",
+                # Names are random and never rewritten, but the content is
+                # private: browser cache only, never a shared proxy cache.
+                hdrs.CACHE_CONTROL: "private, max-age=86400, immutable",
+                "X-Content-Type-Options": "nosniff",
+            },
+        )
 
 
 class ImageUploadView(HomeAssistantView):
@@ -188,6 +268,5 @@ class ImageUploadView(HomeAssistantView):
             write_image, self._data.images_root, aquarium_id, data
         )
         _LOGGER.debug("%s: stored %s (%sx%s)", DOMAIN, path, width, height)
-        return self.json(
-            {"path": path, "url": image_url(path), "width": width, "height": height}
-        )
+        url = signed_image_url(hass, path, request.get(KEY_HASS_REFRESH_TOKEN_ID))
+        return self.json({"path": path, "url": url, "width": width, "height": height})

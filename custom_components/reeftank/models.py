@@ -34,7 +34,7 @@ from .const import (
 # Ids are short, url-safe and generated server side when missing.
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}$")
 # An uploaded picture: "<aquarium id>/<file>.webp", relative to the images dir.
-_UPLOAD_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}/[A-Za-z0-9_-]{1,64}\.webp$")
+UPLOAD_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}/[A-Za-z0-9_-]{1,64}\.webp$")
 # A catalog picture (preset): served by the integration itself.
 _CATALOG_RE = re.compile(
     r"^(?:"
@@ -148,7 +148,7 @@ def _image(value: Any) -> str | None:
     """A view picture: an uploaded file or a catalog picture."""
     if value in (None, ""):
         return None
-    if isinstance(value, str) and (_UPLOAD_RE.match(value) or _CATALOG_RE.match(value)):
+    if isinstance(value, str) and (UPLOAD_RE.match(value) or _CATALOG_RE.match(value)):
         if ".." in value:
             raise vol.Invalid("invalid image path")
         return value
@@ -577,7 +577,7 @@ def referenced_images(doc: dict[str, Any]) -> set[str]:
     return {
         view["image"]
         for view in doc.get("views", {}).values()
-        if view.get("image") and _UPLOAD_RE.match(view["image"])
+        if view.get("image") and UPLOAD_RE.match(view["image"])
     }
 
 

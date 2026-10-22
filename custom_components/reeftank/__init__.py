@@ -34,11 +34,15 @@ from .const import (
     PLATFORMS,
     URL_CATALOG_PACK,
     URL_CATALOG_USER,
-    URL_IMAGES,
     USER_CATALOG_DIR,
 )
 from .feeding import FeedingManager
-from .images import ImageUploadView, cleanup_orphans, delete_aquarium_images
+from .images import (
+    ImageUploadView,
+    ImageView,
+    cleanup_orphans,
+    delete_aquarium_images,
+)
 from .models import referenced_images
 from .services import async_register_services
 from .store import AquariumStore
@@ -153,8 +157,6 @@ async def _async_register_http(hass: HomeAssistant, data: ReefTankData) -> None:
     hass.data[_HTTP_REGISTERED] = holder
     await hass.http.async_register_static_paths(
         [
-            # Picture names are random and never rewritten: cacheable.
-            StaticPathConfig(URL_IMAGES, str(data.images_root), cache_headers=True),
             # The pack folder is replaced by updates, the path stays
             StaticPathConfig(
                 URL_CATALOG_PACK, str(data.pack_root), cache_headers=False
@@ -164,11 +166,15 @@ async def _async_register_http(hass: HomeAssistant, data: ReefTankData) -> None:
             ),
         ]
     )
+    # The user's pictures are private: an authenticated view, not a static
+    # path (static paths do not check who is asking). Only the public
+    # species catalog stays static.
+    hass.http.register_view(ImageView(holder))
     hass.http.register_view(ImageUploadView(holder))
 
 
 class _DataHolder:
-    """Indirection letting the upload view follow config entry reloads."""
+    """Indirection letting the image views follow config entry reloads."""
 
     def __init__(self, data: ReefTankData) -> None:
         self.current = data

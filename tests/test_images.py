@@ -113,7 +113,7 @@ def test_write_cleanup_delete(tmp_path: Path) -> None:
     delete_aquarium_images(tmp_path, "a1b2")
     assert not (tmp_path / "a1b2").exists()
     delete_aquarium_images(tmp_path, "a1b2")  # no folder: nothing to do
-    assert image_url(kept) == f"/reeftank/images/{kept}"
+    assert image_url(kept) == f"/api/reeftank/images/{kept}"
 
 
 async def _upload(client: Any, url: str, payload: bytes, name: str = "file") -> Any:
@@ -123,20 +123,66 @@ async def _upload(client: Any, url: str, payload: bytes, name: str = "file") -> 
 
 
 async def test_upload_view(
-    hass: HomeAssistant, entry: MockConfigEntry, hass_client: Any
+    hass: HomeAssistant,
+    entry: MockConfigEntry,
+    hass_client: Any,
+    hass_client_no_auth: Any,
 ) -> None:
     client = await hass_client()
     response = await _upload(client, "/api/reeftank/upload/a1b2", _jpeg_with_exif())
     assert response.status == HTTPStatus.OK
     body = await response.json()
     assert body["width"] == 200 and body["height"] == 400
-    assert body["url"] == f"/reeftank/images/{body['path']}"
+    plain = f"/api/reeftank/images/{body['path']}"
+    assert body["url"].startswith(f"{plain}?authSig=")
     stored = entry.runtime_data.images_root / body["path"]
     assert stored.is_file()
 
-    # The picture is served by the static path
-    served = await client.get(body["url"])
+    # Served to an authenticated client, as private WebP
+    served = await client.get(plain)
     assert served.status == HTTPStatus.OK
+    assert served.headers["Content-Type"] == "image/webp"
+    assert served.headers["Cache-Control"].startswith("private")
+    assert await served.read() == stored.read_bytes()
+
+    # The signed URL works without auth header (what an <img> does)
+    anonymous = await hass_client_no_auth()
+    served = await anonymous.get(body["url"])
+    assert served.status == HTTPStatus.OK
+
+    # Nothing without a token or a signature, nor with a forged signature
+    response = await anonymous.get(plain)
+    assert response.status == HTTPStatus.UNAUTHORIZED
+    response = await anonymous.get(f"{plain}?authSig=forged")
+    assert response.status == HTTPStatus.UNAUTHORIZED
+    # A signature is only valid for its own path
+    other = write_image(entry.runtime_data.images_root, "a1b2", b"other")
+    sig = body["url"].split("?", 1)[1]
+    response = await anonymous.get(f"/api/reeftank/images/{other}?{sig}")
+    assert response.status == HTTPStatus.UNAUTHORIZED
+
+    # The former static path is gone
+    response = await anonymous.get("/reeftank/images/" + body["path"])
+    assert response.status == HTTPStatus.NOT_FOUND
+
+
+async def test_image_view_not_found(
+    hass: HomeAssistant, entry: MockConfigEntry, hass_client: Any
+) -> None:
+    client = await hass_client()
+    for url in (
+        "/api/reeftank/images/a1b2/missing.webp",
+        "/api/reeftank/images/a1b2/photo.jpg",
+        "/api/reeftank/images/BAD!/x.webp",
+    ):
+        response = await client.get(url)
+        assert response.status == HTTPStatus.NOT_FOUND, url
+    # Traversal: stopped by the HA security filter, and by the view itself
+    response = await client.get("/api/reeftank/images/a1b2/..%2F..%2Fsecrets.webp")
+    assert response.status in (HTTPStatus.BAD_REQUEST, HTTPStatus.NOT_FOUND)
+    root = entry.runtime_data.images_root
+    assert images._image_file(root, "a1b2", "../../secrets.webp") is None
+    assert images._image_file(root, "..", "secrets.webp") is None
 
 
 async def test_upload_errors(
