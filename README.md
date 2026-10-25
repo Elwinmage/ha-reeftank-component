@@ -71,7 +71,7 @@ The ReefTech projects fit together: the integrations bring your equipment into H
     <td>ha-reef-card</td>
   </tr>
   <tr>
-    <td><img src="https://raw.githubusercontent.com/Elwinmage/reeftank-catalog/main/icon.png" width="64" alt="reeftank-catalog" /></td>
+    <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reeftank-catalog/main/icon.png" width="64" alt="reeftank-catalog" /></td>
     <td>🐡<br /><a href="https://github.com/Elwinmage/reeftank-catalog"><b>reeftank-catalog</b></a></td>
     <td>Fish, corals and textures of the aquarium card, downloaded and kept up to date by ha-reeftank-component.</td>
     <td>ha-reeftank-component</td>
