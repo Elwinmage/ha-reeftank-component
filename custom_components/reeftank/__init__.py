@@ -30,6 +30,18 @@ from .const import (
     KEY_FEEDING,
     KEY_FEEDINGS_TODAY,
     KEY_FISH,
+    KEY_KH_ESTIMATED,
+    KEY_KH_FAST_CHANGE,
+    KEY_MONITORING,
+    KEY_MONITORING_PAUSE,
+    KEY_ORP_COMPENSATED,
+    KEY_ORP_LOW,
+    KEY_PH_BASE_LOW,
+    KEY_PH_MEAN,
+    KEY_PH_PROFILE_OFF,
+    KEY_PH_SWING,
+    KEY_PH_SWING_HIGH,
+    KEY_PROBE_SUSPECT,
     PACK_DIR,
     PLATFORMS,
     URL_CATALOG_PACK,
@@ -40,6 +52,7 @@ from .const import (
 from .feeding import FeedingManager
 from .images import ImageUploadView, cleanup_orphans, delete_aquarium_images
 from .models import referenced_images
+from .monitoring import MonitoringManager
 from .services import async_register_services
 from .store import AquariumStore
 from .updater import CatalogUpdater
@@ -65,10 +78,12 @@ class ReefTankData:
     pack_root: Path
     updater: CatalogUpdater
     feeding: FeedingManager = field(init=False)
+    monitoring: MonitoringManager = field(init=False)
 
     def __post_init__(self) -> None:
-        """Create the feeding manager over the store."""
+        """Create the managers over the store."""
         self.feeding = FeedingManager(self.hass, self.store)
+        self.monitoring = MonitoringManager(self.hass, self.store)
 
     async def async_save(
         self, data: dict[str, Any], expected_revision: int | None = None
@@ -91,6 +106,7 @@ class ReefTankData:
         """Delete a document, its device, entities and pictures."""
         if not self.store.delete(aquarium_id):
             return False
+        self.monitoring.async_remove(aquarium_id)
         if remove_device:
             dev_reg = dr.async_get(self.hass)
             device = find_device(dev_reg, (DOMAIN, aquarium_id))
@@ -109,6 +125,18 @@ class ReefTankData:
             KEY_CORALS: "sensor",
             KEY_FEEDINGS_TODAY: "sensor",
             KEY_FEEDING: "event",
+            KEY_MONITORING: "sensor",
+            KEY_PH_MEAN: "sensor",
+            KEY_PH_SWING: "sensor",
+            KEY_ORP_COMPENSATED: "sensor",
+            KEY_PH_BASE_LOW: "binary_sensor",
+            KEY_PH_SWING_HIGH: "binary_sensor",
+            KEY_PH_PROFILE_OFF: "binary_sensor",
+            KEY_ORP_LOW: "binary_sensor",
+            KEY_PROBE_SUSPECT: "binary_sensor",
+            KEY_KH_ESTIMATED: "sensor",
+            KEY_KH_FAST_CHANGE: "binary_sensor",
+            KEY_MONITORING_PAUSE: "switch",
         }
         return {
             key: ent_reg.async_get_entity_id(platform, DOMAIN, f"{aquarium_id}_{key}")
@@ -195,11 +223,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ReefTankConfigEntry) -> 
     data = ReefTankData(hass, store, images_root, user_catalog_root, pack_root, updater)
     entry.runtime_data = data
 
+    await data.monitoring.async_load()
+
     await _async_register_http(hass, data)
     await updater.async_start()
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
     data.feeding.async_start()
     entry.async_on_unload(data.feeding.async_stop)
+    data.monitoring.async_start()
+    entry.async_on_unload(data.monitoring.async_stop)
     entry.async_on_unload(entry.add_update_listener(_async_options_updated))
     return True
 
@@ -218,6 +250,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ReefTankConfigEntry) ->
     unloaded = await hass.config_entries.async_unload_platforms(entry, PLATFORMS)
     if unloaded:
         await entry.runtime_data.store.async_flush()
+        await entry.runtime_data.monitoring.async_flush()
     return unloaded
 
 

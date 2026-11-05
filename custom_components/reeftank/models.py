@@ -23,6 +23,15 @@ from .compat import vol
 from .const import (
     DEFAULT_DEDUP_S,
     DEFAULT_FEED_DURATION_S,
+    DEFAULT_KH_CHANGE_MAX,
+    DEFAULT_LEARNING_DAYS,
+    DEFAULT_ORP_DROP_HOURS,
+    DEFAULT_ORP_DROP_MV,
+    DEFAULT_PAUSE_HOURS,
+    DEFAULT_PH_BASE_DROP,
+    DEFAULT_PH_PROFILE_BAND,
+    DEFAULT_PH_PROFILE_HOURS,
+    DEFAULT_PH_SWING_PCT,
     FEED_KINDS,
     RENDER_FULL,
     RENDER_LEVELS,
@@ -340,6 +349,52 @@ FEEDING_SCHEMA = vol.Schema(
     }
 )
 
+
+def _range(kind: type, low: float, high: float) -> vol.All:
+    """A number within bounds."""
+    return vol.All(vol.Coerce(kind), vol.Range(min=low, max=high))
+
+
+MONITORING_SCHEMA = vol.Schema(
+    {
+        # What is measured: any numeric entity, so that a tank needs no
+        # particular brand of probe.
+        vol.Optional("ph_entity"): vol.Any(None, _entity_id),
+        vol.Optional("orp_entity"): vol.Any(None, _entity_id),
+        vol.Optional("co2_entity"): vol.Any(None, _entity_id),
+        # KH tests: the state is the last one, in dKH
+        vol.Optional("kh_entity"): vol.Any(None, _entity_id),
+        # An entity changing when a probe was calibrated (a date, usually)
+        vol.Optional("ph_calibration_entity"): vol.Any(None, _entity_id),
+        vol.Optional("orp_calibration_entity"): vol.Any(None, _entity_id),
+        # Analysis suspended while any of those is on
+        vol.Optional("pause_entities", default=list): [_entity_id],
+        vol.Optional("learning_days", default=DEFAULT_LEARNING_DAYS): _range(
+            int, 7, 30
+        ),
+        vol.Optional("ph_base_drop", default=DEFAULT_PH_BASE_DROP): _range(
+            float, 0.02, 1
+        ),
+        vol.Optional("ph_swing_pct", default=DEFAULT_PH_SWING_PCT): _range(
+            int, 10, 300
+        ),
+        vol.Optional("ph_profile_band", default=DEFAULT_PH_PROFILE_BAND): _range(
+            float, 0.01, 1
+        ),
+        vol.Optional("ph_profile_hours", default=DEFAULT_PH_PROFILE_HOURS): _range(
+            int, 2, 12
+        ),
+        vol.Optional("orp_drop_mv", default=DEFAULT_ORP_DROP_MV): _range(int, 5, 200),
+        vol.Optional("orp_drop_hours", default=DEFAULT_ORP_DROP_HOURS): _range(
+            int, 2, 48
+        ),
+        vol.Optional("kh_change_max", default=DEFAULT_KH_CHANGE_MAX): _range(
+            float, 0.1, 3
+        ),
+        vol.Optional("pause_hours", default=DEFAULT_PAUSE_HOURS): _range(int, 1, 48),
+    }
+)
+
 DIMENSIONS_SCHEMA = vol.Schema(
     {
         # Red Sea cloud naming: length = X (front), width = Y (depth)
@@ -387,6 +442,7 @@ DOCUMENT_SCHEMA = vol.Schema(
         vol.Optional("render", default=dict): RENDER_SCHEMA,
         vol.Optional("waters", default=dict): {_ident: WATER_SCHEMA},
         vol.Optional("feeding", default=dict): FEEDING_SCHEMA,
+        vol.Optional("monitoring", default=dict): MONITORING_SCHEMA,
         vol.Optional("views", default=dict): {_ident: VIEW_SCHEMA},
         vol.Optional("default_view"): vol.Any(None, _ident),
     }

@@ -163,6 +163,39 @@ Każde akwarium jest wyświetlane na jednym z trzech poziomów; karta może go o
 
 Zdjęcie pomieszczenia technicznego z urządzeniami na żywo to pełnoprawne akwarium `static`.
 
+## Monitorowanie wody
+
+ReefTank porównuje akwarium z jego własną niedawną historią, a nie z uniwersalnymi limitami, i zgłasza alarmy, gdy odbiega ono od normy. pH i ORP mogą pochodzić z dowolnej encji liczbowej; czujnik CO2 w pomieszczeniu jest opcjonalny. pH nie mierzy KH: te alarmy mówią, kiedy wykonać test.
+
+| Alarm | Włącza się, gdy |
+|---|---|
+| **pH poniżej zwykłego poziomu** | Średnia 24 h jest o 0,1 niższa od mediany z ostatnich 14 dni. Z czujnikiem CO2 `cause` wskazuje, czy wyjaśnia to CO2 w pomieszczeniu |
+| **Wahania pH większe niż zwykle** | Amplituda 24 h przekracza zwykłą o 50 % |
+| **Zaburzony dobowy profil pH** | Ostatnie 4 godziny odbiegają od zwykłego kształtu doby |
+| **ORP poniżej zwykłego poziomu** | ORP bez wpływu pH pozostaje o 30 mV poniżej mediany przez 12 godzin |
+| **Podejrzana sonda** | Wartość zamrożona przez 12 godzin, brak wartości przez 2 godziny, powtarzające się piki, skok lub pH i ORP, które przez 2 dni nie poruszają się razem |
+| **KH zmienia się zbyt szybko** | Dwa kolejne testy KH różnią się o więcej niż 0,5 dKH |
+
+Alarmy pozostają nieznane przez pierwsze 14 dni, gdy akwarium jest poznawane; tylko podejrzana sonda działa od początku. Wszystkie progi można ustawić.
+
+Wybierz encje raz. Ta usługa ustawia także progi:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+Z encją testów KH (np. ostatnim pomiarem głowicy ReefDose) niedawny test odróżnia rzeczywisty spadek KH od wpływu CO2 lub problemu z sondą (`cause`), a wraz z CO2 daje szacowane KH między dwoma testami.
+
+Z encją kalibracji (datą ostatniej regulacji sondy) kalibracja nie wymaga żadnego działania: odczyty wokół niej są odrzucane, a historia po 24 godzinach podąża za nowym poziomem. Na czas czyszczenia lub podmiany wody włącz przełącznik wstrzymania: wyłączy się sam po 6 godzinach.
+
 ## Encje
 
 Każde akwarium jest urządzeniem z:
@@ -173,6 +206,12 @@ Każde akwarium jest urządzeniem z:
 | `sensor.<aquarium>_corals` | Liczba koralowców, według gatunków w atrybutach |
 | `event.<aquarium>_feeding` | Ostatnie karmienie, z rodzajem (karmnik, skrót, ręczne) i źródłem |
 | `sensor.<aquarium>_feedings_today` | Karmienia od północy |
+| `sensor.<aquarium>_water_monitoring` | Stan monitorowania, postęp nauki w atrybutach |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | Średnia i amplituda 24 h pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP bez dobowego wpływu pH |
+| `sensor.<aquarium>_kh_estimated` | Szacowane KH między dwoma testami (wymaga testu i CO2) |
+| `binary_sensor.<aquarium>_*` | Sześć powyższych alarmów |
+| `switch.<aquarium>_pause_monitoring` | Wstrzymuje analizę |
 
 Oraz urządzenie *ReefTank catalog*:
 
@@ -188,6 +227,8 @@ Oraz urządzenie *ReefTank catalog*:
 | `reeftank.feed` | Rejestruje karmienie (karmniki nieznane Home Assistant, skrypty) |
 | `reeftank.livestock_add` | Dodaje zwierzęta do inwentarza |
 | `reeftank.livestock_remove` | Usuwa zwierzęta (straty, oddanie) |
+| `reeftank.monitoring_configure` | Wybiera monitorowane encje i progi |
+| `reeftank.monitoring_reset` | Zapomina historię, aby uczyć się od nowa (nowa sonda) |
 
 `aquarium` to nazwa, id lub id urządzenia akwarium.
 

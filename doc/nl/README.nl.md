@@ -163,6 +163,39 @@ Elk aquarium wordt op een van drie niveaus weergegeven; een kaart kan het verlag
 
 Een foto van de technische ruimte met live apparaten erop is een prima `static`-aquarium.
 
+## Waterbewaking
+
+ReefTank vergelijkt uw aquarium met zijn eigen recente geschiedenis in plaats van met algemene grenzen, en geeft alarmen wanneer het afwijkt. pH en ORP kunnen van elke numerieke entiteit komen; een CO2-sensor in de ruimte is optioneel. De pH meet de KH niet: deze alarmen vertellen wanneer u moet testen.
+
+| Alarm | Gaat af wanneer |
+|---|---|
+| **pH onder het gebruikelijke niveau** | Het 24-uursgemiddelde ligt 0,1 onder de mediaan van de laatste 14 dagen. Met een CO2-sensor geeft `cause` aan of de CO2 in de ruimte dit verklaart |
+| **pH-schommeling groter dan gebruikelijk** | De 24-uursamplitude is 50 % groter dan gebruikelijk |
+| **pH-dagpatroon verstoord** | De laatste 4 uur wijken af van de gebruikelijke vorm van de dag |
+| **ORP onder het gebruikelijke niveau** | De ORP zonder pH-effect blijft 12 uur lang 30 mV onder de mediaan |
+| **Verdachte sonde** | Een waarde 12 uur bevroren, 2 uur geen waarde, herhaalde pieken, een sprong, of pH en ORP die 2 dagen niet meer samen bewegen |
+| **KH verandert te snel** | Twee opeenvolgende KH-tests verschillen meer dan 0,5 dKH |
+
+De alarmen blijven de eerste 14 dagen onbekend, terwijl het aquarium wordt geleerd; alleen de verdachte sonde werkt vanaf het begin. Alle drempels zijn instelbaar.
+
+Kies de entiteiten eenmalig. Deze dienst stelt ook de drempels in:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+Met een KH-testentiteit (bijvoorbeeld de laatste meting van een ReefDose-kop) onderscheidt een recente test een echte KH-daling van een CO2-effect of een sondeprobleem (`cause`) en geeft met de CO2 een geschatte KH tussen twee tests.
+
+Met een kalibratie-entiteit (de datum van de laatste afstelling van de sonde) vraagt een kalibratie geen actie: de metingen eromheen vervallen en de geschiedenis volgt na 24 uur het nieuwe niveau. Zet bij schoonmaken of waterverversing de pauzeschakelaar aan: die gaat na 6 uur vanzelf uit.
+
 ## Entiteiten
 
 Elk aquarium is een apparaat met:
@@ -173,6 +206,12 @@ Elk aquarium is een apparaat met:
 | `sensor.<aquarium>_corals` | Aantal koralen, per soort in de attributen |
 | `event.<aquarium>_feeding` | Laatste voedering, met soort (automaat, snelkoppeling, handmatig) en bron |
 | `sensor.<aquarium>_feedings_today` | Voederingen sinds middernacht |
+| `sensor.<aquarium>_water_monitoring` | Status van de bewaking, leervoortgang in de attributen |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | 24-uursgemiddelde en -amplitude van de pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP zonder het dagelijkse pH-effect |
+| `sensor.<aquarium>_kh_estimated` | Geschatte KH tussen twee tests (vereist een test en de CO2) |
+| `binary_sensor.<aquarium>_*` | De zes alarmen hierboven |
+| `switch.<aquarium>_pause_monitoring` | Stopt de analyse tijdelijk |
 
 En het apparaat *ReefTank catalog*:
 
@@ -188,6 +227,8 @@ En het apparaat *ReefTank catalog*:
 | `reeftank.feed` | Legt een voedering vast (automaten die Home Assistant niet kent, scripts) |
 | `reeftank.livestock_add` | Voegt dieren toe aan de inventaris |
 | `reeftank.livestock_remove` | Verwijdert dieren (verlies, weggegeven) |
+| `reeftank.monitoring_configure` | Kiest de bewaakte entiteiten en de drempels |
+| `reeftank.monitoring_reset` | Vergeet de geschiedenis om opnieuw te leren (nieuwe sonde) |
 
 `aquarium` is de naam, het id of het apparaat-id van het aquarium.
 

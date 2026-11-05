@@ -9,9 +9,11 @@ from homeassistant.const import Platform
 DOMAIN: Final = "reeftank"
 
 PLATFORMS: Final = [
+    Platform.BINARY_SENSOR,
     Platform.BUTTON,
     Platform.EVENT,
     Platform.SENSOR,
+    Platform.SWITCH,
     Platform.UPDATE,
 ]
 
@@ -88,6 +90,45 @@ DEFAULT_DEDUP_S: Final = 120
 DEFAULT_FEED_DURATION_S: Final = 45
 
 # ---------------------------------------------------------------------------
+# Monitoring
+# ---------------------------------------------------------------------------
+
+MONITORING_STORE_KEY: Final = f"{DOMAIN}.monitoring"
+MONITORING_STORE_VERSION: Final = 1
+
+CHANNEL_PH: Final = "ph"
+CHANNEL_ORP: Final = "orp"
+CHANNEL_CO2: Final = "co2"
+CHANNELS: Final = (CHANNEL_PH, CHANNEL_ORP, CHANNEL_CO2)
+# Tests rather than samples: a channel of its own for a reset only.
+CHANNEL_KH: Final = "kh"
+# Those have a calibration and an analysis of their own; CO2 only explains.
+PROBE_CHANNELS: Final = (CHANNEL_PH, CHANNEL_ORP)
+
+STATUS_NOT_CONFIGURED: Final = "not_configured"
+STATUS_LEARNING: Final = "learning"
+STATUS_PAUSED: Final = "paused"
+STATUS_SETTLING: Final = "settling"
+STATUS_READY: Final = "ready"
+STATUSES: Final = (
+    STATUS_NOT_CONFIGURED,
+    STATUS_LEARNING,
+    STATUS_PAUSED,
+    STATUS_SETTLING,
+    STATUS_READY,
+)
+
+DEFAULT_LEARNING_DAYS: Final = 14
+DEFAULT_PH_BASE_DROP: Final = 0.1
+DEFAULT_PH_SWING_PCT: Final = 50
+DEFAULT_PH_PROFILE_BAND: Final = 0.05
+DEFAULT_PH_PROFILE_HOURS: Final = 4
+DEFAULT_ORP_DROP_MV: Final = 30
+DEFAULT_ORP_DROP_HOURS: Final = 12
+DEFAULT_PAUSE_HOURS: Final = 6
+DEFAULT_KH_CHANGE_MAX: Final = 0.5
+
+# ---------------------------------------------------------------------------
 # Entities (unique id suffixes, also the translation keys)
 # ---------------------------------------------------------------------------
 
@@ -95,6 +136,18 @@ KEY_FISH: Final = "fish"
 KEY_CORALS: Final = "corals"
 KEY_FEEDING: Final = "feeding"
 KEY_FEEDINGS_TODAY: Final = "feedings_today"
+KEY_MONITORING: Final = "monitoring"
+KEY_MONITORING_PAUSE: Final = "monitoring_pause"
+KEY_PH_MEAN: Final = "ph_mean_24h"
+KEY_PH_SWING: Final = "ph_swing_24h"
+KEY_ORP_COMPENSATED: Final = "orp_compensated"
+KEY_PH_BASE_LOW: Final = "ph_base_low"
+KEY_PH_SWING_HIGH: Final = "ph_swing_high"
+KEY_PH_PROFILE_OFF: Final = "ph_profile_off"
+KEY_ORP_LOW: Final = "orp_low"
+KEY_PROBE_SUSPECT: Final = "probe_suspect"
+KEY_KH_FAST_CHANGE: Final = "kh_fast_change"
+KEY_KH_ESTIMATED: Final = "kh_estimated"
 
 # ---------------------------------------------------------------------------
 # Dispatcher signals
@@ -110,6 +163,8 @@ SIGNAL_AQUARIUMS_CHANGED: Final = f"{DOMAIN}_aquariums_changed"
 SIGNAL_FEEDING: Final = f"{DOMAIN}_feeding_{{}}"
 # A catalog release was installed (with its version).
 SIGNAL_CATALOG_UPDATED: Final = f"{DOMAIN}_catalog_updated"
+# A new analysis of an aquarium is available (format with the aquarium id).
+SIGNAL_MONITORING: Final = f"{DOMAIN}_monitoring_{{}}"
 
 # ---------------------------------------------------------------------------
 # Services
@@ -118,6 +173,8 @@ SIGNAL_CATALOG_UPDATED: Final = f"{DOMAIN}_catalog_updated"
 SERVICE_FEED: Final = "feed"
 SERVICE_LIVESTOCK_ADD: Final = "livestock_add"
 SERVICE_LIVESTOCK_REMOVE: Final = "livestock_remove"
+SERVICE_MONITORING_CONFIGURE: Final = "monitoring_configure"
+SERVICE_MONITORING_RESET: Final = "monitoring_reset"
 
 ATTR_AQUARIUM: Final = "aquarium"
 ATTR_SOURCE: Final = "source"
@@ -127,3 +184,4 @@ ATTR_COUNT: Final = "count"
 ATTR_SIZE_CM: Final = "size_cm"
 ATTR_NOTE: Final = "note"
 ATTR_LINE_ID: Final = "line_id"
+ATTR_CHANNEL: Final = "channel"

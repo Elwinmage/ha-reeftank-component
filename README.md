@@ -163,6 +163,39 @@ Each aquarium renders at one of three levels; a card can lower it, e.g. on a slo
 
 A picture of the technical room with live devices on it is a perfectly good `static` aquarium.
 
+## Water monitoring
+
+ReefTank compares your tank with its own recent history, rather than with universal limits, and raises alarms when it leaves what is usual. pH and ORP can come from any numeric entity; a CO2 sensor in the room is optional. pH does not measure KH: these alarms tell you when to test.
+
+| Alarm | Fires when |
+|---|---|
+| **pH below its usual level** | The 24 h mean is 0.1 below the median of the last 14 days. With a CO2 sensor, `cause` tells whether the CO2 of the room explains it |
+| **pH swing wider than usual** | The 24 h amplitude exceeds the usual one by 50 % |
+| **pH day pattern disturbed** | The last 4 hours stay away from the usual shape of the day |
+| **ORP below its usual level** | ORP, the pH effect taken out, stays 30 mV below its median for 12 hours |
+| **Suspect probe** | A value frozen for 12 hours, no value for 2 hours, repeated spikes, a jump, or pH and ORP no longer moving together for 2 days |
+| **KH moving too fast** | Two consecutive KH tests differ by more than 0.5 dKH |
+
+The alarms stay unknown for the first 14 days, while the tank is learned; only the suspect probe works from the start. All thresholds can be set.
+
+Choose the entities once. This service also sets the thresholds:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+With a KH tests entity (the last measurement of a ReefDose head, for instance), a recent test tells a real KH drop from a CO2 effect or a probe problem (`cause`) and, with the CO2, gives an estimated KH between two tests.
+
+With a calibration entity (the last adjustment date of the probe), a calibration needs no action: the readings around it are dropped and the history follows the new level after 24 hours. For a cleaning or a water change, turn the pause switch on: it turns off by itself after 6 hours.
+
 ## Entities
 
 Each aquarium is a device with:
@@ -173,6 +206,12 @@ Each aquarium is a device with:
 | `sensor.<aquarium>_corals` | Number of corals, per species in the attributes |
 | `event.<aquarium>_feeding` | Last feeding, with its kind (feeder, shortcut, manual) and source |
 | `sensor.<aquarium>_feedings_today` | Feedings since midnight |
+| `sensor.<aquarium>_water_monitoring` | Status of the monitoring, learning progress in the attributes |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | 24 h mean and amplitude of the pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP without the daily effect of the pH |
+| `sensor.<aquarium>_kh_estimated` | KH estimated between two tests (needs a test and the CO2) |
+| `binary_sensor.<aquarium>_*` | The six alarms above |
+| `switch.<aquarium>_pause_monitoring` | Suspends the analysis |
 
 And the *ReefTank catalog* device:
 
@@ -188,6 +227,8 @@ And the *ReefTank catalog* device:
 | `reeftank.feed` | Records a feeding (feeders unknown to Home Assistant, scripts) |
 | `reeftank.livestock_add` | Adds animals to the inventory |
 | `reeftank.livestock_remove` | Removes animals (losses, rehoming) |
+| `reeftank.monitoring_configure` | Chooses the monitored entities and the thresholds |
+| `reeftank.monitoring_reset` | Forgets the history to learn again (new probe) |
 
 `aquarium` is the aquarium's name, id or device id.
 

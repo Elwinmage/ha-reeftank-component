@@ -94,6 +94,18 @@ view: front           # optional
 render: static        # optional: static, light or full
 ```"""
 
+MONITORING_YAML = """```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```"""
+
 SERVICE_YAML = """```yaml
 action: reeftank.livestock_add
 data:
@@ -166,6 +178,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Level",
         "h_shows": "Shows",
         "levels_note": "A picture of the technical room with live devices on it is a perfectly good `static` aquarium.",
+        "m6": "KH moving too fast|Two consecutive KH tests differ by more than 0.5 dKH",
+        "mon_kh": "With a KH tests entity (the last measurement of a ReefDose head, for instance), a recent test tells a real KH drop from a CO2 effect or a probe problem (`cause`) and, with the CO2, gives an estimated KH between two tests.",
+        "e_kh": "KH estimated between two tests (needs a test and the CO2)",
+        "mon_title": "Water monitoring",
+        "mon_body": "ReefTank compares your tank with its own recent history, rather than with universal limits, and raises alarms when it leaves what is usual. pH and ORP can come from any numeric entity; a CO2 sensor in the room is optional. pH does not measure KH: these alarms tell you when to test.",
+        "mon_h_alarm": "Alarm",
+        "mon_h_when": "Fires when",
+        "m1": "pH below its usual level|The 24 h mean is 0.1 below the median of the last 14 days. With a CO2 sensor, `cause` tells whether the CO2 of the room explains it",
+        "m2": "pH swing wider than usual|The 24 h amplitude exceeds the usual one by 50 %",
+        "m3": "pH day pattern disturbed|The last 4 hours stay away from the usual shape of the day",
+        "m4": "ORP below its usual level|ORP, the pH effect taken out, stays 30 mV below its median for 12 hours",
+        "m5": "Suspect probe|A value frozen for 12 hours, no value for 2 hours, repeated spikes, a jump, or pH and ORP no longer moving together for 2 days",
+        "mon_note": "The alarms stay unknown for the first 14 days, while the tank is learned; only the suspect probe works from the start. All thresholds can be set.",
+        "mon_setup": "Choose the entities once. This service also sets the thresholds:",
+        "mon_cal": "With a calibration entity (the last adjustment date of the probe), a calibration needs no action: the readings around it are dropped and the history follows the new level after 24 hours. For a cleaning or a water change, turn the pause switch on: it turns off by itself after 6 hours.",
+        "e_status": "Status of the monitoring, learning progress in the attributes",
+        "e_ph": "24 h mean and amplitude of the pH",
+        "e_orp": "ORP without the daily effect of the pH",
+        "e_alarms": "The six alarms above",
+        "e_pause": "Suspends the analysis",
+        "sv_configure": "Chooses the monitored entities and the thresholds",
+        "sv_reset": "Forgets the history to learn again (new probe)",
         "entities_title": "Entities",
         "entities_body": "Each aquarium is a device with:",
         "h_entity": "Entity",
@@ -249,6 +283,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Niveau",
         "h_shows": "Affiche",
         "levels_note": "Une photo du local technique avec ses appareils en direct est un très bon aquarium `static`.",
+        "m6": "KH qui varie trop vite|Deux tests KH consécutifs diffèrent de plus de 0,5 dKH",
+        "mon_kh": "Avec une entité de tests KH (la dernière mesure d'une tête ReefDose, par exemple), un test récent distingue une vraie baisse du KH d'un effet du CO2 ou d'un problème de sonde (`cause`) et, avec le CO2, donne un KH estimé entre deux tests.",
+        "e_kh": "KH estimé entre deux tests (demande un test et le CO2)",
+        "mon_title": "Surveillance de l'eau",
+        "mon_body": "ReefTank compare votre bac à son propre historique récent plutôt qu'à des limites universelles, et déclenche des alarmes quand il s'en écarte. Le pH et l'ORP peuvent venir de n'importe quelle entité numérique ; un capteur de CO2 dans la pièce est facultatif. Le pH ne mesure pas le KH : ces alarmes vous disent quand faire un test.",
+        "mon_h_alarm": "Alarme",
+        "mon_h_when": "Se déclenche quand",
+        "m1": "pH sous son niveau habituel|La moyenne 24 h est inférieure de 0,1 à la médiane des 14 derniers jours. Avec un capteur de CO2, `cause` indique si le CO2 de la pièce l'explique",
+        "m2": "Amplitude du pH anormale|L'amplitude 24 h dépasse l'habituelle de 50 %",
+        "m3": "Profil jour/nuit du pH perturbé|Les 4 dernières heures s'écartent de la forme habituelle de la journée",
+        "m4": "ORP sous son niveau habituel|L'ORP, sans l'effet du pH, reste 30 mV sous sa médiane pendant 12 heures",
+        "m5": "Sonde suspecte|Valeur figée 12 heures, aucune valeur pendant 2 heures, pics répétés, saut, ou pH et ORP qui ne bougent plus ensemble pendant 2 jours",
+        "mon_note": "Les alarmes restent inconnues pendant les 14 premiers jours, le temps d'apprendre le bac ; seule la sonde suspecte fonctionne dès le départ. Tous les seuils sont réglables.",
+        "mon_setup": "Choisissez les entités une fois. Ce service règle aussi les seuils :",
+        "mon_cal": "Avec une entité d'étalonnage (la date de dernier réglage de la sonde), un étalonnage ne demande aucune action : les mesures autour sont écartées et l'historique suit le nouveau niveau au bout de 24 heures. Pour un nettoyage ou un changement d'eau, activez le switch de pause : il se coupe seul au bout de 6 heures.",
+        "e_status": "État de la surveillance, progression de l'apprentissage dans les attributs",
+        "e_ph": "Moyenne et amplitude 24 h du pH",
+        "e_orp": "ORP sans l'effet quotidien du pH",
+        "e_alarms": "Les six alarmes ci-dessus",
+        "e_pause": "Suspend l'analyse",
+        "sv_configure": "Choisit les entités surveillées et les seuils",
+        "sv_reset": "Oublie l'historique pour réapprendre (nouvelle sonde)",
         "entities_title": "Entités",
         "entities_body": "Chaque aquarium est un appareil avec :",
         "h_entity": "Entité",
@@ -332,6 +388,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Stufe",
         "h_shows": "Zeigt",
         "levels_note": "Ein Foto des Technikraums mit live angezeigten Geräten ist ein vollwertiges `static`-Aquarium.",
+        "m6": "KH ändert sich zu schnell|Zwei aufeinanderfolgende KH-Tests weichen um mehr als 0,5 dKH ab",
+        "mon_kh": "Mit einer KH-Test-Entität (z. B. der letzten Messung eines ReefDose-Kopfes) unterscheidet ein aktueller Test einen echten KH-Rückgang von einem CO2-Effekt oder einem Sondenproblem (`cause`) und liefert mit dem CO2 eine geschätzte KH zwischen zwei Tests.",
+        "e_kh": "Geschätzte KH zwischen zwei Tests (braucht einen Test und das CO2)",
+        "mon_title": "Wasserüberwachung",
+        "mon_body": "ReefTank vergleicht Ihr Becken mit seinem eigenen jüngsten Verlauf statt mit allgemeinen Grenzwerten und löst Alarme aus, wenn es davon abweicht. pH und ORP können von jeder numerischen Entität stammen; ein CO2-Sensor im Raum ist optional. Der pH misst nicht die KH: Diese Alarme sagen Ihnen, wann ein Test fällig ist.",
+        "mon_h_alarm": "Alarm",
+        "mon_h_when": "Löst aus, wenn",
+        "m1": "pH unter dem üblichen Niveau|Das 24-h-Mittel liegt 0,1 unter dem Median der letzten 14 Tage. Mit CO2-Sensor zeigt `cause`, ob das CO2 im Raum dies erklärt",
+        "m2": "pH-Schwankung größer als üblich|Die 24-h-Amplitude übersteigt die übliche um 50 %",
+        "m3": "pH-Tagesverlauf gestört|Die letzten 4 Stunden weichen von der üblichen Tagesform ab",
+        "m4": "ORP unter dem üblichen Niveau|Der ORP ohne pH-Effekt bleibt 12 Stunden lang 30 mV unter seinem Median",
+        "m5": "Verdächtige Sonde|12 Stunden eingefrorener Wert, 2 Stunden kein Wert, wiederholte Spitzen, ein Sprung, oder pH und ORP bewegen sich 2 Tage nicht mehr gemeinsam",
+        "mon_note": "Die Alarme bleiben in den ersten 14 Tagen unbekannt, während das Becken gelernt wird; nur die verdächtige Sonde funktioniert von Anfang an. Alle Schwellen sind einstellbar.",
+        "mon_setup": "Wählen Sie die Entitäten einmalig. Dieser Dienst setzt auch die Schwellen:",
+        "mon_cal": "Mit einer Kalibrierentität (dem letzten Justierdatum der Sonde) ist bei einer Kalibrierung nichts zu tun: Die Messwerte darum herum werden verworfen, und der Verlauf folgt nach 24 Stunden dem neuen Niveau. Schalten Sie für eine Reinigung oder einen Wasserwechsel den Pausenschalter ein: Er schaltet sich nach 6 Stunden selbst aus.",
+        "e_status": "Status der Überwachung, Lernfortschritt in den Attributen",
+        "e_ph": "24-h-Mittel und -Amplitude des pH",
+        "e_orp": "ORP ohne den täglichen pH-Effekt",
+        "e_alarms": "Die sechs Alarme oben",
+        "e_pause": "Setzt die Analyse aus",
+        "sv_configure": "Wählt die überwachten Entitäten und die Schwellen",
+        "sv_reset": "Verwirft den Verlauf, um neu zu lernen (neue Sonde)",
         "entities_title": "Entitäten",
         "entities_body": "Jedes Aquarium ist ein Gerät mit:",
         "h_entity": "Entität",
@@ -415,6 +493,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Nivel",
         "h_shows": "Muestra",
         "levels_note": "Una foto del cuarto técnico con sus dispositivos en vivo es un acuario `static` perfectamente válido.",
+        "m6": "KH que varía demasiado rápido|Dos pruebas de KH seguidas difieren más de 0,5 dKH",
+        "mon_kh": "Con una entidad de pruebas de KH (la última medida de un cabezal ReefDose, por ejemplo), una prueba reciente distingue un descenso real del KH de un efecto del CO2 o de un problema de sonda (`cause`) y, con el CO2, da un KH estimado entre dos pruebas.",
+        "e_kh": "KH estimado entre dos pruebas (necesita una prueba y el CO2)",
+        "mon_title": "Vigilancia del agua",
+        "mon_body": "ReefTank compara su acuario con su propio historial reciente, en lugar de con límites universales, y lanza alarmas cuando se aparta de lo habitual. El pH y el ORP pueden venir de cualquier entidad numérica; un sensor de CO2 en la habitación es opcional. El pH no mide el KH: estas alarmas le indican cuándo hacer una prueba.",
+        "mon_h_alarm": "Alarma",
+        "mon_h_when": "Se activa cuando",
+        "m1": "pH por debajo de su nivel habitual|La media de 24 h queda 0,1 por debajo de la mediana de los últimos 14 días. Con un sensor de CO2, `cause` indica si el CO2 de la habitación lo explica",
+        "m2": "Amplitud del pH mayor de lo habitual|La amplitud de 24 h supera la habitual en un 50 %",
+        "m3": "Perfil diario del pH alterado|Las últimas 4 horas se alejan de la forma habitual del día",
+        "m4": "ORP por debajo de su nivel habitual|El ORP, sin el efecto del pH, sigue 30 mV por debajo de su mediana durante 12 horas",
+        "m5": "Sonda sospechosa|Valor congelado 12 horas, ningún valor durante 2 horas, picos repetidos, un salto, o pH y ORP que dejan de moverse juntos durante 2 días",
+        "mon_note": "Las alarmas siguen desconocidas los primeros 14 días, mientras se aprende el acuario; solo la sonda sospechosa funciona desde el principio. Todos los umbrales se pueden ajustar.",
+        "mon_setup": "Elija las entidades una vez. Este servicio también ajusta los umbrales:",
+        "mon_cal": "Con una entidad de calibración (la fecha de último ajuste de la sonda), una calibración no requiere ninguna acción: se descartan las lecturas cercanas y el historial sigue el nuevo nivel tras 24 horas. Para una limpieza o un cambio de agua, encienda el interruptor de pausa: se apaga solo tras 6 horas.",
+        "e_status": "Estado de la vigilancia, progreso del aprendizaje en los atributos",
+        "e_ph": "Media y amplitud de 24 h del pH",
+        "e_orp": "ORP sin el efecto diario del pH",
+        "e_alarms": "Las seis alarmas anteriores",
+        "e_pause": "Suspende el análisis",
+        "sv_configure": "Elige las entidades vigiladas y los umbrales",
+        "sv_reset": "Olvida el historial para volver a aprender (sonda nueva)",
         "entities_title": "Entidades",
         "entities_body": "Cada acuario es un dispositivo con:",
         "h_entity": "Entidad",
@@ -498,6 +598,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Livello",
         "h_shows": "Mostra",
         "levels_note": "Una foto del locale tecnico con i dispositivi in tempo reale è un ottimo acquario `static`.",
+        "m6": "KH che varia troppo in fretta|Due test KH consecutivi differiscono di più di 0,5 dKH",
+        "mon_kh": "Con un'entità dei test KH (l'ultima misura di una testa ReefDose, ad esempio), un test recente distingue un vero calo del KH da un effetto della CO2 o da un problema di sonda (`cause`) e, con la CO2, fornisce un KH stimato tra due test.",
+        "e_kh": "KH stimato tra due test (richiede un test e la CO2)",
+        "mon_title": "Monitoraggio dell'acqua",
+        "mon_body": "ReefTank confronta la vasca con il suo storico recente, invece che con limiti universali, e lancia allarmi quando si allontana dal solito. pH e ORP possono provenire da qualsiasi entità numerica; un sensore di CO2 nella stanza è facoltativo. Il pH non misura il KH: questi allarmi indicano quando fare un test.",
+        "mon_h_alarm": "Allarme",
+        "mon_h_when": "Scatta quando",
+        "m1": "pH sotto il livello abituale|La media di 24 h è 0,1 sotto la mediana degli ultimi 14 giorni. Con un sensore di CO2, `cause` indica se la CO2 della stanza lo spiega",
+        "m2": "Ampiezza del pH superiore al solito|L'ampiezza di 24 h supera quella abituale del 50 %",
+        "m3": "Profilo giornaliero del pH alterato|Le ultime 4 ore si allontanano dalla forma abituale della giornata",
+        "m4": "ORP sotto il livello abituale|L'ORP, senza l'effetto del pH, resta 30 mV sotto la mediana per 12 ore",
+        "m5": "Sonda sospetta|Valore bloccato per 12 ore, nessun valore per 2 ore, picchi ripetuti, un salto, o pH e ORP che non si muovono più insieme per 2 giorni",
+        "mon_note": "Gli allarmi restano sconosciuti per i primi 14 giorni, mentre la vasca viene appresa; solo la sonda sospetta funziona da subito. Tutte le soglie sono regolabili.",
+        "mon_setup": "Scegli le entità una volta. Questo servizio imposta anche le soglie:",
+        "mon_cal": "Con un'entità di calibrazione (la data dell'ultima regolazione della sonda), una calibrazione non richiede azioni: le letture vicine vengono scartate e lo storico segue il nuovo livello dopo 24 ore. Per una pulizia o un cambio d'acqua, attiva l'interruttore di pausa: si spegne da solo dopo 6 ore.",
+        "e_status": "Stato del monitoraggio, avanzamento dell'apprendimento negli attributi",
+        "e_ph": "Media e ampiezza di 24 h del pH",
+        "e_orp": "ORP senza l'effetto quotidiano del pH",
+        "e_alarms": "I sei allarmi qui sopra",
+        "e_pause": "Sospende l'analisi",
+        "sv_configure": "Sceglie le entità monitorate e le soglie",
+        "sv_reset": "Dimentica lo storico per imparare di nuovo (nuova sonda)",
         "entities_title": "Entità",
         "entities_body": "Ogni acquario è un dispositivo con:",
         "h_entity": "Entità",
@@ -581,6 +703,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Niveau",
         "h_shows": "Toont",
         "levels_note": "Een foto van de technische ruimte met live apparaten erop is een prima `static`-aquarium.",
+        "m6": "KH verandert te snel|Twee opeenvolgende KH-tests verschillen meer dan 0,5 dKH",
+        "mon_kh": "Met een KH-testentiteit (bijvoorbeeld de laatste meting van een ReefDose-kop) onderscheidt een recente test een echte KH-daling van een CO2-effect of een sondeprobleem (`cause`) en geeft met de CO2 een geschatte KH tussen twee tests.",
+        "e_kh": "Geschatte KH tussen twee tests (vereist een test en de CO2)",
+        "mon_title": "Waterbewaking",
+        "mon_body": "ReefTank vergelijkt uw aquarium met zijn eigen recente geschiedenis in plaats van met algemene grenzen, en geeft alarmen wanneer het afwijkt. pH en ORP kunnen van elke numerieke entiteit komen; een CO2-sensor in de ruimte is optioneel. De pH meet de KH niet: deze alarmen vertellen wanneer u moet testen.",
+        "mon_h_alarm": "Alarm",
+        "mon_h_when": "Gaat af wanneer",
+        "m1": "pH onder het gebruikelijke niveau|Het 24-uursgemiddelde ligt 0,1 onder de mediaan van de laatste 14 dagen. Met een CO2-sensor geeft `cause` aan of de CO2 in de ruimte dit verklaart",
+        "m2": "pH-schommeling groter dan gebruikelijk|De 24-uursamplitude is 50 % groter dan gebruikelijk",
+        "m3": "pH-dagpatroon verstoord|De laatste 4 uur wijken af van de gebruikelijke vorm van de dag",
+        "m4": "ORP onder het gebruikelijke niveau|De ORP zonder pH-effect blijft 12 uur lang 30 mV onder de mediaan",
+        "m5": "Verdachte sonde|Een waarde 12 uur bevroren, 2 uur geen waarde, herhaalde pieken, een sprong, of pH en ORP die 2 dagen niet meer samen bewegen",
+        "mon_note": "De alarmen blijven de eerste 14 dagen onbekend, terwijl het aquarium wordt geleerd; alleen de verdachte sonde werkt vanaf het begin. Alle drempels zijn instelbaar.",
+        "mon_setup": "Kies de entiteiten eenmalig. Deze dienst stelt ook de drempels in:",
+        "mon_cal": "Met een kalibratie-entiteit (de datum van de laatste afstelling van de sonde) vraagt een kalibratie geen actie: de metingen eromheen vervallen en de geschiedenis volgt na 24 uur het nieuwe niveau. Zet bij schoonmaken of waterverversing de pauzeschakelaar aan: die gaat na 6 uur vanzelf uit.",
+        "e_status": "Status van de bewaking, leervoortgang in de attributen",
+        "e_ph": "24-uursgemiddelde en -amplitude van de pH",
+        "e_orp": "ORP zonder het dagelijkse pH-effect",
+        "e_alarms": "De zes alarmen hierboven",
+        "e_pause": "Stopt de analyse tijdelijk",
+        "sv_configure": "Kiest de bewaakte entiteiten en de drempels",
+        "sv_reset": "Vergeet de geschiedenis om opnieuw te leren (nieuwe sonde)",
         "entities_title": "Entiteiten",
         "entities_body": "Elk aquarium is een apparaat met:",
         "h_entity": "Entiteit",
@@ -664,6 +808,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Poziom",
         "h_shows": "Pokazuje",
         "levels_note": "Zdjęcie pomieszczenia technicznego z urządzeniami na żywo to pełnoprawne akwarium `static`.",
+        "m6": "KH zmienia się zbyt szybko|Dwa kolejne testy KH różnią się o więcej niż 0,5 dKH",
+        "mon_kh": "Z encją testów KH (np. ostatnim pomiarem głowicy ReefDose) niedawny test odróżnia rzeczywisty spadek KH od wpływu CO2 lub problemu z sondą (`cause`), a wraz z CO2 daje szacowane KH między dwoma testami.",
+        "e_kh": "Szacowane KH między dwoma testami (wymaga testu i CO2)",
+        "mon_title": "Monitorowanie wody",
+        "mon_body": "ReefTank porównuje akwarium z jego własną niedawną historią, a nie z uniwersalnymi limitami, i zgłasza alarmy, gdy odbiega ono od normy. pH i ORP mogą pochodzić z dowolnej encji liczbowej; czujnik CO2 w pomieszczeniu jest opcjonalny. pH nie mierzy KH: te alarmy mówią, kiedy wykonać test.",
+        "mon_h_alarm": "Alarm",
+        "mon_h_when": "Włącza się, gdy",
+        "m1": "pH poniżej zwykłego poziomu|Średnia 24 h jest o 0,1 niższa od mediany z ostatnich 14 dni. Z czujnikiem CO2 `cause` wskazuje, czy wyjaśnia to CO2 w pomieszczeniu",
+        "m2": "Wahania pH większe niż zwykle|Amplituda 24 h przekracza zwykłą o 50 %",
+        "m3": "Zaburzony dobowy profil pH|Ostatnie 4 godziny odbiegają od zwykłego kształtu doby",
+        "m4": "ORP poniżej zwykłego poziomu|ORP bez wpływu pH pozostaje o 30 mV poniżej mediany przez 12 godzin",
+        "m5": "Podejrzana sonda|Wartość zamrożona przez 12 godzin, brak wartości przez 2 godziny, powtarzające się piki, skok lub pH i ORP, które przez 2 dni nie poruszają się razem",
+        "mon_note": "Alarmy pozostają nieznane przez pierwsze 14 dni, gdy akwarium jest poznawane; tylko podejrzana sonda działa od początku. Wszystkie progi można ustawić.",
+        "mon_setup": "Wybierz encje raz. Ta usługa ustawia także progi:",
+        "mon_cal": "Z encją kalibracji (datą ostatniej regulacji sondy) kalibracja nie wymaga żadnego działania: odczyty wokół niej są odrzucane, a historia po 24 godzinach podąża za nowym poziomem. Na czas czyszczenia lub podmiany wody włącz przełącznik wstrzymania: wyłączy się sam po 6 godzinach.",
+        "e_status": "Stan monitorowania, postęp nauki w atrybutach",
+        "e_ph": "Średnia i amplituda 24 h pH",
+        "e_orp": "ORP bez dobowego wpływu pH",
+        "e_alarms": "Sześć powyższych alarmów",
+        "e_pause": "Wstrzymuje analizę",
+        "sv_configure": "Wybiera monitorowane encje i progi",
+        "sv_reset": "Zapomina historię, aby uczyć się od nowa (nowa sonda)",
         "entities_title": "Encje",
         "entities_body": "Każde akwarium jest urządzeniem z:",
         "h_entity": "Encja",
@@ -747,6 +913,28 @@ T: dict[str, dict[str, str]] = {
         "h_level": "Nível",
         "h_shows": "Mostra",
         "levels_note": "Uma foto da sala técnica com os dispositivos em direto é um aquário `static` perfeitamente válido.",
+        "m6": "KH a variar demasiado depressa|Dois testes de KH seguidos diferem mais de 0,5 dKH",
+        "mon_kh": "Com uma entidade de testes de KH (a última medida de uma cabeça ReefDose, por exemplo), um teste recente distingue uma descida real do KH de um efeito do CO2 ou de um problema de sonda (`cause`) e, com o CO2, dá um KH estimado entre dois testes.",
+        "e_kh": "KH estimado entre dois testes (precisa de um teste e do CO2)",
+        "mon_title": "Monitorização da água",
+        "mon_body": "O ReefTank compara o aquário com o seu próprio histórico recente, em vez de limites universais, e lança alarmes quando se afasta do habitual. O pH e o ORP podem vir de qualquer entidade numérica; um sensor de CO2 na divisão é opcional. O pH não mede o KH: estes alarmes dizem-lhe quando fazer um teste.",
+        "mon_h_alarm": "Alarme",
+        "mon_h_when": "Dispara quando",
+        "m1": "pH abaixo do nível habitual|A média de 24 h fica 0,1 abaixo da mediana dos últimos 14 dias. Com um sensor de CO2, `cause` indica se o CO2 da divisão o explica",
+        "m2": "Amplitude do pH maior do que o habitual|A amplitude de 24 h excede a habitual em 50 %",
+        "m3": "Perfil diário do pH alterado|As últimas 4 horas afastam-se da forma habitual do dia",
+        "m4": "ORP abaixo do nível habitual|O ORP, sem o efeito do pH, fica 30 mV abaixo da mediana durante 12 horas",
+        "m5": "Sonda suspeita|Valor congelado durante 12 horas, nenhum valor durante 2 horas, picos repetidos, um salto, ou pH e ORP que deixam de se mover juntos durante 2 dias",
+        "mon_note": "Os alarmes ficam desconhecidos nos primeiros 14 dias, enquanto o aquário é aprendido; só a sonda suspeita funciona desde o início. Todos os limiares são ajustáveis.",
+        "mon_setup": "Escolha as entidades uma vez. Este serviço também define os limiares:",
+        "mon_cal": "Com uma entidade de calibração (a data do último ajuste da sonda), uma calibração não exige qualquer ação: as leituras à volta são descartadas e o histórico segue o novo nível após 24 horas. Para uma limpeza ou uma mudança de água, ligue o interruptor de pausa: desliga-se sozinho após 6 horas.",
+        "e_status": "Estado da monitorização, progresso da aprendizagem nos atributos",
+        "e_ph": "Média e amplitude de 24 h do pH",
+        "e_orp": "ORP sem o efeito diário do pH",
+        "e_alarms": "Os seis alarmes acima",
+        "e_pause": "Suspende a análise",
+        "sv_configure": "Escolhe as entidades monitorizadas e os limiares",
+        "sv_reset": "Esquece o histórico para voltar a aprender (sonda nova)",
         "entities_title": "Entidades",
         "entities_body": "Cada aquário é um dispositivo com:",
         "h_entity": "Entidade",
@@ -932,6 +1120,11 @@ def render(code: str) -> str:
         for level in ("static", "light", "full")
         for name, shows in [ui[level].split(":", 1)]
     )
+    alarm_rows = "\n".join(
+        f"| **{name}** | {when} |"
+        for i in range(1, 7)
+        for name, when in [t[f"m{i}"].split("|", 1)]
+    )
     return f"""# ReefTank 🐟
 > {t["ecosystem_line"]}
 <p align="center">
@@ -994,6 +1187,24 @@ def render(code: str) -> str:
 
 {t["levels_note"]}
 
+## {t["mon_title"]}
+
+{t["mon_body"]}
+
+| {t["mon_h_alarm"]} | {t["mon_h_when"]} |
+|---|---|
+{alarm_rows}
+
+{t["mon_note"]}
+
+{t["mon_setup"]}
+
+{MONITORING_YAML}
+
+{t["mon_kh"]}
+
+{t["mon_cal"]}
+
 ## {t["entities_title"]}
 
 {t["entities_body"]}
@@ -1004,6 +1215,12 @@ def render(code: str) -> str:
 | `sensor.<aquarium>_corals` | {t["e_corals"]} |
 | `event.<aquarium>_feeding` | {t["e_feeding"]} |
 | `sensor.<aquarium>_feedings_today` | {t["e_today"]} |
+| `sensor.<aquarium>_water_monitoring` | {t["e_status"]} |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | {t["e_ph"]} |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | {t["e_orp"]} |
+| `sensor.<aquarium>_kh_estimated` | {t["e_kh"]} |
+| `binary_sensor.<aquarium>_*` | {t["e_alarms"]} |
+| `switch.<aquarium>_pause_monitoring` | {t["e_pause"]} |
 
 {t["entities_catalog"]}
 
@@ -1019,6 +1236,8 @@ def render(code: str) -> str:
 | `reeftank.feed` | {t["sv_feed"]} |
 | `reeftank.livestock_add` | {t["sv_add"]} |
 | `reeftank.livestock_remove` | {t["sv_remove"]} |
+| `reeftank.monitoring_configure` | {t["sv_configure"]} |
+| `reeftank.monitoring_reset` | {t["sv_reset"]} |
 
 {t["services_note"]}
 

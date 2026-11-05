@@ -12,6 +12,90 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "kh_fast_change": {
+        "name": "KH moving too fast",
+        "state_attributes": {
+          "last": {
+            "name": "Last test"
+          },
+          "change": {
+            "name": "Change between the last two tests"
+          }
+        }
+      },
+      "orp_low": {
+        "name": "ORP below its usual level",
+        "state_attributes": {
+          "baseline": {
+            "name": "Usual level"
+          },
+          "drop": {
+            "name": "Drop"
+          },
+          "ph_slope": {
+            "name": "ORP change per pH unit"
+          },
+          "ph_correlation": {
+            "name": "pH/ORP correlation"
+          }
+        }
+      },
+      "ph_base_low": {
+        "name": "pH below its usual level",
+        "state_attributes": {
+          "baseline": {
+            "name": "Usual level"
+          },
+          "drop": {
+            "name": "Drop"
+          },
+          "cause": {
+            "name": "Probable cause",
+            "state": {
+              "co2": "CO2 of the room",
+              "other": "Not explained by CO2: test KH, check the probe",
+              "unknown": "Unknown: no CO2 sensor",
+              "kh": "KH drop, measured by the tests",
+              "probe": "Faulty reading: neither KH nor CO2 moved"
+            }
+          },
+          "co2_explained_drop": {
+            "name": "pH drop explained by CO2"
+          },
+          "kh_explained_drop": {
+            "name": "pH drop explained by KH"
+          },
+          "kh_test_due": {
+            "name": "KH test needed"
+          }
+        }
+      },
+      "ph_profile_off": {
+        "name": "pH day pattern disturbed",
+        "state_attributes": {
+          "profile_hours_off": {
+            "name": "Hours off the usual day"
+          }
+        }
+      },
+      "ph_swing_high": {
+        "name": "pH swing wider than usual",
+        "state_attributes": {
+          "swing_baseline": {
+            "name": "Usual swing"
+          }
+        }
+      },
+      "probe_suspect": {
+        "name": "Suspect probe",
+        "state_attributes": {
+          "probes": {
+            "name": "Probes"
+          }
+        }
+      }
+    },
     "button": {
       "check_catalog": {
         "name": "Check for updates"
@@ -65,6 +149,48 @@
             "name": "Number of species"
           }
         }
+      },
+      "kh_estimated": {
+        "name": "KH estimated",
+        "state_attributes": {
+          "last_test": {
+            "name": "Last test"
+          }
+        }
+      },
+      "monitoring": {
+        "name": "Water monitoring",
+        "state": {
+          "not_configured": "Not configured",
+          "learning": "Learning",
+          "paused": "Paused",
+          "settling": "Measuring after calibration",
+          "ready": "Ready"
+        },
+        "state_attributes": {
+          "learning_pct": {
+            "name": "Learning progress (%)"
+          }
+        }
+      },
+      "orp_compensated": {
+        "name": "ORP without the pH effect"
+      },
+      "ph_mean_24h": {
+        "name": "pH (24 h mean)"
+      },
+      "ph_swing_24h": {
+        "name": "pH swing (24 h)"
+      }
+    },
+    "switch": {
+      "monitoring_pause": {
+        "name": "Pause monitoring",
+        "state_attributes": {
+          "until": {
+            "name": "Until"
+          }
+        }
       }
     }
   },
@@ -99,6 +225,14 @@
       "options": {
         "fish": "Fish",
         "invertebrate": "Invertebrate"
+      }
+    },
+    "monitoring_channel": {
+      "options": {
+        "ph": "pH",
+        "orp": "ORP",
+        "co2": "CO2",
+        "kh": "KH test"
       }
     }
   },
@@ -170,6 +304,94 @@
         "species": {
           "name": "Species",
           "description": "Species of the line, when no line id is given."
+        }
+      }
+    },
+    "monitoring_configure": {
+      "name": "Configure monitoring",
+      "description": "Chooses what is monitored in an aquarium and sets the alarm thresholds. Only the fields given are changed.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "ph_entity": {
+          "name": "pH entity",
+          "description": "Numeric entity giving the pH."
+        },
+        "orp_entity": {
+          "name": "ORP entity",
+          "description": "Numeric entity giving the ORP in mV."
+        },
+        "co2_entity": {
+          "name": "CO2 entity",
+          "description": "Numeric entity giving the CO2 of the room in ppm (optional): tells a CO2 effect from an alkalinity problem."
+        },
+        "kh_entity": {
+          "name": "KH tests entity",
+          "description": "Sensor or number giving the last KH test in dKH (optional), such as the last measurement of a ReefDose head. Tells a KH drop from a CO2 effect or a probe problem."
+        },
+        "ph_calibration_entity": {
+          "name": "pH calibration entity",
+          "description": "Entity changing when the pH probe is calibrated, such as its last adjustment date."
+        },
+        "orp_calibration_entity": {
+          "name": "ORP calibration entity",
+          "description": "Entity changing when the ORP probe is calibrated, such as its last adjustment date."
+        },
+        "pause_entities": {
+          "name": "Pause entities",
+          "description": "The analysis is suspended while one of them is on."
+        },
+        "learning_days": {
+          "name": "Learning days",
+          "description": "Days of history the tank is compared with."
+        },
+        "ph_base_drop": {
+          "name": "pH drop",
+          "description": "Alarm when the 24 h mean falls this far below the usual level."
+        },
+        "ph_swing_pct": {
+          "name": "pH swing (%)",
+          "description": "Alarm when the 24 h swing exceeds the usual one by this much."
+        },
+        "ph_profile_band": {
+          "name": "pH day band",
+          "description": "Smallest gap from the usual day that counts."
+        },
+        "ph_profile_hours": {
+          "name": "pH day hours",
+          "description": "Consecutive hours off the usual day before the alarm."
+        },
+        "orp_drop_mv": {
+          "name": "ORP drop (mV)",
+          "description": "Alarm when ORP stays this far below its usual level."
+        },
+        "orp_drop_hours": {
+          "name": "ORP drop hours",
+          "description": "Hours ORP must stay low before the alarm."
+        },
+        "kh_change_max": {
+          "name": "KH change (dKH)",
+          "description": "Alarm when two consecutive KH tests differ by more than this."
+        },
+        "pause_hours": {
+          "name": "Pause hours",
+          "description": "How long the pause switch stays on before resuming by itself."
+        }
+      }
+    },
+    "monitoring_reset": {
+      "name": "Reset monitoring",
+      "description": "Forgets the recorded history so that the aquarium learns again (a new probe, say).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "channel": {
+          "name": "Measure",
+          "description": "Measure to forget (all of them when empty)."
         }
       }
     }

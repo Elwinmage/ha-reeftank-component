@@ -9,7 +9,13 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity import Entity
 
-from .const import DOMAIN, MANUFACTURER, MODEL, SIGNAL_AQUARIUM_UPDATED
+from .const import (
+    DOMAIN,
+    MANUFACTURER,
+    MODEL,
+    SIGNAL_AQUARIUM_UPDATED,
+    SIGNAL_MONITORING,
+)
 
 if TYPE_CHECKING:
     from . import ReefTankData
@@ -57,3 +63,23 @@ class ReefTankEntity(Entity):
 
     def _update_from_document(self) -> None:
         """Refresh the `_attr_*` values derived from the document."""
+
+
+class MonitoringEntity(ReefTankEntity):
+    """An entity also refreshed by every analysis of its aquarium."""
+
+    async def async_added_to_hass(self) -> None:
+        """Follow the analyses too."""
+        await super().async_added_to_hass()
+        self.async_on_remove(
+            async_dispatcher_connect(
+                self.hass,
+                SIGNAL_MONITORING.format(self._aquarium_id),
+                self._on_analysis,
+            )
+        )
+
+    @callback
+    def _on_analysis(self) -> None:
+        self._update_from_document()
+        self.async_write_ha_state()

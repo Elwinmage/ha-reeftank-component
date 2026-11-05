@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.sensor import (
     RestoreSensor,
+    SensorDeviceClass,
     SensorEntity,
     SensorStateClass,
 )
@@ -19,10 +20,17 @@ from .const import (
     KEY_CORALS,
     KEY_FEEDINGS_TODAY,
     KEY_FISH,
+    KEY_KH_ESTIMATED,
+    KEY_MONITORING,
+    KEY_ORP_COMPENSATED,
+    KEY_PH_MEAN,
+    KEY_PH_SWING,
     SIGNAL_AQUARIUM_ADDED,
     SIGNAL_FEEDING,
+    STATUS_SETTLING,
+    STATUSES,
 )
-from .entity import ReefTankEntity
+from .entity import MonitoringEntity, ReefTankEntity
 from .models import coral_counts, fish_counts
 
 if TYPE_CHECKING:
@@ -44,6 +52,11 @@ async def async_setup_entry(
                 FishSensor(data, aquarium_id),
                 CoralSensor(data, aquarium_id),
                 FeedingsTodaySensor(data, aquarium_id),
+                MonitoringSensor(data, aquarium_id),
+                PhMeanSensor(data, aquarium_id),
+                PhSwingSensor(data, aquarium_id),
+                OrpCompensatedSensor(data, aquarium_id),
+                KhEstimatedSensor(data, aquarium_id),
             ]
         )
 
@@ -147,3 +160,92 @@ class FeedingsTodaySensor(ReefTankEntity, RestoreSensor):
         """The count as the state, its day as an attribute (to restore it)."""
         self._attr_native_value = self._count
         self._attr_extra_state_attributes = {"day": self._day}
+
+
+class MonitoringSensor(MonitoringEntity, SensorEntity):
+    """Where the monitoring stands, and how far the learning went."""
+
+    _attr_device_class = SensorDeviceClass.ENUM
+    _attr_options = list(STATUSES)
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_MONITORING)
+
+    def _update_from_document(self) -> None:
+        """The status as the state, the learning progress as an attribute."""
+        monitoring = self._data.monitoring
+        self._attr_native_value = monitoring.status(self._aquarium_id)
+        learning = monitoring.report(self._aquarium_id).get("learning", 0.0)
+        self._attr_extra_state_attributes = {"learning_pct": round(learning * 100)}
+
+
+class _AnalysisSensor(MonitoringEntity, SensorEntity):
+    """A figure of the last analysis, unknown until it can be computed."""
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+    _section: str
+    _field: str
+
+    def _update_from_document(self) -> None:
+        report = self._data.monitoring.report(self._aquarium_id)
+        self._attr_native_value = report.get(self._section, {}).get(self._field)
+
+
+class PhMeanSensor(_AnalysisSensor):
+    """Mean pH of the last 24 hours."""
+
+    _attr_suggested_display_precision = 2
+    _section = "ph"
+    _field = "mean_24h"
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_PH_MEAN)
+
+
+class PhSwingSensor(_AnalysisSensor):
+    """Amplitude of the pH over the last 24 hours."""
+
+    _attr_suggested_display_precision = 2
+    _section = "ph"
+    _field = "swing_24h"
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_PH_SWING)
+
+
+class OrpCompensatedSensor(_AnalysisSensor):
+    """ORP of the last hour, the daily effect of the pH taken out."""
+
+    _attr_native_unit_of_measurement = "mV"
+    _attr_suggested_display_precision = 0
+    _section = "orp"
+    _field = "compensated"
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_ORP_COMPENSATED)
+
+
+class KhEstimatedSensor(_AnalysisSensor):
+    """KH today, from the last test and what pH and CO2 did since."""
+
+    _attr_native_unit_of_measurement = "dKH"
+    _attr_suggested_display_precision = 2
+    _section = "kh"
+    _field = "estimated"
+
+    def __init__(self, data: ReefTankData, aquarium_id: str) -> None:
+        """Create the sensor."""
+        super().__init__(data, aquarium_id, KEY_KH_ESTIMATED)
+
+    def _update_from_document(self) -> None:
+        """Unknown while a calibration moves the pH under the estimate."""
+        super()._update_from_document()
+        monitoring = self._data.monitoring
+        if monitoring.status(self._aquarium_id) == STATUS_SETTLING:
+            self._attr_native_value = None
+        kh = monitoring.report(self._aquarium_id).get("kh", {})
+        self._attr_extra_state_attributes = {"last_test": kh.get("last")}

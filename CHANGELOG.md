@@ -1,3 +1,18 @@
+# Unreleased
+
+- Water monitoring: pH and ORP (and optionally the CO2 of the room) sampled
+  every 5 minutes from any entity, and compared with the tank's own last 14
+  days. Alarms: pH below its usual level, wider pH swing, disturbed day
+  pattern, ORP below its usual level (pH effect removed), suspect probe.
+- `sensor` entities for the status, the 24 h pH mean and amplitude and the
+  compensated ORP; `switch` to pause, ending by itself.
+- Calibrations recognised from a date entity: readings around it dropped, the
+  history carried over to the new level.
+- KH tests, when an entity gives them (the last measurement of a ReefDose head,
+  for instance): `cause` of the pH alarm tells the KH, the CO2 and the probe
+  apart; alarm when two tests differ too much; estimated KH with the CO2.
+- Services: `reeftank.monitoring_configure`, `reeftank.monitoring_reset`.
+
 # v0.1.0
 
 First version.
