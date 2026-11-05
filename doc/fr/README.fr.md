@@ -103,7 +103,7 @@ L'ensemble est documenté sur la [page du projet ReefTech](https://elwinmage.git
 - **Poissons et coraux** du [catalogue ReefTank](https://github.com/Elwinmage/reeftank-catalog) : bancs, nageurs de pleine eau, poissons de sable, gobies qui sortent la tête de leur terrier, coraux qui ondulent avec les pompes
 - **Profondeur** : les poissons passent derrière les roches détourées et se posent sur le sable la nuit
 - **Bac dessiné** : pas de belle photo de l'eau ? Dessinez-la (eau, sable, textures de roche) en gardant le reste de la photo
-- **Appareils et entités** posés sur l'image, cliquables ; zones qui ouvrent une autre image (la décante dans le meuble)
+- **Appareils et entités** déposés sur l'image en miniature, ou détourés dessus, cliquables ; zones qui ouvrent une autre image (la décante dans le meuble)
 - **Nourrissage** : nourrisseurs, raccourcis Red Sea ou un service enregistrent chaque nourrissage ; les poissons se ruent vers le point de nourrissage
 - **Inventaire** : nombre de poissons et de coraux en capteurs, avec leur historique
 

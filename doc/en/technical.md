@@ -41,7 +41,8 @@ entities on the picture, and declares the livestock. The card then renders:
   swaying with the flow of the pumps;
 - clickable **devices** (open the device view) and **entities** (existing card
   elements);
-- clickable **hotspots** switching to other pictures (e.g. cabinet door open
+- clickable **hotspots** opening the view of a device outlined on the picture,
+  or switching to other pictures (e.g. cabinet door open
   showing the sump), each with its own elements.
 
 It must work **without** the `redsea` integration (e.g. Aqua Medic only); Red
@@ -189,7 +190,9 @@ One **aquarium** document per tank. Key rules:
       ],
       "hotspots": [
         { "poly": [[0.1, 0.6], [0.9, 0.6], [0.9, 0.95], [0.1, 0.95]],
-          "goto": "cabinet" }
+          "goto": "cabinet" },
+        { "poly": [[0.7, 0.7], [0.8, 0.7], [0.8, 0.9], [0.7, 0.9]],
+          "device_id": "<ha device id>" }
       ]
     },
     "cabinet": {
@@ -623,12 +626,14 @@ modal of its own, stacked above Home Assistant's card editor.
    - **decor**: polygon tool (click points, double-click or Enter to close,
      drag vertices) and lasso (simplified with Ramer–Douglas–Peucker); depth
      preset front / middle / back (numeric `z` underneath);
-   - **clickable zones** (hotspots) opening another view;
+   - **clickable zones** (hotspots) opening another view, drawn as a rectangle,
+     with the lasso or as a polygon;
    - **background**: *draw this water instead of the photo*, rock and sand
      textures, and a preview of the drawn decor.
 3. **Devices** — tree built from `hass.devices` + `hass.entities`, laid out
    like the target picker of the automation editor (floor → area → device →
-   entity), with a search:
+   entity), with a search. A device is dropped as a thumbnail, or outlined on
+   the picture with the same tools as a zone (a hotspot with `device_id`):
 
    ```
    Ground floor                      (floor)

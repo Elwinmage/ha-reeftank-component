@@ -103,7 +103,7 @@ Todos están documentados juntos en la [página del proyecto ReefTech](https://e
 - **Peces y corales** del [catálogo ReefTank](https://github.com/Elwinmage/reeftank-catalog): cardúmenes, nadadores de aguas abiertas, peces de arena, gobios que asoman de su madriguera, corales que se mecen con las bombas
 - **Profundidad**: los peces pasan detrás de las rocas contorneadas y descansan sobre la arena de noche
 - **Acuario dibujado**: ¿sin una buena foto del agua? Dibújela (agua, arena, texturas de roca) conservando el resto de la foto
-- **Dispositivos y entidades** sobre la imagen, clicables; zonas que abren otra imagen (el sump en el mueble)
+- **Dispositivos y entidades** colocados en la imagen como miniaturas, o contorneados en ella, con clic; zonas que abren otra imagen (el sump en el mueble)
 - **Alimentación**: comederos, atajos Red Sea o un servicio registran cada alimentación; los peces acuden al punto de alimentación
 - **Inventario**: número de peces y corales como sensores, con su historial
 

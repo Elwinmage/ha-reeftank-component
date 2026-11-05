@@ -40,6 +40,7 @@ def test_valid_document_gets_defaults(document: dict[str, Any]) -> None:
     assert doc["render"] == {
         "level": "full",
         "max_fish": 30,
+        "fish_scale": 1.0,
         "caustics": False,
         "night_darkness": 0.55,
     }
@@ -331,3 +332,43 @@ def test_referenced_images_and_feeding_points(document: dict[str, Any]) -> None:
     doc["views"]["cabinet"]["image"] = "/reeftank/catalog/pack/presets/x/a.webp"
     assert referenced_images(doc) == {"a1b2/0123456789abcdef.webp"}
     assert [e["id"] for e in feeding_points(doc)] == ["e2"]
+
+
+def test_hotspot_opens_a_device(document: dict[str, Any]) -> None:
+    """A hotspot opens a device as well as a view."""
+    doc = document
+    zone = doc["views"]["front"]["hotspots"][0]
+    del zone["goto"]
+    zone["device_id"] = "dev1"
+    checked = models.validate_document(doc)
+    assert checked["views"]["front"]["hotspots"][0]["device_id"] == "dev1"
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        {},
+        {"goto": None, "device_id": None},
+        {"goto": "cabinet", "device_id": "dev1"},
+    ],
+)
+def test_hotspot_opens_one_thing(
+    target: dict[str, Any], document: dict[str, Any]
+) -> None:
+    """A hotspot opens a view or a device, not both nor nothing."""
+    doc = document
+    zone = doc["views"]["front"]["hotspots"][0]
+    del zone["goto"]
+    zone.update(target)
+    with pytest.raises(vol.Invalid, match="a view or a device"):
+        models.validate_document(doc)
+
+
+def test_fish_scale(document: dict[str, Any]) -> None:
+    """Fish size has a default, and bounds."""
+    assert models.validate_document(document)["render"]["fish_scale"] == 1.0
+    document["render"] = {"fish_scale": 1.5}
+    assert models.validate_document(document)["render"]["fish_scale"] == 1.5
+    document["render"] = {"fish_scale": 10}
+    with pytest.raises(vol.Invalid):
+        models.validate_document(document)

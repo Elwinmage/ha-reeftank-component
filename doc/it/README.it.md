@@ -103,7 +103,7 @@ Sono tutti documentati insieme sulla [pagina del progetto ReefTech](https://elwi
 - **Pesci e coralli** dal [catalogo ReefTank](https://github.com/Elwinmage/reeftank-catalog): banchi, nuotatori di acque libere, pesci di sabbia, ghiozzi che spuntano dalla tana, coralli che ondeggiano con le pompe
 - **Profondità**: i pesci passano dietro le rocce contornate e di notte riposano sulla sabbia
 - **Vasca disegnata**: nessuna bella foto dell'acqua? Disegnatela (acqua, sabbia, texture di roccia) tenendo il resto della foto
-- **Dispositivi ed entità** sull'immagine, cliccabili; zone che aprono un'altra immagine (la sump nel mobile)
+- **Dispositivi ed entità** posati sull'immagine come miniature, o contornati su di essa, cliccabili; zone che aprono un'altra immagine (la sump nel mobile)
 - **Alimentazione**: alimentatori, scorciatoie Red Sea o un servizio registrano ogni alimentazione; i pesci accorrono al punto di alimentazione
 - **Inventario**: numero di pesci e coralli come sensori, con la loro cronologia
 

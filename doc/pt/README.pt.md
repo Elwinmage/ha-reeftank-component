@@ -103,7 +103,7 @@ Estão todos documentados em conjunto na [página do projeto ReefTech](https://e
 - **Peixes e corais** do [catálogo ReefTank](https://github.com/Elwinmage/reeftank-catalog): cardumes, nadadores de águas abertas, peixes de areia, gobies a espreitar da toca, corais a ondular com as bombas
 - **Profundidade**: os peixes passam por trás das rochas contornadas e repousam na areia à noite
 - **Aquário desenhado**: sem uma boa foto da água? Desenhe-a (água, areia, texturas de rocha) mantendo o resto da foto
-- **Dispositivos e entidades** na imagem, clicáveis; zonas que abrem outra imagem (a sump no móvel)
+- **Dispositivos e entidades** colocados na imagem como miniaturas, ou contornados nela, clicáveis; zonas que abrem outra imagem (a sump no móvel)
 - **Alimentação**: alimentadores, atalhos Red Sea ou um serviço registam cada alimentação; os peixes correm para o ponto de alimentação
 - **Inventário**: número de peixes e corais como sensores, com o seu histórico
 

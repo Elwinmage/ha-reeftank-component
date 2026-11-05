@@ -103,7 +103,7 @@ Alles staat samen gedocumenteerd op de [ReefTech-projectpagina](https://elwinmag
 - **Vissen en koralen** uit de [ReefTank-catalogus](https://github.com/Elwinmage/reeftank-catalog): scholen, openwaterzwemmers, zandbewoners, grondels die uit hun hol kijken, koralen die meewiegen met de pompen
 - **Diepte**: vissen zwemmen achter de omlijnde stenen en rusten 's nachts op het zand
 - **Getekende bak**: geen mooie foto van het water? Teken het (water, zand, steentexturen) en houd de rest van de foto
-- **Apparaten en entiteiten** op de afbeelding, klikbaar; zones die een andere afbeelding openen (de sump in het meubel)
+- **Apparaten en entiteiten** als miniaturen op de afbeelding geplaatst, of erop omlijnd, klikbaar; zones die een andere afbeelding openen (de sump in de kast)
 - **Voederen**: voederautomaten, Red Sea-snelkoppelingen of een dienst leggen elke voedering vast; de vissen haasten zich naar het voederpunt
 - **Inventaris**: aantal vissen en koralen als sensoren, met hun geschiedenis
 

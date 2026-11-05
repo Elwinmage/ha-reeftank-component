@@ -103,7 +103,7 @@ All of them are documented together on the [ReefTech project page](https://elwin
 - **Fish and corals** from the [ReefTank catalog](https://github.com/Elwinmage/reeftank-catalog): shoals, open-water swimmers, sand dwellers, gobies peeking out of their burrow, corals swaying with the pumps
 - **Depth**: fish swim behind the rocks you outlined, and rest on the sand at night
 - **Drawn tank**: no nice picture of the water? Draw it (water, sand, rock textures) and keep the rest of the photo
-- **Devices and entities** dropped on the picture, clickable; zones that open another picture (the sump in the cabinet)
+- **Devices and entities** dropped on the picture as thumbnails, or outlined on it, clickable; zones that open another picture (the sump in the cabinet)
 - **Feeding**: feeders, Red Sea shortcuts or a service record each feeding; the fish rush to the feeding point
 - **Inventory**: fish and coral counts as sensors, with their history
 

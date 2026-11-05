@@ -103,7 +103,7 @@ Alle zusammen sind auf der [ReefTech-Projektseite](https://elwinmage.github.io/r
 - **Fische und Korallen** aus dem [ReefTank-Katalog](https://github.com/Elwinmage/reeftank-catalog): Schwärme, Freiwasserschwimmer, Bodenbewohner, Grundeln, die aus ihrer Höhle schauen, Korallen, die sich mit den Pumpen wiegen
 - **Tiefe**: Fische schwimmen hinter den umrandeten Steinen und ruhen nachts auf dem Sand
 - **Gezeichnetes Becken**: kein schönes Foto vom Wasser? Zeichnen Sie es (Wasser, Sand, Gesteinstexturen) und behalten Sie den Rest des Fotos
-- **Geräte und Entitäten** auf dem Bild, anklickbar; Zonen, die ein anderes Bild öffnen (das Technikbecken im Unterschrank)
+- **Geräte und Entitäten** als Miniaturen auf dem Bild abgelegt oder darauf umrandet, anklickbar; Zonen, die ein anderes Bild öffnen (das Technikbecken im Schrank)
 - **Fütterung**: Futterautomaten, Red-Sea-Kurzbefehle oder ein Dienst protokollieren jede Fütterung; die Fische eilen zur Futterstelle
 - **Bestand**: Anzahl der Fische und Korallen als Sensoren, mit Verlauf
 

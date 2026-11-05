@@ -301,7 +301,11 @@ ELEMENT_SCHEMA = _with_id(
 HOTSPOT_SCHEMA = _with_id(
     {
         vol.Required("poly"): _polygon,
-        vol.Required("goto"): _ident,
+        # What a tap opens: another view, or the view of a device
+        vol.Optional("goto"): vol.Any(None, _ident),
+        vol.Optional("device_id"): vol.Any(
+            None, vol.All(str, vol.Length(min=1, max=64))
+        ),
         vol.Optional("label", default=""): _text(MAX_NAME),
     }
 )
@@ -410,6 +414,10 @@ RENDER_SCHEMA = vol.Schema(
         vol.Optional("max_fish", default=30): vol.All(
             vol.Coerce(int), vol.Range(min=0, max=200)
         ),
+        # Fish size against the tank: 1 keeps their real size in cm
+        vol.Optional("fish_scale", default=1.0): vol.All(
+            vol.Coerce(float), vol.Range(min=0.25, max=3)
+        ),
         vol.Optional("caustics", default=False): bool,
         # Darkness of the water with the lamps off (0: as by day). Capped
         # below 1 so that the tank never turns black.
@@ -465,10 +473,13 @@ def _check_links(doc: dict[str, Any]) -> None:
                     f"view {view_id!r}: region of unknown water {region['water']!r}"
                 )
         for hotspot in view["hotspots"]:
-            if hotspot["goto"] not in views:
+            goto = hotspot.get("goto")
+            if bool(goto) == bool(hotspot.get("device_id")):
                 raise vol.Invalid(
-                    f"view {view_id!r}: hotspot to unknown view {hotspot['goto']!r}"
+                    f"view {view_id!r}: a hotspot opens a view or a device"
                 )
+            if goto and goto not in views:
+                raise vol.Invalid(f"view {view_id!r}: hotspot to unknown view {goto!r}")
         for element in view["elements"]:
             kind = element["kind"]
             if kind == "device" and not element.get("device_id"):

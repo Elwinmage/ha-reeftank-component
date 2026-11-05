@@ -103,7 +103,7 @@ Wszystkie są udokumentowane razem na [stronie projektu ReefTech](https://elwinm
 - **Ryby i koralowce** z [katalogu ReefTank](https://github.com/Elwinmage/reeftank-catalog): ławice, pływaki otwartej wody, ryby piaskowe, babki wyglądające z norki, koralowce falujące z pompami
 - **Głębia**: ryby pływają za obrysowanymi skałami, a nocą odpoczywają na piasku
 - **Rysowany zbiornik**: brak ładnego zdjęcia wody? Narysuj ją (woda, piasek, tekstury skał), zachowując resztę zdjęcia
-- **Urządzenia i encje** na obrazie, klikalne; strefy otwierające inny obraz (sump w szafce)
+- **Urządzenia i encje** umieszczane na obrazie jako miniatury lub obrysowane na nim, klikalne; strefy otwierające inny obraz (sump w szafce)
 - **Karmienie**: karmniki, skróty Red Sea lub usługa rejestrują każde karmienie; ryby płyną do punktu karmienia
 - **Inwentarz**: liczba ryb i koralowców jako sensory, z historią
 

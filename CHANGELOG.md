@@ -11,6 +11,8 @@
 - KH tests, when an entity gives them (the last measurement of a ReefDose head,
   for instance): `cause` of the pH alarm tells the KH, the CO2 and the probe
   apart; alarm when two tests differ too much; estimated KH with the CO2.
+- A hotspot opens a view (`goto`) or a device (`device_id`).
+- `render.fish_scale`: size of the fish against the tank, over their real size.
 - Services: `reeftank.monitoring_configure`, `reeftank.monitoring_reset`.
 
 # v0.1.0
