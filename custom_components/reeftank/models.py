@@ -23,6 +23,15 @@ from .compat import vol
 from .const import (
     DEFAULT_DEDUP_S,
     DEFAULT_FEED_DURATION_S,
+    DEFAULT_KH_CHANGE_MAX,
+    DEFAULT_LEARNING_DAYS,
+    DEFAULT_ORP_DROP_HOURS,
+    DEFAULT_ORP_DROP_MV,
+    DEFAULT_PAUSE_HOURS,
+    DEFAULT_PH_BASE_DROP,
+    DEFAULT_PH_PROFILE_BAND,
+    DEFAULT_PH_PROFILE_HOURS,
+    DEFAULT_PH_SWING_PCT,
     FEED_KINDS,
     RENDER_FULL,
     RENDER_LEVELS,
@@ -284,6 +293,9 @@ ELEMENT_SCHEMA = _with_id(
             vol.Coerce(float), vol.Range(min=0.2, max=5)
         ),
         vol.Optional("label", default=""): _text(MAX_NAME),
+        # Entity: draw the value without the label, in this colour
+        vol.Optional("hide_label", default=False): bool,
+        vol.Optional("text_color"): vol.Any(None, _hex_color),
         vol.Optional("roles", default=list): [vol.In([ROLE_FEEDING_POINT])],
         vol.Optional("source"): vol.Any(None, _ident),
     }
@@ -292,7 +304,11 @@ ELEMENT_SCHEMA = _with_id(
 HOTSPOT_SCHEMA = _with_id(
     {
         vol.Required("poly"): _polygon,
-        vol.Required("goto"): _ident,
+        # What a tap opens: another view, or the view of a device
+        vol.Optional("goto"): vol.Any(None, _ident),
+        vol.Optional("device_id"): vol.Any(
+            None, vol.All(str, vol.Length(min=1, max=64))
+        ),
         vol.Optional("label", default=""): _text(MAX_NAME),
     }
 )
@@ -340,6 +356,52 @@ FEEDING_SCHEMA = vol.Schema(
     }
 )
 
+
+def _range(kind: type, low: float, high: float) -> vol.All:
+    """A number within bounds."""
+    return vol.All(vol.Coerce(kind), vol.Range(min=low, max=high))
+
+
+MONITORING_SCHEMA = vol.Schema(
+    {
+        # What is measured: any numeric entity, so that a tank needs no
+        # particular brand of probe.
+        vol.Optional("ph_entity"): vol.Any(None, _entity_id),
+        vol.Optional("orp_entity"): vol.Any(None, _entity_id),
+        vol.Optional("co2_entity"): vol.Any(None, _entity_id),
+        # KH tests: the state is the last one, in dKH
+        vol.Optional("kh_entity"): vol.Any(None, _entity_id),
+        # An entity changing when a probe was calibrated (a date, usually)
+        vol.Optional("ph_calibration_entity"): vol.Any(None, _entity_id),
+        vol.Optional("orp_calibration_entity"): vol.Any(None, _entity_id),
+        # Analysis suspended while any of those is on
+        vol.Optional("pause_entities", default=list): [_entity_id],
+        vol.Optional("learning_days", default=DEFAULT_LEARNING_DAYS): _range(
+            int, 7, 30
+        ),
+        vol.Optional("ph_base_drop", default=DEFAULT_PH_BASE_DROP): _range(
+            float, 0.02, 1
+        ),
+        vol.Optional("ph_swing_pct", default=DEFAULT_PH_SWING_PCT): _range(
+            int, 10, 300
+        ),
+        vol.Optional("ph_profile_band", default=DEFAULT_PH_PROFILE_BAND): _range(
+            float, 0.01, 1
+        ),
+        vol.Optional("ph_profile_hours", default=DEFAULT_PH_PROFILE_HOURS): _range(
+            int, 2, 12
+        ),
+        vol.Optional("orp_drop_mv", default=DEFAULT_ORP_DROP_MV): _range(int, 5, 200),
+        vol.Optional("orp_drop_hours", default=DEFAULT_ORP_DROP_HOURS): _range(
+            int, 2, 48
+        ),
+        vol.Optional("kh_change_max", default=DEFAULT_KH_CHANGE_MAX): _range(
+            float, 0.1, 3
+        ),
+        vol.Optional("pause_hours", default=DEFAULT_PAUSE_HOURS): _range(int, 1, 48),
+    }
+)
+
 DIMENSIONS_SCHEMA = vol.Schema(
     {
         # Red Sea cloud naming: length = X (front), width = Y (depth)
@@ -354,6 +416,10 @@ RENDER_SCHEMA = vol.Schema(
         vol.Optional("level", default=RENDER_FULL): vol.In(RENDER_LEVELS),
         vol.Optional("max_fish", default=30): vol.All(
             vol.Coerce(int), vol.Range(min=0, max=200)
+        ),
+        # Fish size against the tank: 1 keeps their real size in cm
+        vol.Optional("fish_scale", default=1.0): vol.All(
+            vol.Coerce(float), vol.Range(min=0.25, max=3)
         ),
         vol.Optional("caustics", default=False): bool,
         # Darkness of the water with the lamps off (0: as by day). Capped
@@ -392,6 +458,7 @@ DOCUMENT_SCHEMA = vol.Schema(
         vol.Optional("render", default=dict): RENDER_SCHEMA,
         vol.Optional("waters", default=dict): {_ident: WATER_SCHEMA},
         vol.Optional("feeding", default=dict): FEEDING_SCHEMA,
+        vol.Optional("monitoring", default=dict): MONITORING_SCHEMA,
         vol.Optional("views", default=dict): {_ident: VIEW_SCHEMA},
         vol.Optional("default_view"): vol.Any(None, _ident),
     }
@@ -414,10 +481,13 @@ def _check_links(doc: dict[str, Any]) -> None:
                     f"view {view_id!r}: region of unknown water {region['water']!r}"
                 )
         for hotspot in view["hotspots"]:
-            if hotspot["goto"] not in views:
+            goto = hotspot.get("goto")
+            if bool(goto) == bool(hotspot.get("device_id")):
                 raise vol.Invalid(
-                    f"view {view_id!r}: hotspot to unknown view {hotspot['goto']!r}"
+                    f"view {view_id!r}: a hotspot opens a view or a device"
                 )
+            if goto and goto not in views:
+                raise vol.Invalid(f"view {view_id!r}: hotspot to unknown view {goto!r}")
         for element in view["elements"]:
             kind = element["kind"]
             if kind == "device" and not element.get("device_id"):

@@ -1,17 +1,77 @@
 {
   "entity": {
+    "binary_sensor": {
+      "kh_fast_change": {
+        "default": "mdi:test-tube"
+      },
+      "orp_low": {
+        "default": "mdi:flash-alert-outline"
+      },
+      "ph_base_low": {
+        "default": "mdi:trending-down"
+      },
+      "ph_profile_off": {
+        "default": "mdi:chart-line-variant"
+      },
+      "ph_swing_high": {
+        "default": "mdi:arrow-expand-vertical"
+      },
+      "probe_suspect": {
+        "default": "mdi:test-tube-off"
+      }
+    },
     "event": {
-      "feeding": { "default": "mdi:shaker-outline" }
+      "feeding": {
+        "default": "mdi:shaker-outline"
+      }
     },
     "sensor": {
-      "corals": { "default": "mdi:flower-pollen" },
-      "feedings_today": { "default": "mdi:counter" },
-      "fish": { "default": "mdi:fish" }
+      "corals": {
+        "default": "mdi:flower-pollen"
+      },
+      "feedings_today": {
+        "default": "mdi:counter"
+      },
+      "fish": {
+        "default": "mdi:fish"
+      },
+      "kh_estimated": {
+        "default": "mdi:test-tube"
+      },
+      "monitoring": {
+        "default": "mdi:chart-timeline-variant"
+      },
+      "orp_compensated": {
+        "default": "mdi:flash-outline"
+      },
+      "ph_mean_24h": {
+        "default": "mdi:ph"
+      },
+      "ph_swing_24h": {
+        "default": "mdi:arrow-expand-vertical"
+      }
+    },
+    "switch": {
+      "monitoring_pause": {
+        "default": "mdi:pause-circle-outline"
+      }
     }
   },
   "services": {
-    "feed": { "service": "mdi:shaker-outline" },
-    "livestock_add": { "service": "mdi:plus-circle-outline" },
-    "livestock_remove": { "service": "mdi:minus-circle-outline" }
+    "feed": {
+      "service": "mdi:shaker-outline"
+    },
+    "livestock_add": {
+      "service": "mdi:plus-circle-outline"
+    },
+    "livestock_remove": {
+      "service": "mdi:minus-circle-outline"
+    },
+    "monitoring_configure": {
+      "service": "mdi:tune"
+    },
+    "monitoring_reset": {
+      "service": "mdi:restart"
+    }
   }
 }

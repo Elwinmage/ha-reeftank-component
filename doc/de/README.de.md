@@ -4,7 +4,7 @@
   <img src="https://github.com/Elwinmage/ha-reeftank-component/raw/main/icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -27,11 +27,17 @@ Sie speichert die Aquarien, ihre Bilder und ihren Besatz, protokolliert die Füt
   <img src="../../doc/img/preview.webp" width="80%" alt="Die Aquariumkarte"/>
 </p>
 
+Die Aquariumkarte in Aktion:
+
+[![Video ansehen](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Verwandte Projekte
 
 Die ReefTech-Projekte greifen ineinander: die Integrationen bringen Ihre Geräte in Home Assistant, die Karte zeigt und steuert sie, und das Backup hält sie bei einem Stromausfall am Laufen. Jedes funktioniert auch für sich allein.
+
+<p align="center"><a href="https://elwinmage.github.io/reeftank/"><img src="https://raw.githubusercontent.com/Elwinmage/reeftank/main/assets/flower/ecosystem-flower.png" width="480" alt="ReefTech project ecosystem" /></a></p>
 
 <table>
   <tr>
@@ -79,7 +85,7 @@ Die ReefTech-Projekte greifen ineinander: die Integrationen bringen Ihre Geräte
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Benachrichtigungs-Blueprints für das gesamte Ökosystem: überfällige Wartungen, über den <code>reef_role</code>-Vertrag gefunden, und nicht mehr erreichbare Geräte. Acht Sprachen.</td>
+    <td>Automatisierungs-Blueprints für das gesamte Ökosystem: überfällige Wartungen, über den <code>reef_role</code>-Vertrag gefunden, nicht mehr erreichbare Geräte, ein regelmäßiger Heizertest und eine Relaisüberwachung. Acht Sprachen.</td>
     <td>alle drei Integrationen</td>
   </tr>
   <tr>
@@ -101,7 +107,7 @@ Alle zusammen sind auf der [ReefTech-Projektseite](https://elwinmage.github.io/r
 - **Fische und Korallen** aus dem [ReefTank-Katalog](https://github.com/Elwinmage/reeftank-catalog): Schwärme, Freiwasserschwimmer, Bodenbewohner, Grundeln, die aus ihrer Höhle schauen, Korallen, die sich mit den Pumpen wiegen
 - **Tiefe**: Fische schwimmen hinter den umrandeten Steinen und ruhen nachts auf dem Sand
 - **Gezeichnetes Becken**: kein schönes Foto vom Wasser? Zeichnen Sie es (Wasser, Sand, Gesteinstexturen) und behalten Sie den Rest des Fotos
-- **Geräte und Entitäten** auf dem Bild, anklickbar; Zonen, die ein anderes Bild öffnen (das Technikbecken im Unterschrank)
+- **Geräte und Entitäten** als Miniaturen auf dem Bild abgelegt oder darauf umrandet, anklickbar; Zonen, die ein anderes Bild öffnen (das Technikbecken im Schrank)
 - **Fütterung**: Futterautomaten, Red-Sea-Kurzbefehle oder ein Dienst protokollieren jede Fütterung; die Fische eilen zur Futterstelle
 - **Bestand**: Anzahl der Fische und Korallen als Sensoren, mit Verlauf
 
@@ -109,13 +115,13 @@ Alle zusammen sind auf der [ReefTech-Projektseite](https://elwinmage.github.io/r
 
 ### Direkte Installation
 
-Hier klicken, um das Repository direkt in HACS zu öffnen, dann auf „Herunterladen“ klicken: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Klicken Sie hier, um das Repository direkt im Marketplace zu öffnen, und klicken Sie auf „Installieren“: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Suche in HACS
+### Suche im Marketplace
 
-Oder `https://github.com/Elwinmage/ha-reeftank-component` als benutzerdefiniertes Repository (Integration) hinzufügen und nach „ReefTank“ suchen.
+Oder suchen Sie in *Einstellungen > Marketplace* nach „ReefTank“. Bei einem Home Assistant vor 2026.11 funktionieren dieselben Schritte in HACS.
 
-Home Assistant neu starten, dann die Integration hinzufügen (ein Eintrag, nichts zu konfigurieren): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Fügen Sie dann die Integration hinzu (ein Eintrag, nichts zu konfigurieren; mit HACS auf einem älteren Home Assistant zuerst neu starten): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 Die Aquariumkarte selbst kommt mit [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), ebenfalls zu installieren.
 
@@ -138,7 +144,7 @@ render: static        # optional: static, light or full
 
 ## Der Szeneneditor
 
-Ein Vollbilddialog, aus dem Karteneditor geöffnet, mit sechs Reitern:
+Ein Vollbilddialog, aus dem Karteneditor geöffnet, mit sieben Reitern:
 
 | Reiter | Was man dort macht |
 |---|---|
@@ -148,6 +154,7 @@ Ein Vollbilddialog, aus dem Karteneditor geöffnet, mit sechs Reitern:
 | **Licht & Strömung** | Lampen, die jedes Wasser beleuchten, und ihre Position; Pumpen, die das Wasser bewegen |
 | **Besatz** | Fische (Art, Anzahl, Größe, Revier) und Korallen (Art, Größe, Farben, Position) |
 | **Fütterung** | Entitäten, die eine Fütterung protokollieren, und wo das Futter fällt |
+| **Überwachung** | Die Entitäten für pH, ORP, CO2 im Raum und KH-Tests, was eine Kalibrierung anzeigt, die Alarmschwellen und der Status der Überwachung |
 
 ## Darstellungsstufen
 
@@ -161,6 +168,39 @@ Jedes Aquarium wird in einer von drei Stufen dargestellt; eine Karte kann sie se
 
 Ein Foto des Technikraums mit live angezeigten Geräten ist ein vollwertiges `static`-Aquarium.
 
+## Wasserüberwachung
+
+ReefTank vergleicht Ihr Becken mit seinem eigenen jüngsten Verlauf statt mit allgemeinen Grenzwerten und löst Alarme aus, wenn es davon abweicht. pH und ORP können von jeder numerischen Entität stammen; ein CO2-Sensor im Raum ist optional. Der pH misst nicht die KH: Diese Alarme sagen Ihnen, wann ein Test fällig ist.
+
+| Alarm | Löst aus, wenn |
+|---|---|
+| **pH unter dem üblichen Niveau** | Das 24-h-Mittel liegt 0,1 unter dem Median der letzten 14 Tage. Mit CO2-Sensor zeigt `cause`, ob das CO2 im Raum dies erklärt |
+| **pH-Schwankung größer als üblich** | Die 24-h-Amplitude übersteigt die übliche um 50 % |
+| **pH-Tagesverlauf gestört** | Die letzten 4 Stunden weichen von der üblichen Tagesform ab |
+| **ORP unter dem üblichen Niveau** | Der ORP ohne pH-Effekt bleibt 12 Stunden lang 30 mV unter seinem Median |
+| **Verdächtige Sonde** | 12 Stunden eingefrorener Wert, 2 Stunden kein Wert, wiederholte Spitzen, ein Sprung, oder pH und ORP bewegen sich 2 Tage nicht mehr gemeinsam |
+| **KH ändert sich zu schnell** | Zwei aufeinanderfolgende KH-Tests weichen um mehr als 0,5 dKH ab |
+
+Die Alarme bleiben in den ersten 14 Tagen unbekannt, während das Becken gelernt wird; nur die verdächtige Sonde funktioniert von Anfang an. Alle Schwellen sind einstellbar.
+
+Wählen Sie die Entitäten einmalig. Dieser Dienst setzt auch die Schwellen:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+Mit einer KH-Test-Entität (z. B. der letzten Messung eines ReefDose-Kopfes) unterscheidet ein aktueller Test einen echten KH-Rückgang von einem CO2-Effekt oder einem Sondenproblem (`cause`) und liefert mit dem CO2 eine geschätzte KH zwischen zwei Tests.
+
+Mit einer Kalibrierentität (dem letzten Justierdatum der Sonde) ist bei einer Kalibrierung nichts zu tun: Die Messwerte darum herum werden verworfen, und der Verlauf folgt nach 24 Stunden dem neuen Niveau. Schalten Sie für eine Reinigung oder einen Wasserwechsel den Pausenschalter ein: Er schaltet sich nach 6 Stunden selbst aus.
+
 ## Entitäten
 
 Jedes Aquarium ist ein Gerät mit:
@@ -171,6 +211,12 @@ Jedes Aquarium ist ein Gerät mit:
 | `sensor.<aquarium>_corals` | Anzahl der Korallen, pro Art in den Attributen |
 | `event.<aquarium>_feeding` | Letzte Fütterung, mit Art (Futterautomat, Kurzbefehl, manuell) und Quelle |
 | `sensor.<aquarium>_feedings_today` | Fütterungen seit Mitternacht |
+| `sensor.<aquarium>_water_monitoring` | Status der Überwachung, Lernfortschritt in den Attributen |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | 24-h-Mittel und -Amplitude des pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP ohne den täglichen pH-Effekt |
+| `sensor.<aquarium>_kh_estimated` | Geschätzte KH zwischen zwei Tests (braucht einen Test und das CO2) |
+| `binary_sensor.<aquarium>_*` | Die sechs Alarme oben |
+| `switch.<aquarium>_pause_monitoring` | Setzt die Analyse aus |
 | `sensor.<aquarium>_water_volume` | Netto-Wasservolumen (L), von der ReefDose-Dosierregelung der redsea-Integration gelesen |
 
 Und das Gerät *ReefTank catalog*:
@@ -187,6 +233,8 @@ Und das Gerät *ReefTank catalog*:
 | `reeftank.feed` | Protokolliert eine Fütterung (Futterautomaten außerhalb von Home Assistant, Skripte) |
 | `reeftank.livestock_add` | Fügt dem Bestand Tiere hinzu |
 | `reeftank.livestock_remove` | Entfernt Tiere (Verluste, Abgabe) |
+| `reeftank.monitoring_configure` | Wählt die überwachten Entitäten und die Schwellen |
+| `reeftank.monitoring_reset` | Verwirft den Verlauf, um neu zu lernen (neue Sonde) |
 
 `aquarium` ist Name, ID oder Geräte-ID des Aquariums.
 

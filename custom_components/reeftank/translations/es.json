@@ -12,6 +12,90 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "kh_fast_change": {
+        "name": "KH que varía demasiado rápido",
+        "state_attributes": {
+          "last": {
+            "name": "Última prueba"
+          },
+          "change": {
+            "name": "Variación entre las dos últimas pruebas"
+          }
+        }
+      },
+      "orp_low": {
+        "name": "ORP por debajo de su nivel habitual",
+        "state_attributes": {
+          "baseline": {
+            "name": "Nivel habitual"
+          },
+          "drop": {
+            "name": "Descenso"
+          },
+          "ph_slope": {
+            "name": "Variación de ORP por unidad de pH"
+          },
+          "ph_correlation": {
+            "name": "Correlación pH/ORP"
+          }
+        }
+      },
+      "ph_base_low": {
+        "name": "pH por debajo de su nivel habitual",
+        "state_attributes": {
+          "baseline": {
+            "name": "Nivel habitual"
+          },
+          "drop": {
+            "name": "Descenso"
+          },
+          "cause": {
+            "name": "Causa probable",
+            "state": {
+              "co2": "CO2 de la habitación",
+              "other": "No explicado por el CO2: mida el KH, revise la sonda",
+              "unknown": "Desconocida: sin sensor de CO2",
+              "kh": "Descenso del KH, medido por las pruebas",
+              "probe": "Lectura dudosa: ni el KH ni el CO2 se han movido"
+            }
+          },
+          "co2_explained_drop": {
+            "name": "Descenso de pH explicado por el CO2"
+          },
+          "kh_explained_drop": {
+            "name": "Descenso de pH explicado por el KH"
+          },
+          "kh_test_due": {
+            "name": "Hay que medir el KH"
+          }
+        }
+      },
+      "ph_profile_off": {
+        "name": "Perfil diario del pH alterado",
+        "state_attributes": {
+          "profile_hours_off": {
+            "name": "Horas fuera del perfil habitual"
+          }
+        }
+      },
+      "ph_swing_high": {
+        "name": "Amplitud del pH mayor de lo habitual",
+        "state_attributes": {
+          "swing_baseline": {
+            "name": "Amplitud habitual"
+          }
+        }
+      },
+      "probe_suspect": {
+        "name": "Sonda sospechosa",
+        "state_attributes": {
+          "probes": {
+            "name": "Sondas"
+          }
+        }
+      }
+    },
     "button": {
       "check_catalog": {
         "name": "Buscar actualizaciones"
@@ -66,6 +150,38 @@
           }
         }
       },
+      "kh_estimated": {
+        "name": "KH estimado",
+        "state_attributes": {
+          "last_test": {
+            "name": "Última prueba"
+          }
+        }
+      },
+      "monitoring": {
+        "name": "Vigilancia del agua",
+        "state": {
+          "not_configured": "Sin configurar",
+          "learning": "Aprendizaje",
+          "paused": "En pausa",
+          "settling": "Medición tras calibración",
+          "ready": "Lista"
+        },
+        "state_attributes": {
+          "learning_pct": {
+            "name": "Progreso del aprendizaje (%)"
+          }
+        }
+      },
+      "orp_compensated": {
+        "name": "ORP sin el efecto del pH"
+      },
+      "ph_mean_24h": {
+        "name": "pH (media 24 h)"
+      },
+      "ph_swing_24h": {
+        "name": "Amplitud del pH (24 h)"
+      },
       "water_volume": {
         "name": "Volumen de agua",
         "state_attributes": {
@@ -74,6 +190,16 @@
           },
           "device_ids": {
             "name": "Dispositivos"
+          }
+        }
+      }
+    },
+    "switch": {
+      "monitoring_pause": {
+        "name": "Pausar la vigilancia",
+        "state_attributes": {
+          "until": {
+            "name": "Hasta"
           }
         }
       }
@@ -110,6 +236,14 @@
       "options": {
         "fish": "Pez",
         "invertebrate": "Invertebrado"
+      }
+    },
+    "monitoring_channel": {
+      "options": {
+        "ph": "pH",
+        "orp": "ORP",
+        "co2": "CO2",
+        "kh": "Prueba de KH"
       }
     }
   },
@@ -181,6 +315,94 @@
         "species": {
           "name": "Especie",
           "description": "Especie de la línea, si no se indica id de línea."
+        }
+      }
+    },
+    "monitoring_configure": {
+      "name": "Configurar la vigilancia",
+      "description": "Elige qué se vigila en un acuario y ajusta los umbrales de alarma. Solo se cambian los campos indicados.",
+      "fields": {
+        "aquarium": {
+          "name": "Acuario",
+          "description": "Nombre, id o id de dispositivo del acuario."
+        },
+        "ph_entity": {
+          "name": "Entidad de pH",
+          "description": "Entidad numérica que da el pH."
+        },
+        "orp_entity": {
+          "name": "Entidad de ORP",
+          "description": "Entidad numérica que da el ORP en mV."
+        },
+        "co2_entity": {
+          "name": "Entidad de CO2",
+          "description": "Entidad numérica que da el CO2 de la habitación en ppm (opcional): distingue un efecto del CO2 de un problema de alcalinidad."
+        },
+        "kh_entity": {
+          "name": "Entidad de pruebas de KH",
+          "description": "Sensor o número que da la última prueba de KH en dKH (opcional), como la última medida de un cabezal ReefDose. Distingue un descenso del KH de un efecto del CO2 o de un problema de sonda."
+        },
+        "ph_calibration_entity": {
+          "name": "Entidad de calibración de pH",
+          "description": "Entidad que cambia al calibrar la sonda de pH, como su fecha de último ajuste."
+        },
+        "orp_calibration_entity": {
+          "name": "Entidad de calibración de ORP",
+          "description": "Entidad que cambia al calibrar la sonda de ORP, como su fecha de último ajuste."
+        },
+        "pause_entities": {
+          "name": "Entidades de pausa",
+          "description": "El análisis se suspende mientras alguna esté encendida."
+        },
+        "learning_days": {
+          "name": "Días de aprendizaje",
+          "description": "Días de historial con los que se compara el acuario."
+        },
+        "ph_base_drop": {
+          "name": "Descenso de pH",
+          "description": "Alarma cuando la media de 24 h cae esta cantidad bajo el nivel habitual."
+        },
+        "ph_swing_pct": {
+          "name": "Amplitud del pH (%)",
+          "description": "Alarma cuando la amplitud de 24 h supera la habitual en esta parte."
+        },
+        "ph_profile_band": {
+          "name": "Banda del perfil de pH",
+          "description": "Menor desviación del perfil habitual que cuenta."
+        },
+        "ph_profile_hours": {
+          "name": "Horas del perfil de pH",
+          "description": "Horas seguidas fuera del perfil habitual antes de la alarma."
+        },
+        "orp_drop_mv": {
+          "name": "Descenso de ORP (mV)",
+          "description": "Alarma cuando el ORP se mantiene esta cantidad bajo su nivel habitual."
+        },
+        "orp_drop_hours": {
+          "name": "Horas de descenso de ORP",
+          "description": "Horas que el ORP debe seguir bajo antes de la alarma."
+        },
+        "kh_change_max": {
+          "name": "Variación de KH (dKH)",
+          "description": "Alarma cuando dos pruebas de KH seguidas difieren más que este valor."
+        },
+        "pause_hours": {
+          "name": "Horas de pausa",
+          "description": "Duración de la pausa antes de reanudarse sola."
+        }
+      }
+    },
+    "monitoring_reset": {
+      "name": "Reiniciar la vigilancia",
+      "description": "Olvida el historial registrado para que el acuario vuelva a aprender (una sonda nueva, por ejemplo).",
+      "fields": {
+        "aquarium": {
+          "name": "Acuario",
+          "description": "Nombre, id o id de dispositivo del acuario."
+        },
+        "channel": {
+          "name": "Medida",
+          "description": "Medida que olvidar (todas si está vacío)."
         }
       }
     }

@@ -79,3 +79,154 @@ livestock_remove:
           min: 1
           max: 10000
           mode: box
+
+monitoring_configure:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    ph_entity:
+      required: false
+      selector:
+        entity:
+          domain: sensor
+    orp_entity:
+      required: false
+      selector:
+        entity:
+          domain: sensor
+    co2_entity:
+      required: false
+      selector:
+        entity:
+          domain: sensor
+    kh_entity:
+      required: false
+      selector:
+        entity:
+          domain:
+            - sensor
+            - input_number
+    ph_calibration_entity:
+      required: false
+      selector:
+        entity:
+          domain: sensor
+    orp_calibration_entity:
+      required: false
+      selector:
+        entity:
+          domain: sensor
+    pause_entities:
+      required: false
+      selector:
+        entity:
+          multiple: true
+    learning_days:
+      required: false
+      default: 14
+      selector:
+        number:
+          min: 7
+          max: 30
+          step: 1
+          mode: box
+          unit_of_measurement: days
+    ph_base_drop:
+      required: false
+      default: 0.1
+      selector:
+        number:
+          min: 0.02
+          max: 1
+          step: 0.01
+          mode: box
+    ph_swing_pct:
+      required: false
+      default: 50
+      selector:
+        number:
+          min: 10
+          max: 300
+          step: 5
+          mode: box
+          unit_of_measurement: "%"
+    ph_profile_band:
+      required: false
+      default: 0.05
+      selector:
+        number:
+          min: 0.01
+          max: 1
+          step: 0.01
+          mode: box
+    ph_profile_hours:
+      required: false
+      default: 4
+      selector:
+        number:
+          min: 2
+          max: 12
+          step: 1
+          mode: box
+          unit_of_measurement: h
+    orp_drop_mv:
+      required: false
+      default: 30
+      selector:
+        number:
+          min: 5
+          max: 200
+          step: 1
+          mode: box
+          unit_of_measurement: mV
+    orp_drop_hours:
+      required: false
+      default: 12
+      selector:
+        number:
+          min: 2
+          max: 48
+          step: 1
+          mode: box
+          unit_of_measurement: h
+    kh_change_max:
+      required: false
+      default: 0.5
+      selector:
+        number:
+          min: 0.1
+          max: 3
+          step: 0.1
+          mode: box
+          unit_of_measurement: dKH
+    pause_hours:
+      required: false
+      default: 6
+      selector:
+        number:
+          min: 1
+          max: 48
+          step: 1
+          mode: box
+          unit_of_measurement: h
+
+monitoring_reset:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    channel:
+      required: false
+      selector:
+        select:
+          translation_key: monitoring_channel
+          options:
+            - ph
+            - orp
+            - co2
+            - kh

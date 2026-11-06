@@ -4,7 +4,7 @@
   <img src="https://github.com/Elwinmage/ha-reeftank-component/raw/main/icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -27,11 +27,17 @@ Ze bewaart de aquaria, hun afbeeldingen en hun bezetting, legt de voederingen va
   <img src="../../doc/img/preview.webp" width="80%" alt="De aquariumkaart"/>
 </p>
 
+De aquariumkaart in actie:
+
+[![Bekijk de video](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Verwante projecten
 
 De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in Home Assistant, de kaart toont en bedient ze, en de back-up houdt alles draaiend tijdens een stroomuitval. Elk werkt ook op zichzelf.
+
+<p align="center"><a href="https://elwinmage.github.io/reeftank/"><img src="https://raw.githubusercontent.com/Elwinmage/reeftank/main/assets/flower/ecosystem-flower.png" width="480" alt="ReefTech project ecosystem" /></a></p>
 
 <table>
   <tr>
@@ -79,7 +85,7 @@ De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Meldings-blueprints voor het hele ecosysteem: achterstallig onderhoud gevonden via het <code>reef_role</code>-contract, en apparaten die onbereikbaar zijn geworden. Acht talen.</td>
+    <td>Automatiserings-blueprints voor het hele ecosysteem: achterstallig onderhoud gevonden via het <code>reef_role</code>-contract, apparaten die onbereikbaar zijn geworden, een periodieke verwarmertest en relaisbewaking. Acht talen.</td>
     <td>alle drie de integraties</td>
   </tr>
   <tr>
@@ -101,7 +107,7 @@ Alles staat samen gedocumenteerd op de [ReefTech-projectpagina](https://elwinmag
 - **Vissen en koralen** uit de [ReefTank-catalogus](https://github.com/Elwinmage/reeftank-catalog): scholen, openwaterzwemmers, zandbewoners, grondels die uit hun hol kijken, koralen die meewiegen met de pompen
 - **Diepte**: vissen zwemmen achter de omlijnde stenen en rusten 's nachts op het zand
 - **Getekende bak**: geen mooie foto van het water? Teken het (water, zand, steentexturen) en houd de rest van de foto
-- **Apparaten en entiteiten** op de afbeelding, klikbaar; zones die een andere afbeelding openen (de sump in het meubel)
+- **Apparaten en entiteiten** als miniaturen op de afbeelding geplaatst, of erop omlijnd, klikbaar; zones die een andere afbeelding openen (de sump in de kast)
 - **Voederen**: voederautomaten, Red Sea-snelkoppelingen of een dienst leggen elke voedering vast; de vissen haasten zich naar het voederpunt
 - **Inventaris**: aantal vissen en koralen als sensoren, met hun geschiedenis
 
@@ -109,13 +115,13 @@ Alles staat samen gedocumenteerd op de [ReefTech-projectpagina](https://elwinmag
 
 ### Directe installatie
 
-Klik hier om de repository direct in HACS te openen en klik op "Downloaden": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Klik hier om de repository direct in de Marketplace te openen en klik op "Installeren": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Zoeken in HACS
+### Zoeken in de Marketplace
 
-Of voeg `https://github.com/Elwinmage/ha-reeftank-component` toe als aangepaste repository (Integratie) en zoek naar "ReefTank".
+Of zoek naar "ReefTank" in *Instellingen > Marketplace*. Op een Home Assistant ouder dan 2026.11 werken dezelfde stappen in HACS.
 
-Herstart Home Assistant en voeg de integratie toe (één item, niets in te stellen): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Voeg daarna de integratie toe (één vermelding, niets te configureren; met HACS op een oudere Home Assistant eerst herstarten): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 De aquariumkaart zelf komt met [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), dat u ook installeert.
 
@@ -138,7 +144,7 @@ render: static        # optional: static, light or full
 
 ## De scène-editor
 
-Een schermvullend venster, geopend vanuit de kaarteditor, met zes tabbladen (de kaart is nog niet in het Nederlands vertaald):
+Een schermvullend venster, geopend vanuit de kaarteditor, met zeven tabbladen (de kaart is nog niet in het Nederlands vertaald):
 
 | Tabblad | Wat u er doet |
 |---|---|
@@ -148,6 +154,7 @@ Een schermvullend venster, geopend vanuit de kaarteditor, met zes tabbladen (de 
 | **Light & flow** | De lampen die elk water verlichten en hun positie; de pompen die het water bewegen |
 | **Livestock** | Vissen (soort, aantal, grootte, thuis) en koralen (soort, grootte, kleuren, positie) |
 | **Feeding** | De entiteiten die een voedering vastleggen, en waar het voer valt |
+| **Monitoring** | De entiteiten voor pH, ORP, CO2 in de ruimte en KH-tests, wat een kalibratie aangeeft, de alarmdrempels en de status van de bewaking |
 
 ## Weergaveniveaus
 
@@ -161,6 +168,39 @@ Elk aquarium wordt op een van drie niveaus weergegeven; een kaart kan het verlag
 
 Een foto van de technische ruimte met live apparaten erop is een prima `static`-aquarium.
 
+## Waterbewaking
+
+ReefTank vergelijkt uw aquarium met zijn eigen recente geschiedenis in plaats van met algemene grenzen, en geeft alarmen wanneer het afwijkt. pH en ORP kunnen van elke numerieke entiteit komen; een CO2-sensor in de ruimte is optioneel. De pH meet de KH niet: deze alarmen vertellen wanneer u moet testen.
+
+| Alarm | Gaat af wanneer |
+|---|---|
+| **pH onder het gebruikelijke niveau** | Het 24-uursgemiddelde ligt 0,1 onder de mediaan van de laatste 14 dagen. Met een CO2-sensor geeft `cause` aan of de CO2 in de ruimte dit verklaart |
+| **pH-schommeling groter dan gebruikelijk** | De 24-uursamplitude is 50 % groter dan gebruikelijk |
+| **pH-dagpatroon verstoord** | De laatste 4 uur wijken af van de gebruikelijke vorm van de dag |
+| **ORP onder het gebruikelijke niveau** | De ORP zonder pH-effect blijft 12 uur lang 30 mV onder de mediaan |
+| **Verdachte sonde** | Een waarde 12 uur bevroren, 2 uur geen waarde, herhaalde pieken, een sprong, of pH en ORP die 2 dagen niet meer samen bewegen |
+| **KH verandert te snel** | Twee opeenvolgende KH-tests verschillen meer dan 0,5 dKH |
+
+De alarmen blijven de eerste 14 dagen onbekend, terwijl het aquarium wordt geleerd; alleen de verdachte sonde werkt vanaf het begin. Alle drempels zijn instelbaar.
+
+Kies de entiteiten eenmalig. Deze dienst stelt ook de drempels in:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+Met een KH-testentiteit (bijvoorbeeld de laatste meting van een ReefDose-kop) onderscheidt een recente test een echte KH-daling van een CO2-effect of een sondeprobleem (`cause`) en geeft met de CO2 een geschatte KH tussen twee tests.
+
+Met een kalibratie-entiteit (de datum van de laatste afstelling van de sonde) vraagt een kalibratie geen actie: de metingen eromheen vervallen en de geschiedenis volgt na 24 uur het nieuwe niveau. Zet bij schoonmaken of waterverversing de pauzeschakelaar aan: die gaat na 6 uur vanzelf uit.
+
 ## Entiteiten
 
 Elk aquarium is een apparaat met:
@@ -171,6 +211,12 @@ Elk aquarium is een apparaat met:
 | `sensor.<aquarium>_corals` | Aantal koralen, per soort in de attributen |
 | `event.<aquarium>_feeding` | Laatste voedering, met soort (automaat, snelkoppeling, handmatig) en bron |
 | `sensor.<aquarium>_feedings_today` | Voederingen sinds middernacht |
+| `sensor.<aquarium>_water_monitoring` | Status van de bewaking, leervoortgang in de attributen |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | 24-uursgemiddelde en -amplitude van de pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP zonder het dagelijkse pH-effect |
+| `sensor.<aquarium>_kh_estimated` | Geschatte KH tussen twee tests (vereist een test en de CO2) |
+| `binary_sensor.<aquarium>_*` | De zes alarmen hierboven |
+| `switch.<aquarium>_pause_monitoring` | Stopt de analyse tijdelijk |
 | `sensor.<aquarium>_water_volume` | Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie |
 
 En het apparaat *ReefTank catalog*:
@@ -187,6 +233,8 @@ En het apparaat *ReefTank catalog*:
 | `reeftank.feed` | Legt een voedering vast (automaten die Home Assistant niet kent, scripts) |
 | `reeftank.livestock_add` | Voegt dieren toe aan de inventaris |
 | `reeftank.livestock_remove` | Verwijdert dieren (verlies, weggegeven) |
+| `reeftank.monitoring_configure` | Kiest de bewaakte entiteiten en de drempels |
+| `reeftank.monitoring_reset` | Vergeet de geschiedenis om opnieuw te leren (nieuwe sonde) |
 
 `aquarium` is de naam, het id of het apparaat-id van het aquarium.
 

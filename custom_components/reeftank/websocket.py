@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.websocket_api import async_register_command
@@ -30,6 +31,8 @@ from .store import RevisionConflict
 
 if TYPE_CHECKING:
     from . import ReefTankData
+
+_LOGGER = logging.getLogger(__name__)
 
 ERR_NOT_LOADED = "not_loaded"
 ERR_NOT_FOUND = "not_found"
@@ -203,6 +206,7 @@ async def ws_save(
         )
         return
     except vol.Invalid as err:
+        _LOGGER.warning("Aquarium not saved: %s", err)
         connection.send_error(msg["id"], ERR_INVALID, str(err))
         return
     connection.send_result(msg["id"], _payload(hass, connection, data, doc))

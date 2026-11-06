@@ -4,7 +4,7 @@
   <img src="https://github.com/Elwinmage/ha-reeftank-component/raw/main/icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -27,11 +27,17 @@ Przechowuje akwaria, ich zdjęcia i obsadę, rejestruje karmienia i aktualizuje 
   <img src="../../doc/img/preview.webp" width="80%" alt="Karta akwarium"/>
 </p>
 
+Karta akwarium w akcji:
+
+[![Obejrzyj wideo](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Powiązane projekty
 
 Projekty ReefTech uzupełniają się: integracje wprowadzają sprzęt do Home Assistant, karta go wyświetla i steruje nim, a zasilanie awaryjne utrzymuje go w ruchu podczas przerwy w zasilaniu. Każdy działa również samodzielnie.
+
+<p align="center"><a href="https://elwinmage.github.io/reeftank/"><img src="https://raw.githubusercontent.com/Elwinmage/reeftank/main/assets/flower/ecosystem-flower.png" width="480" alt="ReefTech project ecosystem" /></a></p>
 
 <table>
   <tr>
@@ -79,7 +85,7 @@ Projekty ReefTech uzupełniają się: integracje wprowadzają sprzęt do Home As
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Blueprinty powiadomień wspólne dla całego ekosystemu: zaległe konserwacje znajdowane przez kontrakt <code>reef_role</code> oraz urządzenia, które przestały odpowiadać. Osiem języków.</td>
+    <td>Blueprinty automatyzacji wspólne dla całego ekosystemu: zaległe konserwacje znajdowane przez kontrakt <code>reef_role</code>, urządzenia, które przestały odpowiadać, okresowy test grzałek i nadzór przekaźników. Osiem języków.</td>
     <td>wszystkie trzy integracje</td>
   </tr>
   <tr>
@@ -101,7 +107,7 @@ Wszystkie są udokumentowane razem na [stronie projektu ReefTech](https://elwinm
 - **Ryby i koralowce** z [katalogu ReefTank](https://github.com/Elwinmage/reeftank-catalog): ławice, pływaki otwartej wody, ryby piaskowe, babki wyglądające z norki, koralowce falujące z pompami
 - **Głębia**: ryby pływają za obrysowanymi skałami, a nocą odpoczywają na piasku
 - **Rysowany zbiornik**: brak ładnego zdjęcia wody? Narysuj ją (woda, piasek, tekstury skał), zachowując resztę zdjęcia
-- **Urządzenia i encje** na obrazie, klikalne; strefy otwierające inny obraz (sump w szafce)
+- **Urządzenia i encje** umieszczane na obrazie jako miniatury lub obrysowane na nim, klikalne; strefy otwierające inny obraz (sump w szafce)
 - **Karmienie**: karmniki, skróty Red Sea lub usługa rejestrują każde karmienie; ryby płyną do punktu karmienia
 - **Inwentarz**: liczba ryb i koralowców jako sensory, z historią
 
@@ -109,13 +115,13 @@ Wszystkie są udokumentowane razem na [stronie projektu ReefTech](https://elwinm
 
 ### Instalacja bezpośrednia
 
-Kliknij tutaj, aby otworzyć repozytorium bezpośrednio w HACS, i kliknij „Pobierz”: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Kliknij tutaj, aby otworzyć repozytorium bezpośrednio w Marketplace, i kliknij „Zainstaluj”: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Wyszukiwanie w HACS
+### Wyszukiwanie w Marketplace
 
-Lub dodaj `https://github.com/Elwinmage/ha-reeftank-component` jako niestandardowe repozytorium (Integracja) i wyszukaj „ReefTank”.
+Lub wyszukaj „ReefTank” w *Ustawienia > Marketplace*. W Home Assistant starszym niż 2026.11 te same kroki działają w HACS.
 
-Uruchom ponownie Home Assistant, a następnie dodaj integrację (jeden wpis, nic do konfiguracji): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Następnie dodaj integrację (jeden wpis, nic do konfiguracji; z HACS w starszym Home Assistant najpierw uruchom ponownie): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 Sama karta akwarium pochodzi z [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), które również trzeba zainstalować.
 
@@ -138,7 +144,7 @@ render: static        # optional: static, light or full
 
 ## Edytor sceny
 
-Pełnoekranowe okno, otwierane z edytora karty, z sześcioma zakładkami:
+Pełnoekranowe okno, otwierane z edytora karty, z siedmioma zakładkami:
 
 | Zakładka | Co się w niej robi |
 |---|---|
@@ -148,6 +154,7 @@ Pełnoekranowe okno, otwierane z edytora karty, z sześcioma zakładkami:
 | **Światło i przepływ** | Lampy oświetlające każdą wodę i ich położenie; pompy poruszające wodę |
 | **Obsada** | Ryby (gatunek, liczba, rozmiar, schronienie) i koralowce (gatunek, rozmiar, kolory, położenie) |
 | **Karmienie** | Encje rejestrujące karmienie i miejsce, gdzie spada pokarm |
+| **Monitorowanie** | Encje pH, ORP, CO2 w pomieszczeniu i testów KH, to, co sygnalizuje kalibrację, progi alarmów oraz stan monitorowania |
 
 ## Poziomy renderowania
 
@@ -161,6 +168,39 @@ Każde akwarium jest wyświetlane na jednym z trzech poziomów; karta może go o
 
 Zdjęcie pomieszczenia technicznego z urządzeniami na żywo to pełnoprawne akwarium `static`.
 
+## Monitorowanie wody
+
+ReefTank porównuje akwarium z jego własną niedawną historią, a nie z uniwersalnymi limitami, i zgłasza alarmy, gdy odbiega ono od normy. pH i ORP mogą pochodzić z dowolnej encji liczbowej; czujnik CO2 w pomieszczeniu jest opcjonalny. pH nie mierzy KH: te alarmy mówią, kiedy wykonać test.
+
+| Alarm | Włącza się, gdy |
+|---|---|
+| **pH poniżej zwykłego poziomu** | Średnia 24 h jest o 0,1 niższa od mediany z ostatnich 14 dni. Z czujnikiem CO2 `cause` wskazuje, czy wyjaśnia to CO2 w pomieszczeniu |
+| **Wahania pH większe niż zwykle** | Amplituda 24 h przekracza zwykłą o 50 % |
+| **Zaburzony dobowy profil pH** | Ostatnie 4 godziny odbiegają od zwykłego kształtu doby |
+| **ORP poniżej zwykłego poziomu** | ORP bez wpływu pH pozostaje o 30 mV poniżej mediany przez 12 godzin |
+| **Podejrzana sonda** | Wartość zamrożona przez 12 godzin, brak wartości przez 2 godziny, powtarzające się piki, skok lub pH i ORP, które przez 2 dni nie poruszają się razem |
+| **KH zmienia się zbyt szybko** | Dwa kolejne testy KH różnią się o więcej niż 0,5 dKH |
+
+Alarmy pozostają nieznane przez pierwsze 14 dni, gdy akwarium jest poznawane; tylko podejrzana sonda działa od początku. Wszystkie progi można ustawić.
+
+Wybierz encje raz. Ta usługa ustawia także progi:
+
+```yaml
+action: reeftank.monitoring_configure
+data:
+  aquarium: Reefer 425
+  ph_entity: sensor.tank_ph
+  orp_entity: sensor.tank_orp
+  co2_entity: sensor.room_co2
+  kh_entity: sensor.reefdose_head_2_last_measurement
+  ph_calibration_entity: sensor.tank_ph_last_adjustment
+  orp_calibration_entity: sensor.tank_orp_last_adjustment
+```
+
+Z encją testów KH (np. ostatnim pomiarem głowicy ReefDose) niedawny test odróżnia rzeczywisty spadek KH od wpływu CO2 lub problemu z sondą (`cause`), a wraz z CO2 daje szacowane KH między dwoma testami.
+
+Z encją kalibracji (datą ostatniej regulacji sondy) kalibracja nie wymaga żadnego działania: odczyty wokół niej są odrzucane, a historia po 24 godzinach podąża za nowym poziomem. Na czas czyszczenia lub podmiany wody włącz przełącznik wstrzymania: wyłączy się sam po 6 godzinach.
+
 ## Encje
 
 Każde akwarium jest urządzeniem z:
@@ -171,6 +211,12 @@ Każde akwarium jest urządzeniem z:
 | `sensor.<aquarium>_corals` | Liczba koralowców, według gatunków w atrybutach |
 | `event.<aquarium>_feeding` | Ostatnie karmienie, z rodzajem (karmnik, skrót, ręczne) i źródłem |
 | `sensor.<aquarium>_feedings_today` | Karmienia od północy |
+| `sensor.<aquarium>_water_monitoring` | Stan monitorowania, postęp nauki w atrybutach |
+| `sensor.<aquarium>_ph_24_h_mean`, `sensor.<aquarium>_ph_swing_24_h` | Średnia i amplituda 24 h pH |
+| `sensor.<aquarium>_orp_without_the_ph_effect` | ORP bez dobowego wpływu pH |
+| `sensor.<aquarium>_kh_estimated` | Szacowane KH między dwoma testami (wymaga testu i CO2) |
+| `binary_sensor.<aquarium>_*` | Sześć powyższych alarmów |
+| `switch.<aquarium>_pause_monitoring` | Wstrzymuje analizę |
 | `sensor.<aquarium>_water_volume` | Objętość wody netto (L), odczytywana przez regulację dozowania ReefDose integracji redsea |
 
 Oraz urządzenie *ReefTank catalog*:
@@ -187,6 +233,8 @@ Oraz urządzenie *ReefTank catalog*:
 | `reeftank.feed` | Rejestruje karmienie (karmniki nieznane Home Assistant, skrypty) |
 | `reeftank.livestock_add` | Dodaje zwierzęta do inwentarza |
 | `reeftank.livestock_remove` | Usuwa zwierzęta (straty, oddanie) |
+| `reeftank.monitoring_configure` | Wybiera monitorowane encje i progi |
+| `reeftank.monitoring_reset` | Zapomina historię, aby uczyć się od nowa (nowa sonda) |
 
 `aquarium` to nazwa, id lub id urządzenia akwarium.
 

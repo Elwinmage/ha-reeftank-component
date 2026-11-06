@@ -40,6 +40,7 @@ def test_valid_document_gets_defaults(document: dict[str, Any]) -> None:
     assert doc["render"] == {
         "level": "full",
         "max_fish": 30,
+        "fish_scale": 1.0,
         "caustics": False,
         "night_darkness": 0.55,
     }
@@ -333,6 +334,46 @@ def test_referenced_images_and_feeding_points(document: dict[str, Any]) -> None:
     assert [e["id"] for e in feeding_points(doc)] == ["e2"]
 
 
+def test_hotspot_opens_a_device(document: dict[str, Any]) -> None:
+    """A hotspot opens a device as well as a view."""
+    doc = document
+    zone = doc["views"]["front"]["hotspots"][0]
+    del zone["goto"]
+    zone["device_id"] = "dev1"
+    checked = models.validate_document(doc)
+    assert checked["views"]["front"]["hotspots"][0]["device_id"] == "dev1"
+
+
+@pytest.mark.parametrize(
+    "target",
+    [
+        {},
+        {"goto": None, "device_id": None},
+        {"goto": "cabinet", "device_id": "dev1"},
+    ],
+)
+def test_hotspot_opens_one_thing(
+    target: dict[str, Any], document: dict[str, Any]
+) -> None:
+    """A hotspot opens a view or a device, not both nor nothing."""
+    doc = document
+    zone = doc["views"]["front"]["hotspots"][0]
+    del zone["goto"]
+    zone.update(target)
+    with pytest.raises(vol.Invalid, match="a view or a device"):
+        models.validate_document(doc)
+
+
+def test_fish_scale(document: dict[str, Any]) -> None:
+    """Fish size has a default, and bounds."""
+    assert models.validate_document(document)["render"]["fish_scale"] == 1.0
+    document["render"] = {"fish_scale": 1.5}
+    assert models.validate_document(document)["render"]["fish_scale"] == 1.5
+    document["render"] = {"fish_scale": 10}
+    with pytest.raises(vol.Invalid):
+        models.validate_document(document)
+
+
 def test_water_volume(document: dict[str, Any]) -> None:
     assert "water_volume_l" not in validate_document(document)
     assert (
@@ -358,3 +399,20 @@ def test_placed_devices(document: dict[str, Any]) -> None:
     ]
     assert models.placed_devices(doc) == ["led1", "feeder1", "doser"]
     assert models.placed_devices({}) == []
+
+
+def test_entity_text_options() -> None:
+    """An entity can hide its label and have its own text colour."""
+    element = {"kind": "entity", "entity_id": "sensor.temp", "pos": [0.5, 0.5]}
+    view = {"elements": [{**element, "hide_label": True, "text_color": "#ff0000"}]}
+    doc = validate_document({"name": "T", "views": {"v1": view}})
+    stored = doc["views"]["v1"]["elements"][0]
+    assert stored["hide_label"] is True
+    assert stored["text_color"] == "#ff0000"
+
+    plain = validate_document({"name": "T", "views": {"v1": {"elements": [element]}}})
+    assert plain["views"]["v1"]["elements"][0]["hide_label"] is False
+
+    view["elements"][0]["text_color"] = "red"
+    with pytest.raises(vol.Invalid):
+        validate_document({"name": "T", "views": {"v1": view}})

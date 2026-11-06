@@ -21,6 +21,7 @@
 - [15. Performance budget](#15-performance-budget)
 - [16. Development](#16-development)
 - [17. Open points](#17-open-points)
+- [18. Monitoring](#18-monitoring)
 
 ## 1. Overview
 
@@ -40,7 +41,8 @@ entities on the picture, and declares the livestock. The card then renders:
   swaying with the flow of the pumps;
 - clickable **devices** (open the device view) and **entities** (existing card
   elements);
-- clickable **hotspots** switching to other pictures (e.g. cabinet door open
+- clickable **hotspots** opening the view of a device outlined on the picture,
+  or switching to other pictures (e.g. cabinet door open
   showing the sump), each with its own elements.
 
 It must work **without** the `redsea` integration (e.g. Aqua Medic only); Red
@@ -90,7 +92,7 @@ flowchart LR
 
 | Component | Owns | Does not own |
 |---|---|---|
-| **`reeftank`** (this repo) | Scenes, uploaded images, asset catalog, livestock, feeding events, entities | Any vendor-specific knowledge |
+| **`reeftank`** (this repo) | Scenes, uploaded images, asset catalog, livestock, feeding events, water monitoring, entities | Any vendor-specific knowledge |
 | **`redsea`** | `redsea/aquariums` WebSocket command: cloud aquariums + linked HA devices | Scene storage |
 | **ha-reef-card** | `custom:reef-aquarium-card`: rendering, scene editor, composition of `reeftank` + optional vendor data | Persistence |
 | **[reeftank-catalog](https://github.com/Elwinmage/reeftank-catalog)** | Species (fish, corals), textures and presets, published as releases | Code: it only ships data |
@@ -185,11 +187,14 @@ One **aquarium** document per tank. Key rules:
         { "kind": "device", "device_id": "feeder1", "pos": [0.62, 0.08],
           "roles": ["feeding_point"], "source": "f1" },
         { "kind": "entity", "type": "common-sensor",
-          "entity_id": "sensor.temp", "pos": [0.85, 0.60] }
+          "entity_id": "sensor.temp", "pos": [0.85, 0.60],
+          "hide_label": false, "text_color": "#ffcc00" }
       ],
       "hotspots": [
         { "poly": [[0.1, 0.6], [0.9, 0.6], [0.9, 0.95], [0.1, 0.95]],
-          "goto": "cabinet" }
+          "goto": "cabinet" },
+        { "poly": [[0.7, 0.7], [0.8, 0.7], [0.8, 0.9], [0.7, 0.9]],
+          "device_id": "<ha device id>" }
       ]
     },
     "cabinet": {
@@ -326,6 +331,8 @@ exist yet: the editor gives a new aquarium its id before saving it.
 | `reeftank.feed` | `aquarium`, `source?` | Fires the feeding event (for feeders not in HA, scripts…) |
 | `reeftank.livestock_add` | `aquarium`, `water?`, `species`, `count?`, `kind?`, `size_cm?`, `note?` | Adds to / creates an inventory line |
 | `reeftank.livestock_remove` | `aquarium`, `line_id` or `species`, `count?` | Decreases a line (losses, rehoming); removes it at 0 |
+| `reeftank.monitoring_configure` | `aquarium`, any field of `monitoring` (§18) | Changes the fields given |
+| `reeftank.monitoring_reset` | `aquarium`, `channel?` | Forgets the history, of one measure or all |
 
 `aquarium` is the aquarium's id, its name or its device id.
 
@@ -359,6 +366,13 @@ removed with it (unique ids derived from the aquarium id).
 | `sensor.<tank>_corals` | Total coral count | `{species: count}`, `species_count` |
 | `event.<tank>_feeding` | Timestamp of the last feeding | `event_type`: `feeder` / `shortcut` / `manual`; `source` |
 | `sensor.<tank>_feedings_today` | Feedings since local midnight | — |
+| `sensor.<tank>_water_monitoring` | `not_configured` / `learning` / `settling` / `paused` / `ready` | `learning_pct` |
+| `sensor.<tank>_ph_24_h_mean` | Mean pH of the last 24 hours | — |
+| `sensor.<tank>_ph_swing_24_h` | pH amplitude of the last 24 hours | — |
+| `sensor.<tank>_orp_without_the_ph_effect` | ORP of the last hour, without the pH effect | — |
+| `sensor.<tank>_kh_estimated` | KH between two tests, in dKH (§18) | `last_test` |
+| `binary_sensor.<tank>_*` | The six alarms (§18); unknown while they cannot be told | Figures explaining each one |
+| `switch.<tank>_pause_monitoring` | On during a pause; turns off by itself | `until` |
 | `sensor.<tank>_water_volume` | `water_volume_l` (L), unknown when unset | `cloud` (the document's), `device_ids` (devices placed on the views) |
 
 - The population history comes for free from the recorder on the count
@@ -629,7 +643,8 @@ modal of its own, stacked above Home Assistant's card editor.
 1. **Aquarium** — name, dimensions, the cloud aquarium it matches (via
    `redsea/aquariums` when loaded: dimensions, lamps, feeding shortcuts and
    device list filled in), preset, light the photos were taken under, render
-   level and fish cap; delete.
+   level, fish cap, fish size (`render.fish_scale`) and darkness of the water
+   at night; delete.
 2. **Views** — add a picture (upload or preset), then per water:
    - **outline** the water with a 4-corner quad;
    - **sand line**: front glass and back wall polylines; click to add a point
@@ -637,12 +652,14 @@ modal of its own, stacked above Home Assistant's card editor.
    - **decor**: polygon tool (click points, double-click or Enter to close,
      drag vertices) and lasso (simplified with Ramer–Douglas–Peucker); depth
      preset front / middle / back (numeric `z` underneath);
-   - **clickable zones** (hotspots) opening another view;
+   - **clickable zones** (hotspots) opening another view, drawn as a rectangle,
+     with the lasso or as a polygon;
    - **background**: *draw this water instead of the photo*, rock and sand
      textures, and a preview of the drawn decor.
 3. **Devices** — tree built from `hass.devices` + `hass.entities`, laid out
    like the target picker of the automation editor (floor → area → device →
-   entity), with a search:
+   entity), with a search. A device is dropped as a thumbnail, or outlined on
+   the picture with the same tools as a zone (a hotspot with `device_id`):
 
    ```
    Ground floor                      (floor)
@@ -667,6 +684,10 @@ modal of its own, stacked above Home Assistant's card editor.
    palette, placed by click and drag on a view).
 6. **Feeding** — feeding sources (feeder, shortcut, button…), merge delay and
    duration; feeding points on the picture, each for one source or any.
+7. **Monitoring** — pH, ORP, room CO2 and KH tests entities, the entities
+   telling a probe was calibrated, the entities pausing the analysis and the
+   thresholds of the alarms (§18); shows the status of the monitoring and of
+   its alarms.
 
 Saving sends the whole document with the revision it was loaded at: if it
 moved meanwhile (another editor), the save is refused with `conflict` rather
@@ -799,3 +820,138 @@ version pinned by `requirements.test.txt` and stays compatible with the
 - **Double-resolution atlases** (`--hd`): built, not used by the card yet.
 - **Multiple cloud accounts** with the same aquarium name: disambiguation in
   the picker.
+
+## 18. Monitoring
+
+Compares a tank with its own recent history. pH and ORP vary too much from one
+tank to another for universal limits, so every alarm reads "not as usual".
+
+| Part | Role |
+|---|---|
+| `analysis.py` | The rules. Pure (no Home Assistant object), run in the executor (about 10 ms for 16 days of three measures) |
+| `monitoring.py` | Sampling, history, pause, calibrations, publication to the entities |
+| `monitoring` in the aquarium document | Settings: entities and thresholds |
+| `.storage/reeftank.monitoring` | History, latched alarms and last report |
+
+The history has its own `Store` rather than a place in the document: it changes
+every five minutes, and each document save bumps `revision`, which would turn
+every open editor into a conflict.
+
+### Settings
+
+```json
+"monitoring": {
+  "ph_entity": "sensor.tank_ph", "orp_entity": "sensor.tank_orp",
+  "co2_entity": "sensor.room_co2",
+  "kh_entity": "sensor.reefdose_head_2_last_measurement",
+  "ph_calibration_entity": "sensor.tank_ph_last_adjustment",
+  "orp_calibration_entity": "sensor.tank_orp_last_adjustment",
+  "pause_entities": ["switch.ph_probe_maintenance"],
+  "learning_days": 14, "ph_base_drop": 0.1, "ph_swing_pct": 50,
+  "ph_profile_band": 0.05, "ph_profile_hours": 4,
+  "orp_drop_mv": 30, "orp_drop_hours": 12,
+  "kh_change_max": 0.5, "pause_hours": 6
+}
+```
+
+Any numeric entity will do: `reeftank` still knows nothing of a vendor. With
+`redsea`, the pH and ORP sensors of a ReefSense probe are polled every 60 s, and
+the calibration entity is its `last_adjustment` timestamp, updated on pH and ORP
+alike. The per-probe maintenance switch exists for pH, not for ORP: an ORP
+cleaning goes through the pause switch.
+
+### Samples
+
+One sample of each measure every 5 minutes, on a grid (`Series`: a first slot
+and a list of values, `null` for a gap), kept for `learning_days` + 2 days.
+
+Windows: the *last 24 hours* are judged against the *baseline*, the
+`learning_days` before them. A window is trusted from 70 % of its samples. The
+baseline is ready once the oldest sample is `learning_days` old. Isolated
+outliers are removed before any statistics.
+
+### Alarms
+
+| Alarm | Rule |
+|---|---|
+| `ph_base_low` | Baseline median − 24 h mean > `ph_base_drop` |
+| `ph_swing_high` | 24 h amplitude (P95 − P5) above the median daily amplitude by `ph_swing_pct` % (and 0.02 at least) |
+| `ph_profile_off` | The last `ph_profile_hours` hours all leave the usual hour-of-day shape, by the largest of `ph_profile_band` and 3 σ |
+| `orp_low` | Hourly compensated ORP below the baseline median by `orp_drop_mv` for `orp_drop_hours` |
+| `probe_suspect` | One of the reasons below |
+| `kh_fast_change` | The last two KH tests, 14 days apart at most, differ by more than `kh_change_max` |
+
+- Hours of the day are local: lights follow the clock, daylight saving included.
+- The shape of the day is taken on detrended hours (minus the centred 24 hours),
+  so that a slow drift does not read as a disturbed day.
+- `ph_base_low`, `ph_swing_high` and `orp_low` clear at 80 % of their threshold,
+  so that they do not flap.
+- An alarm is `None` (unknown) while learning, paused, or without enough recent
+  samples.
+
+Probe reasons, per probe (`probes` attribute): `missing` (no value for 2 hours),
+`frozen` (one value for 12 hours), `spikes` (3 outliers or more in a day), `step`
+(a jump between two samples: 0.2 pH, 40 mV), `decoupled` (pH and ORP usually
+correlate at |r| ≥ 0.5, and did not for two days in a row, pH moving by 0.05 at
+least). They need no baseline except `decoupled`: a broken probe must be seen
+while learning, or the tank would learn a wrong normal.
+
+### ORP compensation
+
+ORP moves against pH during the day. The slope is learned on the hourly
+variations of the baseline (the last 24 hours are left out: what is judged must
+not teach what is usual), then `ORP − slope × (pH − baseline pH)` is what is
+compared. Below |r| = 0.3 the slope is noise and ORP is used as it reads. A hub
+compensating ORP itself gives a positive slope, learned the same way.
+
+### KH and CO2
+
+pH does not measure KH: `pH ≈ constant + log10(KH / CO2)`, and the CO2 of the
+room moves it as much. So `ph_base_low` alone says "test KH", not "KH dropped".
+What is measured narrows it down, both as the pH drop it would explain:
+
+- CO2: `log10(CO2 24 h / CO2 baseline)`;
+- KH: `log10(KH of the baseline tests / last test)`, from a test less than 3 days
+  old. Without one, `kh_test_due` asks for it.
+
+| `cause` | Meaning |
+|---|---|
+| `kh` | The tests explain half of the drop at least, and more than the CO2 |
+| `co2` | The CO2 explains half of the drop at least |
+| `probe` | Both were measured and neither moved: the reading did |
+| `other` | One of them is measured and does not explain it |
+| `unknown` | Neither is measured |
+
+`kh_entity` is any numeric entity in dKH (or without a unit), such as the
+`regulation_last_measurement` sensor of a `redsea` dosing head. Its `measurements`
+attribute, when it has one, gives the tests with their dates, leaving out those
+flagged `suspect`; otherwise each new value is a test. A head regulating another
+parameter gives ppm, and is ignored. Tests are not samples: they need no baseline
+and stay valid during a pause. The last 100 are kept.
+
+`kh_estimated` needs a test less than 14 days old and the CO2:
+`last test × 10^(pH − pH at the test) × CO2 / CO2 at the test`, on 24-hour means
+so that the daily cycle cancels out. It is a trend to compare with the next test,
+not a measure, and no alarm uses it.
+
+### Calibrations and pauses
+
+A change of the calibration entity means the probe was out of the water, and now
+reads differently. The last 2 hours of that probe are dropped; for 24 hours
+(`settling`) only `probe_suspect` is judged; then the difference between the days
+around the calibration shifts the older samples, so that a calibration does not
+cost two weeks of learning. Without enough readings around it, the measure learns
+again.
+
+A pause leaves gaps. The pause switch ends by itself after `pause_hours`:
+forgotten after a cleaning, it would otherwise silently turn the alarms off.
+
+Changing a measure's entity forgets its history.
+
+### Limits
+
+- A slow drift enters the baseline: after half of `learning_days`, a lower level
+  has become the usual one. The alarms see changes, not bad levels.
+- Readings taken during a calibration are only recognised afterwards, through
+  the calibration date, and only with a calibration entity set.
+- A KH alarm comes at the pace of the tests: it confirms, it does not detect.

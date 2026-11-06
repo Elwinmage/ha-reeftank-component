@@ -1,13 +1,28 @@
-# UNRELEASED
+# Unreleased
 
-## MODIFICATIONS
-
+- Water monitoring: pH and ORP (and optionally the CO2 of the room) sampled
+  every 5 minutes from any entity, and compared with the tank's own last 14
+  days. Alarms: pH below its usual level, wider pH swing, disturbed day
+  pattern, ORP below its usual level (pH effect removed), suspect probe.
+- `sensor` entities for the status, the 24 h pH mean and amplitude and the
+  compensated ORP; `switch` to pause, ending by itself.
+- Calibrations recognised from a date entity: readings around it dropped, the
+  history carried over to the new level.
+- KH tests, when an entity gives them (the last measurement of a ReefDose head,
+  for instance): `cause` of the pH alarm tells the KH, the CO2 and the probe
+  apart; alarm when two tests differ too much; estimated KH with the CO2.
+- A hotspot opens a view (`goto`) or a device (`device_id`).
+- Elements: `hide_label` and `text_color`, for the text of an entity.
+- `render.fish_scale`: size of the fish against the tank, over their real size.
+- Services: `reeftank.monitoring_configure`, `reeftank.monitoring_reset`.
 - Aquarium documents: new optional `water_volume_l`, the net water volume in
   litres (tank and sump, without rock and sand).
 - New `sensor.<aquarium>_water_volume` (L, unknown until set), with the
   document's `cloud` and the devices placed on its views (`device_ids`) as
   attributes: the redsea integration's ReefDose dose regulation reads the
   volume of a doser's tank from it.
+- Uploaded pictures are private: served through signed URLs that the card
+  renews (`reeftank/images/sign`), no longer as public static files.
 
 # v0.1.0
 

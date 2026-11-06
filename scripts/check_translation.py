@@ -24,7 +24,7 @@ except ImportError:
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "custom_components" / "reeftank"
-PLATFORMS = ("sensor", "event")
+PLATFORMS = ("binary_sensor", "sensor", "switch", "event")
 
 
 def flatten(data: object, prefix: str = "") -> set[str]:

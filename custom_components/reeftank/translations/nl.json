@@ -12,6 +12,90 @@
     }
   },
   "entity": {
+    "binary_sensor": {
+      "kh_fast_change": {
+        "name": "KH verandert te snel",
+        "state_attributes": {
+          "last": {
+            "name": "Laatste test"
+          },
+          "change": {
+            "name": "Verandering tussen de laatste twee tests"
+          }
+        }
+      },
+      "orp_low": {
+        "name": "ORP onder het gebruikelijke niveau",
+        "state_attributes": {
+          "baseline": {
+            "name": "Gebruikelijk niveau"
+          },
+          "drop": {
+            "name": "Daling"
+          },
+          "ph_slope": {
+            "name": "ORP-verandering per pH-eenheid"
+          },
+          "ph_correlation": {
+            "name": "pH/ORP-correlatie"
+          }
+        }
+      },
+      "ph_base_low": {
+        "name": "pH onder het gebruikelijke niveau",
+        "state_attributes": {
+          "baseline": {
+            "name": "Gebruikelijk niveau"
+          },
+          "drop": {
+            "name": "Daling"
+          },
+          "cause": {
+            "name": "Waarschijnlijke oorzaak",
+            "state": {
+              "co2": "CO2 in de ruimte",
+              "other": "Niet verklaard door CO2: test de KH, controleer de sonde",
+              "unknown": "Onbekend: geen CO2-sensor",
+              "kh": "KH-daling, gemeten door de tests",
+              "probe": "Twijfelachtige meting: KH noch CO2 bewoog"
+            }
+          },
+          "co2_explained_drop": {
+            "name": "pH-daling verklaard door CO2"
+          },
+          "kh_explained_drop": {
+            "name": "pH-daling verklaard door KH"
+          },
+          "kh_test_due": {
+            "name": "KH-test nodig"
+          }
+        }
+      },
+      "ph_profile_off": {
+        "name": "pH-dagpatroon verstoord",
+        "state_attributes": {
+          "profile_hours_off": {
+            "name": "Uren buiten het gebruikelijke patroon"
+          }
+        }
+      },
+      "ph_swing_high": {
+        "name": "pH-schommeling groter dan gebruikelijk",
+        "state_attributes": {
+          "swing_baseline": {
+            "name": "Gebruikelijke schommeling"
+          }
+        }
+      },
+      "probe_suspect": {
+        "name": "Verdachte sonde",
+        "state_attributes": {
+          "probes": {
+            "name": "Sondes"
+          }
+        }
+      }
+    },
     "button": {
       "check_catalog": {
         "name": "Zoeken naar updates"
@@ -66,6 +150,38 @@
           }
         }
       },
+      "kh_estimated": {
+        "name": "Geschatte KH",
+        "state_attributes": {
+          "last_test": {
+            "name": "Laatste test"
+          }
+        }
+      },
+      "monitoring": {
+        "name": "Waterbewaking",
+        "state": {
+          "not_configured": "Niet geconfigureerd",
+          "learning": "Leerfase",
+          "paused": "Gepauzeerd",
+          "settling": "Meting na kalibratie",
+          "ready": "Gereed"
+        },
+        "state_attributes": {
+          "learning_pct": {
+            "name": "Leervoortgang (%)"
+          }
+        }
+      },
+      "orp_compensated": {
+        "name": "ORP zonder pH-effect"
+      },
+      "ph_mean_24h": {
+        "name": "pH (24-uursgemiddelde)"
+      },
+      "ph_swing_24h": {
+        "name": "pH-schommeling (24 u)"
+      },
       "water_volume": {
         "name": "Watervolume",
         "state_attributes": {
@@ -74,6 +190,16 @@
           },
           "device_ids": {
             "name": "Apparaten"
+          }
+        }
+      }
+    },
+    "switch": {
+      "monitoring_pause": {
+        "name": "Bewaking pauzeren",
+        "state_attributes": {
+          "until": {
+            "name": "Tot"
           }
         }
       }
@@ -110,6 +236,14 @@
       "options": {
         "fish": "Vis",
         "invertebrate": "Ongewervelde"
+      }
+    },
+    "monitoring_channel": {
+      "options": {
+        "ph": "pH",
+        "orp": "ORP",
+        "co2": "CO2",
+        "kh": "KH-test"
       }
     }
   },
@@ -181,6 +315,94 @@
         "species": {
           "name": "Soort",
           "description": "Soort van de regel als er geen regel-id is opgegeven."
+        }
+      }
+    },
+    "monitoring_configure": {
+      "name": "Bewaking configureren",
+      "description": "Kiest wat in een aquarium wordt bewaakt en stelt de alarmdrempels in. Alleen de opgegeven velden worden gewijzigd.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "ph_entity": {
+          "name": "pH-entiteit",
+          "description": "Numerieke entiteit met de pH."
+        },
+        "orp_entity": {
+          "name": "ORP-entiteit",
+          "description": "Numerieke entiteit met de ORP in mV."
+        },
+        "co2_entity": {
+          "name": "CO2-entiteit",
+          "description": "Numerieke entiteit met de CO2 van de ruimte in ppm (optioneel): onderscheidt een CO2-effect van een alkaliniteitsprobleem."
+        },
+        "kh_entity": {
+          "name": "KH-testentiteit",
+          "description": "Sensor of getal met de laatste KH-test in dKH (optioneel), zoals de laatste meting van een ReefDose-kop. Onderscheidt een KH-daling van een CO2-effect of een sondeprobleem."
+        },
+        "ph_calibration_entity": {
+          "name": "pH-kalibratie-entiteit",
+          "description": "Entiteit die verandert wanneer de pH-sonde wordt gekalibreerd, zoals de datum van de laatste afstelling."
+        },
+        "orp_calibration_entity": {
+          "name": "ORP-kalibratie-entiteit",
+          "description": "Entiteit die verandert wanneer de ORP-sonde wordt gekalibreerd, zoals de datum van de laatste afstelling."
+        },
+        "pause_entities": {
+          "name": "Pauze-entiteiten",
+          "description": "De analyse staat stil zolang een ervan aan staat."
+        },
+        "learning_days": {
+          "name": "Leerdagen",
+          "description": "Dagen geschiedenis waarmee het aquarium wordt vergeleken."
+        },
+        "ph_base_drop": {
+          "name": "pH-daling",
+          "description": "Alarm wanneer het 24-uursgemiddelde zover onder het gebruikelijke niveau zakt."
+        },
+        "ph_swing_pct": {
+          "name": "pH-schommeling (%)",
+          "description": "Alarm wanneer de 24-uursschommeling de gebruikelijke met dit deel overschrijdt."
+        },
+        "ph_profile_band": {
+          "name": "pH-dagband",
+          "description": "Kleinste afwijking van het gebruikelijke patroon die telt."
+        },
+        "ph_profile_hours": {
+          "name": "pH-daguren",
+          "description": "Opeenvolgende uren buiten het gebruikelijke patroon vóór het alarm."
+        },
+        "orp_drop_mv": {
+          "name": "ORP-daling (mV)",
+          "description": "Alarm wanneer de ORP zover onder het gebruikelijke niveau blijft."
+        },
+        "orp_drop_hours": {
+          "name": "ORP-daaluren",
+          "description": "Uren dat de ORP laag moet blijven vóór het alarm."
+        },
+        "kh_change_max": {
+          "name": "KH-verandering (dKH)",
+          "description": "Alarm wanneer twee opeenvolgende KH-tests meer dan deze waarde verschillen."
+        },
+        "pause_hours": {
+          "name": "Pauze-uren",
+          "description": "Duur van de pauze voordat de bewaking vanzelf hervat."
+        }
+      }
+    },
+    "monitoring_reset": {
+      "name": "Bewaking resetten",
+      "description": "Vergeet de opgeslagen geschiedenis zodat het aquarium opnieuw leert (bijvoorbeeld bij een nieuwe sonde).",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "channel": {
+          "name": "Meting",
+          "description": "Te vergeten meting (alle als leeg)."
         }
       }
     }

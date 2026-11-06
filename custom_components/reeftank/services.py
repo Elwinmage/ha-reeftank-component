@@ -13,6 +13,7 @@ from homeassistant.util import dt as dt_util
 from .compat import vol
 from .const import (
     ATTR_AQUARIUM,
+    ATTR_CHANNEL,
     ATTR_COUNT,
     ATTR_LINE_ID,
     ATTR_NOTE,
@@ -20,14 +21,23 @@ from .const import (
     ATTR_SOURCE,
     ATTR_SPECIES,
     ATTR_WATER,
+    CHANNEL_KH,
+    CHANNELS,
     DOMAIN,
     FEED_MANUAL,
     SERVICE_FEED,
     SERVICE_LIVESTOCK_ADD,
     SERVICE_LIVESTOCK_REMOVE,
+    SERVICE_MONITORING_CONFIGURE,
+    SERVICE_MONITORING_RESET,
 )
 from .feeding import default_kind
-from .models import LIVESTOCK_KINDS, livestock_add, livestock_remove
+from .models import (
+    LIVESTOCK_KINDS,
+    MONITORING_SCHEMA,
+    livestock_add,
+    livestock_remove,
+)
 
 if TYPE_CHECKING:
     from . import ReefTankData
@@ -67,6 +77,22 @@ REMOVE_SCHEMA = vol.All(
         }
     ),
     cv.has_at_least_one_key(ATTR_LINE_ID, ATTR_SPECIES),
+)
+
+# Same rules as the aquarium document, without the defaults: a call only
+# changes what it names.
+CONFIGURE_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_AQUARIUM): cv.string,
+        **{vol.Optional(str(k)): v for k, v in MONITORING_SCHEMA.schema.items()},
+    }
+)
+
+RESET_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_AQUARIUM): cv.string,
+        vol.Optional(ATTR_CHANNEL): vol.In((*CHANNELS, CHANNEL_KH)),
+    }
 )
 
 
@@ -155,10 +181,32 @@ def async_register_services(hass: HomeAssistant) -> None:
             ) from err
         await data.async_save(doc)
 
+    async def handle_configure(call: ServiceCall) -> None:
+        data = _runtime(hass)
+        aquarium_id = _resolve(hass, data, call.data[ATTR_AQUARIUM])
+        doc: dict[str, Any] = data.store.get(aquarium_id) or {}
+        changes = {k: v for k, v in call.data.items() if k != ATTR_AQUARIUM}
+        doc["monitoring"] = {**doc["monitoring"], **changes}
+        await data.async_save(doc)
+
+    async def handle_reset(call: ServiceCall) -> None:
+        data = _runtime(hass)
+        aquarium_id = _resolve(hass, data, call.data[ATTR_AQUARIUM])
+        await data.monitoring.async_reset(aquarium_id, call.data.get(ATTR_CHANNEL))
+
     hass.services.async_register(DOMAIN, SERVICE_FEED, handle_feed, schema=FEED_SCHEMA)
     hass.services.async_register(
         DOMAIN, SERVICE_LIVESTOCK_ADD, handle_add, schema=ADD_SCHEMA
     )
     hass.services.async_register(
         DOMAIN, SERVICE_LIVESTOCK_REMOVE, handle_remove, schema=REMOVE_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN,
+        SERVICE_MONITORING_CONFIGURE,
+        handle_configure,
+        schema=CONFIGURE_SCHEMA,
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_MONITORING_RESET, handle_reset, schema=RESET_SCHEMA
     )
