@@ -27,6 +27,10 @@ Przechowuje akwaria, ich zdjęcia i obsadę, rejestruje karmienia i aktualizuje 
   <img src="../../doc/img/preview.webp" width="80%" alt="Karta akwarium"/>
 </p>
 
+Karta akwarium w akcji:
+
+[![Obejrzyj wideo](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Powiązane projekty

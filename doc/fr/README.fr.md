@@ -27,6 +27,10 @@ Elle stocke les aquariums, leurs images et leur population, enregistre les nourr
   <img src="../../doc/img/preview.webp" width="80%" alt="La carte aquarium"/>
 </p>
 
+La carte aquarium en action :
+
+[![Regarder la vidéo](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Projets liés

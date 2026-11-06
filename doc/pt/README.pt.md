@@ -27,6 +27,10 @@ Guarda os aquários, as suas imagens e a sua fauna, regista as alimentações e 
   <img src="../../doc/img/preview.webp" width="80%" alt="O cartão de aquário"/>
 </p>
 
+O cartão de aquário em ação:
+
+[![Assistir ao vídeo](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Projetos relacionados

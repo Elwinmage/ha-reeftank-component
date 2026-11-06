@@ -27,6 +27,10 @@ Ze bewaart de aquaria, hun afbeeldingen en hun bezetting, legt de voederingen va
   <img src="../../doc/img/preview.webp" width="80%" alt="De aquariumkaart"/>
 </p>
 
+De aquariumkaart in actie:
+
+[![Bekijk de video](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Verwante projecten

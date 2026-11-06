@@ -30,6 +30,8 @@ CATALOG = f"https://github.com/{OWNER}/reeftank-catalog"
 SITE = "https://elwinmage.github.io/reeftank/"
 TECH = "doc/en/technical.md"
 PREVIEW = "doc/img/preview.webp"
+#: Demo video of the aquarium card
+VIDEO = "ZtYobmQZf9k"
 
 # Flag, language code, and the path the flag links to. English is the root
 # README; the rest live under doc/<lang>/.
@@ -140,6 +142,8 @@ T: dict[str, dict[str, str]] = {
             "other equipment Home Assistant knows."
         ),
         "preview": "The aquarium card",
+        "video_intro": "The aquarium card in action:",
+        "video_alt": "Watch the video",
         "features_title": "Features",
         "f1": "**Your photo, alive**: outline the water on a picture of your tank, the card animates it",
         "f2": "**Real light**: the water takes the colour and the intensity of your lamps (ReefLED or any `light`), dimmed at night but still readable",
@@ -247,6 +251,8 @@ T: dict[str, dict[str, str]] = {
             "Medic ou tout autre matériel connu de Home Assistant."
         ),
         "preview": "La carte aquarium",
+        "video_intro": "La carte aquarium en action :",
+        "video_alt": "Regarder la vidéo",
         "features_title": "Fonctionnalités",
         "f1": "**Votre photo, vivante** : détourez l'eau sur une photo de votre bac, la carte l'anime",
         "f2": "**La vraie lumière** : l'eau prend la couleur et l'intensité de vos lampes (ReefLED ou n'importe quelle `light`), assombrie la nuit mais toujours lisible",
@@ -354,6 +360,8 @@ T: dict[str, dict[str, str]] = {
             "Medic oder jedem anderen Gerät, das Home Assistant kennt."
         ),
         "preview": "Die Aquariumkarte",
+        "video_intro": "Die Aquariumkarte in Aktion:",
+        "video_alt": "Video ansehen",
         "features_title": "Funktionen",
         "f1": "**Ihr Foto, lebendig**: Wasser auf einem Foto Ihres Beckens umranden, die Karte animiert es",
         "f2": "**Echtes Licht**: das Wasser nimmt Farbe und Intensität Ihrer Lampen an (ReefLED oder jede `light`), nachts abgedunkelt, aber gut erkennbar",
@@ -461,6 +469,8 @@ T: dict[str, dict[str, str]] = {
             "otro equipo que Home Assistant conozca."
         ),
         "preview": "La tarjeta de acuario",
+        "video_intro": "La tarjeta de acuario en acción:",
+        "video_alt": "Ver el video",
         "features_title": "Funciones",
         "f1": "**Su foto, viva**: contornee el agua en una foto de su acuario y la tarjeta la anima",
         "f2": "**Luz real**: el agua toma el color y la intensidad de sus lámparas (ReefLED o cualquier `light`), oscurecida de noche pero legible",
@@ -568,6 +578,8 @@ T: dict[str, dict[str, str]] = {
             "qualsiasi altra apparecchiatura nota a Home Assistant."
         ),
         "preview": "La scheda acquario",
+        "video_intro": "La scheda acquario in azione:",
+        "video_alt": "Guarda il video",
         "features_title": "Funzionalità",
         "f1": "**La vostra foto, viva**: contornate l'acqua su una foto della vasca, la scheda la anima",
         "f2": "**Luce reale**: l'acqua prende colore e intensità delle vostre lampade (ReefLED o qualsiasi `light`), scurita di notte ma leggibile",
@@ -675,6 +687,8 @@ T: dict[str, dict[str, str]] = {
             "apparaat dat Home Assistant kent."
         ),
         "preview": "De aquariumkaart",
+        "video_intro": "De aquariumkaart in actie:",
+        "video_alt": "Bekijk de video",
         "features_title": "Functies",
         "f1": "**Uw foto, levend**: omlijn het water op een foto van uw bak, de kaart brengt het tot leven",
         "f2": "**Echt licht**: het water krijgt de kleur en de sterkte van uw lampen (ReefLED of elke `light`), 's nachts gedimd maar leesbaar",
@@ -782,6 +796,8 @@ T: dict[str, dict[str, str]] = {
             "Home Assistant."
         ),
         "preview": "Karta akwarium",
+        "video_intro": "Karta akwarium w akcji:",
+        "video_alt": "Obejrzyj wideo",
         "features_title": "Funkcje",
         "f1": "**Twoje zdjęcie, żywe**: obrysuj wodę na zdjęciu zbiornika, a karta ją ożywi",
         "f2": "**Prawdziwe światło**: woda przyjmuje kolor i natężenie Twoich lamp (ReefLED lub dowolne `light`), nocą przyciemniona, ale czytelna",
@@ -889,6 +905,8 @@ T: dict[str, dict[str, str]] = {
             "qualquer outro equipamento que o Home Assistant conheça."
         ),
         "preview": "O cartão de aquário",
+        "video_intro": "O cartão de aquário em ação:",
+        "video_alt": "Assistir ao vídeo",
         "features_title": "Funcionalidades",
         "f1": "**A sua foto, viva**: contorne a água numa foto do aquário e o cartão anima-a",
         "f2": "**Luz real**: a água ganha a cor e a intensidade das suas lâmpadas (ReefLED ou qualquer `light`), escurecida à noite mas legível",
@@ -1166,6 +1184,10 @@ def render(code: str) -> str:
 <p align="center">
   <img src="{root}{PREVIEW}" width="80%" alt="{t["preview"]}"/>
 </p>
+
+{t["video_intro"]}
+
+[![{t["video_alt"]}](https://img.youtube.com/vi/{VIDEO}/0.jpg)](https://www.youtube.com/watch?v={VIDEO})
 
 ## {t["features_title"]}
 

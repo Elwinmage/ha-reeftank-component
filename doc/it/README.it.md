@@ -27,6 +27,10 @@ Conserva gli acquari, le loro immagini e la loro fauna, registra le alimentazion
   <img src="../../doc/img/preview.webp" width="80%" alt="La scheda acquario"/>
 </p>
 
+La scheda acquario in azione:
+
+[![Guarda il video](https://img.youtube.com/vi/ZtYobmQZf9k/0.jpg)](https://www.youtube.com/watch?v=ZtYobmQZf9k)
+
 <!-- ecosystem:start -->
 
 ## Progetti correlati
