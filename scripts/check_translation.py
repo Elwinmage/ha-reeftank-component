@@ -13,7 +13,14 @@ import json
 import sys
 from pathlib import Path
 
-from colorama import Fore, Style
+# colorama is optional: plain output when it is not installed.
+try:
+    from colorama import Fore, Style
+
+    RED, YELLOW, GREEN, RESET = Fore.RED, Fore.YELLOW, Fore.GREEN, Style.RESET_ALL
+except ImportError:
+    RED = YELLOW = GREEN = RESET = ""
+
 
 ROOT = Path(__file__).resolve().parent.parent
 BASE = ROOT / "custom_components" / "reeftank"
@@ -68,19 +75,17 @@ def main() -> int:
     for key in sorted(keys_in_code()):
         if f"entity.{key}.name" not in reference:
             ok = False
-            print(f"{Fore.RED}strings.json: missing entity.{key}.name{Style.RESET_ALL}")
+            print(f"{RED}strings.json: missing entity.{key}.name{RESET}")
     for file in sorted((BASE / "translations").glob("*.json")):
         keys = flatten(json.loads(file.read_text(encoding="utf-8")))
         for missing in sorted(reference - keys):
             ok = False
-            print(f"{Fore.RED}{file.name}: missing {missing}{Style.RESET_ALL}")
+            print(f"{RED}{file.name}: missing {missing}{RESET}")
         for extra in sorted(keys - reference):
             ok = False
-            print(
-                f"{Fore.YELLOW}{file.name}: not in strings.json {extra}{Style.RESET_ALL}"
-            )
+            print(f"{YELLOW}{file.name}: not in strings.json {extra}{RESET}")
     if ok:
-        print(f"{Fore.GREEN}Translations OK{Style.RESET_ALL}")
+        print(f"{GREEN}Translations OK{RESET}")
     return 0 if ok else 1
 
 

@@ -4,7 +4,7 @@
   <img src="https://github.com/Elwinmage/ha-reeftank-component/raw/main/icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -81,7 +81,7 @@ Los proyectos ReefTech encajan entre sí: las integraciones traen tu equipo a Ho
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Blueprints de notificación comunes a todo el ecosistema: mantenimientos vencidos encontrados por el contrato <code>reef_role</code>, y dispositivos que dejaron de responder. Ocho idiomas.</td>
+    <td>Blueprints de automatización comunes a todo el ecosistema: mantenimientos vencidos encontrados por el contrato <code>reef_role</code>, dispositivos que dejaron de responder, una prueba periódica de calentadores y una vigilancia de relés. Ocho idiomas.</td>
     <td>las tres integraciones</td>
   </tr>
   <tr>
@@ -111,13 +111,13 @@ Todos están documentados juntos en la [página del proyecto ReefTech](https://e
 
 ### Instalación directa
 
-Haga clic aquí para abrir el repositorio directamente en HACS y pulse «Descargar»: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Haga clic aquí para abrir el repositorio directamente en el Marketplace y pulse «Instalar»: [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Búsqueda en HACS
+### Búsqueda en el Marketplace
 
-O añada `https://github.com/Elwinmage/ha-reeftank-component` como repositorio personalizado (Integración) y busque «ReefTank».
+O busque «ReefTank» en *Ajustes > Marketplace*. En un Home Assistant anterior a 2026.11, los mismos pasos funcionan en HACS.
 
-Reinicie Home Assistant y añada la integración (una sola entrada, nada que configurar): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Añada después la integración (una entrada, nada que configurar; con HACS en un Home Assistant más antiguo, reinicie antes): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 La tarjeta de acuario viene con [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), que también hay que instalar.
 
@@ -140,7 +140,7 @@ render: static        # optional: static, light or full
 
 ## El editor de escena
 
-Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con seis pestañas:
+Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con siete pestañas:
 
 | Pestaña | Qué se hace en ella |
 |---|---|
@@ -150,6 +150,7 @@ Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con seis
 | **Luz y corriente** | Las lámparas que iluminan cada agua y su posición; las bombas que mueven el agua |
 | **Fauna** | Peces (especie, número, tamaño, refugio) y corales (especie, tamaño, colores, posición) |
 | **Alimentación** | Las entidades que registran una alimentación, y dónde cae la comida |
+| **Vigilancia** | Las entidades de pH, ORP, CO2 de la habitación y pruebas de KH, lo que indica una calibración, los umbrales de las alarmas y el estado de la vigilancia |
 
 ## Niveles de renderizado
 
@@ -212,6 +213,7 @@ Cada acuario es un dispositivo con:
 | `sensor.<aquarium>_kh_estimated` | KH estimado entre dos pruebas (necesita una prueba y el CO2) |
 | `binary_sensor.<aquarium>_*` | Las seis alarmas anteriores |
 | `switch.<aquarium>_pause_monitoring` | Suspende el análisis |
+| `sensor.<aquarium>_water_volume` | Volumen de agua neto (L), leído por la regulación de dosificación ReefDose de la integración redsea |
 
 Y el dispositivo *ReefTank catalog*:
 

@@ -4,7 +4,7 @@
   <img src="icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -81,7 +81,7 @@ The ReefTech projects fit together: the integrations bring your equipment into H
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Notification blueprints shared by the whole ecosystem: overdue maintenance found through the <code>reef_role</code> contract, and devices that went unreachable. Eight languages.</td>
+    <td>Automation blueprints shared by the whole ecosystem: overdue maintenance found through the <code>reef_role</code> contract, devices that went unreachable, a periodic heater test and a relay watch. Eight languages.</td>
     <td>all three integrations</td>
   </tr>
   <tr>
@@ -111,13 +111,13 @@ All of them are documented together on the [ReefTech project page](https://elwin
 
 ### Direct installation
 
-Click here to open the repository directly in HACS and click "Download": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Click here to open the repository directly in the Marketplace and click "Install": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Search in HACS
+### Search in the Marketplace
 
-Or add `https://github.com/Elwinmage/ha-reeftank-component` as a custom repository (Integration) and search for "ReefTank".
+Or search for "ReefTank" in *Settings > Marketplace*. On a Home Assistant older than 2026.11, the same steps work in HACS.
 
-Restart Home Assistant, then add the integration (one entry, nothing to configure): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Then add the integration (one entry, nothing to configure; with HACS on an older Home Assistant, restart first): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 The aquarium card itself comes with [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), to install as well.
 
@@ -140,7 +140,7 @@ render: static        # optional: static, light or full
 
 ## The scene editor
 
-A full-screen dialog, opened from the card editor, with six tabs:
+A full-screen dialog, opened from the card editor, with seven tabs:
 
 | Tab | What you do there |
 |---|---|
@@ -150,6 +150,7 @@ A full-screen dialog, opened from the card editor, with six tabs:
 | **Light & flow** | Lamps lighting each water and their position; pumps that make the water move |
 | **Livestock** | Fish (species, count, size, home) and corals (species, size, colours, position) |
 | **Feeding** | Entities that record a feeding, and where the food falls |
+| **Monitoring** | The pH, ORP, room CO2 and KH tests entities, what tells a calibration, the alarm thresholds, and the status of the monitoring |
 
 ## Render levels
 
@@ -212,6 +213,7 @@ Each aquarium is a device with:
 | `sensor.<aquarium>_kh_estimated` | KH estimated between two tests (needs a test and the CO2) |
 | `binary_sensor.<aquarium>_*` | The six alarms above |
 | `switch.<aquarium>_pause_monitoring` | Suspends the analysis |
+| `sensor.<aquarium>_water_volume` | Net water volume (L), read by the ReefDose dose regulation of the redsea integration |
 
 And the *ReefTank catalog* device:
 

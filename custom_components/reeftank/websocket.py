@@ -18,12 +18,14 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from .compat import vol
 from .const import (
     DOMAIN,
+    IMAGE_URL_TTL,
     SIGNAL_AQUARIUM_UPDATED,
     SIGNAL_CATALOG_UPDATED,
     URL_CATALOG_PACK,
     URL_CATALOG_USER,
-    URL_IMAGES,
 )
+from .images import signed_image_urls
+from .models import referenced_images
 from .store import RevisionConflict
 
 if TYPE_CHECKING:
@@ -50,6 +52,7 @@ def async_register_websocket(hass: HomeAssistant) -> None:
         ws_subscribe,
         ws_save,
         ws_delete,
+        ws_images_sign,
         ws_catalog,
         ws_catalog_subscribe,
     ):
@@ -68,11 +71,28 @@ def _summary(doc: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _payload(data: ReefTankData, doc: dict[str, Any]) -> dict[str, Any]:
+# Cap of one `reeftank/images/sign` request.
+MAX_SIGN_PATHS = 64
+
+
+def _payload(
+    hass: HomeAssistant,
+    connection: ActiveConnection,
+    data: ReefTankData,
+    doc: dict[str, Any],
+) -> dict[str, Any]:
+    """A document with its entities and the signed URLs of its pictures.
+
+    `images` maps each uploaded picture of the document to a URL signed for
+    this connection's user, valid `images_ttl` seconds.
+    """
     return {
         "document": doc,
         "entities": data.entity_ids(doc["id"]),
-        "images_url": URL_IMAGES,
+        "images": signed_image_urls(
+            hass, referenced_images(doc), connection.refresh_token_id
+        ),
+        "images_ttl": int(IMAGE_URL_TTL.total_seconds()),
     }
 
 
@@ -108,7 +128,7 @@ def ws_get(
     if doc is None:
         connection.send_error(msg["id"], ERR_NOT_FOUND, "unknown aquarium")
         return
-    connection.send_result(msg["id"], _payload(data, doc))
+    connection.send_result(msg["id"], _payload(hass, connection, data, doc))
 
 
 @websocket_command(
@@ -144,14 +164,16 @@ def ws_subscribe(
         current = _data(hass)
         if current is not None:
             connection.send_message(
-                event_message(msg["id"], _payload(current, new_doc))
+                event_message(msg["id"], _payload(hass, connection, current, new_doc))
             )
 
     connection.subscriptions[msg["id"]] = async_dispatcher_connect(
         hass, SIGNAL_AQUARIUM_UPDATED.format(aquarium_id), _forward
     )
     connection.send_result(msg["id"])
-    connection.send_message(event_message(msg["id"], _payload(data, doc)))
+    connection.send_message(
+        event_message(msg["id"], _payload(hass, connection, data, doc))
+    )
 
 
 @websocket_command(
@@ -183,7 +205,7 @@ async def ws_save(
     except vol.Invalid as err:
         connection.send_error(msg["id"], ERR_INVALID, str(err))
         return
-    connection.send_result(msg["id"], _payload(data, doc))
+    connection.send_result(msg["id"], _payload(hass, connection, data, doc))
 
 
 @websocket_command(
@@ -206,6 +228,30 @@ async def ws_delete(
         connection.send_error(msg["id"], ERR_NOT_FOUND, "unknown aquarium")
         return
     connection.send_result(msg["id"])
+
+
+@websocket_command(
+    {
+        vol.Required("type"): "reeftank/images/sign",
+        vol.Required("paths"): [str],
+    }
+)
+@callback
+def ws_images_sign(
+    hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]
+) -> None:
+    """Sign uploaded picture paths for this user: `{path: url}`.
+
+    Lets the card renew URLs before `images_ttl` runs out, and the editor
+    show a picture not saved in a document yet. Invalid paths are left out.
+    """
+    paths = msg["paths"]
+    if len(paths) > MAX_SIGN_PATHS:
+        connection.send_error(msg["id"], ERR_INVALID, "too many paths")
+        return
+    connection.send_result(
+        msg["id"], signed_image_urls(hass, paths, connection.refresh_token_id)
+    )
 
 
 @websocket_command({vol.Required("type"): "reeftank/catalog"})

@@ -128,6 +128,7 @@ One **aquarium** document per tank. Key rules:
   "cloud": { "provider": "redsea", "uid": "00000000-…" },
   "preset": "reefer-425-g2",
   "dimensions_cm": { "length": 121.9, "width": 60.9, "height": 40.6 },
+  "water_volume_l": 425,
   "photo_light": "white",
   "render": { "level": "full", "max_fish": 30, "caustics": false,
               "night_darkness": 0.55 },
@@ -210,6 +211,10 @@ Notes:
 
 - `dimensions_cm` uses the Red Sea cloud naming: `length` = X (front, left to
   right), `width` = Y (depth, front glass to back wall), `height` = Z.
+- `water_volume_l` is the net water volume in litres (tank and sump, without
+  rock and sand), optional. The editor pre-fills it from the cloud
+  aquarium's `net_water_volume` (converted from gallons when the cloud
+  account counts in gallons).
 - `quad` is a 4-corner quadrilateral (photos are rarely shot square-on); the
   editor starts from a rectangle.
 - `sand` is where the sand meets the front glass, as seen on the picture: a
@@ -261,12 +266,21 @@ button.
 | What | Where | Why |
 |---|---|---|
 | Aquarium documents | `Store` → `.storage/reeftank` | Versioned, migrated, in HA backups |
-| Uploaded photos | `/config/reeftank/<aquarium_id>/` | In HA backups; served by a static path |
+| Uploaded photos | `/config/reeftank/images/<aquarium_id>/` | In HA backups; private, served to authenticated requests only |
 | Downloaded catalog | `/config/reeftank/pack/` | Species and textures of the catalog releases, replaced by updates |
 | User catalog additions | `/config/reeftank/catalog/` | Custom species, merged over the downloaded ones |
 
-Static paths: `/reeftank/images/…`, `/reeftank/catalog/pack/…` and
+Static paths (public species catalog): `/reeftank/catalog/pack/…` and
 `/reeftank/catalog/user/…`.
+
+Uploaded photos show the user's home (tank, cabinet, technical room): they
+are **not** a static path, which would serve them to anyone holding the URL.
+`GET /api/reeftank/images/<aquarium_id>/<file>.webp` is an authenticated view
+(`requires_auth`). An `<img>` cannot send the bearer token, so the WebSocket
+API hands out URLs signed with `async_sign_path` (`?authSig=…`): bound to the
+user's refresh token (revoked on logout) and valid 24 h (`images_ttl`). The
+card renews them with `reeftank/images/sign` before they expire, or on a
+`401` from an `<img>`. Responses are `Cache-Control: private`.
 
 ### Background photo uploads
 
@@ -291,18 +305,22 @@ produced by the scripts of reeftank-catalog in their final format.
 | Command | Payload | Returns |
 |---|---|---|
 | `reeftank/aquarium/list` | — | `[{id, name, revision, preset, cloud, render_level, views}]` |
-| `reeftank/aquarium/get` | `{aquarium_id}` | `{document, entities, images_url}` |
+| `reeftank/aquarium/get` | `{aquarium_id}` | `{document, entities, images, images_ttl}` |
 | `reeftank/aquarium/subscribe` | `{aquarium_id}` | the same payload now and on every change; `{deleted: true}` |
-| `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images_url}`; error `conflict` when the revision moved, `invalid_format` |
+| `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images, images_ttl}`; error `conflict` when the revision moved, `invalid_format` |
 | `reeftank/aquarium/delete` (admin) | `{aquarium_id}` | — (removes device, entities, pictures) |
+| `reeftank/images/sign` | `{paths: ["<aquarium_id>/<file>.webp", …]}` (≤ 64) | `{path: signed_url}`; invalid paths left out |
 | `reeftank/catalog` | — | merged catalog (downloaded + user), asset names turned into URLs; `pack: {version, updating}` |
 | `reeftank/catalog/subscribe` | — | an event `{version}` each time a catalog release is installed |
 
 `entities` gives the entity ids of the aquarium's own entities (§6), so the
-card follows `event.<tank>_feeding` without guessing its name.
+card follows `event.<tank>_feeding` without guessing its name. `images` maps
+each uploaded picture of the document (`views[].image`) to a URL signed for
+the current user, valid `images_ttl` seconds; catalog pictures keep their
+public catalog URL.
 
 Pictures are uploaded over HTTP (admin only): `POST /api/reeftank/upload/<aquarium_id>`,
-multipart field `file` → `{path, url, width, height}`. The aquarium may not
+multipart field `file` → `{path, url, width, height}` (`url` signed, as above). The aquarium may not
 exist yet: the editor gives a new aquarium its id before saving it.
 
 ### Services
@@ -354,9 +372,15 @@ removed with it (unique ids derived from the aquarium id).
 | `sensor.<tank>_kh_estimated` | KH between two tests, in dKH (§18) | `last_test` |
 | `binary_sensor.<tank>_*` | The six alarms (§18); unknown while they cannot be told | Figures explaining each one |
 | `switch.<tank>_pause_monitoring` | On during a pause; turns off by itself | `until` |
+| `sensor.<tank>_water_volume` | `water_volume_l` (L), unknown when unset | `cloud` (the document's), `device_ids` (devices placed on the views) |
 
 - The population history comes for free from the recorder on the count
   sensors.
+- `water_volume` lets another integration find the volume of the tank a
+  device belongs to without depending on reeftank: the redsea integration's
+  ReefDose dose regulation takes the sensor whose `device_ids` hold the
+  doser (or one of its heads), or whose `cloud` is the Red Sea cloud
+  aquarium of the doser.
 - `event.<tank>_feeding` is an `EventEntity`: its state *is* the last trigger
   time, restored across restarts, usable in automations.
 
@@ -618,7 +642,8 @@ modal of its own, stacked above Home Assistant's card editor.
 1. **Aquarium** — name, dimensions, the cloud aquarium it matches (via
    `redsea/aquariums` when loaded: dimensions, lamps, feeding shortcuts and
    device list filled in), preset, light the photos were taken under, render
-   level and fish cap; delete.
+   level, fish cap, fish size (`render.fish_scale`) and darkness of the water
+   at night; delete.
 2. **Views** — add a picture (upload or preset), then per water:
    - **outline** the water with a 4-corner quad;
    - **sand line**: front glass and back wall polylines; click to add a point
@@ -658,6 +683,10 @@ modal of its own, stacked above Home Assistant's card editor.
    palette, placed by click and drag on a view).
 6. **Feeding** — feeding sources (feeder, shortcut, button…), merge delay and
    duration; feeding points on the picture, each for one source or any.
+7. **Monitoring** — pH, ORP, room CO2 and KH tests entities, the entities
+   telling a probe was calibrated, the entities pausing the analysis and the
+   thresholds of the alarms (§18); shows the status of the monitoring and of
+   its alarms.
 
 Saving sends the whole document with the revision it was loaded at: if it
 moved meanwhile (another editor), the save is refused with `conflict` rather

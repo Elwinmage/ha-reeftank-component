@@ -181,6 +181,17 @@
       },
       "ph_swing_24h": {
         "name": "pH swing (24 h)"
+      },
+      "water_volume": {
+        "name": "Water volume",
+        "state_attributes": {
+          "cloud": {
+            "name": "Cloud aquarium"
+          },
+          "device_ids": {
+            "name": "Devices"
+          }
+        }
       }
     },
     "switch": {

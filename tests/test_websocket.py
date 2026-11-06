@@ -31,7 +31,13 @@ async def test_list_get_catalog(
     await ws.send_json_auto_id({"type": "reeftank/aquarium/get", "aquarium_id": "a1b2"})
     msg = await ws.receive_json()
     assert msg["result"]["document"]["name"] == "Reefer 425"
-    assert msg["result"]["images_url"] == "/reeftank/images"
+    images = msg["result"]["images"]
+    assert list(images) == ["a1b2/0123456789abcdef.webp"]
+    assert images["a1b2/0123456789abcdef.webp"].startswith(
+        "/api/reeftank/images/a1b2/0123456789abcdef.webp?authSig="
+    )
+    assert msg["result"]["images_ttl"] == 86400
+    assert "images_url" not in msg["result"]
     entities = msg["result"]["entities"]
     assert entities["feeding"] == "event.reefer_425_feeding"
     assert entities["fish"] == "sensor.reefer_425_fish"
@@ -181,3 +187,31 @@ async def test_not_loaded(
         await ws.send_json_auto_id(payload)
         msg = await ws.receive_json()
         assert msg["error"]["code"] == "not_loaded", payload
+
+
+async def test_images_sign(
+    hass: HomeAssistant,
+    entry: MockConfigEntry,
+    hass_ws_client: Any,
+    hass_read_only_access_token: str,
+) -> None:
+    # Any logged-in user may sign: they can read the documents anyway
+    ws = await hass_ws_client(hass, hass_read_only_access_token)
+    await ws.send_json_auto_id(
+        {
+            "type": "reeftank/images/sign",
+            "paths": ["a1b2/abc.webp", "../etc/passwd", "a1b2/abc.webp", "x.png"],
+        }
+    )
+    msg = await ws.receive_json()
+    assert msg["success"]
+    assert list(msg["result"]) == ["a1b2/abc.webp"]
+    assert msg["result"]["a1b2/abc.webp"].startswith(
+        "/api/reeftank/images/a1b2/abc.webp?authSig="
+    )
+
+    await ws.send_json_auto_id(
+        {"type": "reeftank/images/sign", "paths": ["a1b2/a.webp"] * 65}
+    )
+    msg = await ws.receive_json()
+    assert msg["error"]["code"] == "invalid_format"

@@ -43,7 +43,7 @@ from .const import (
 # Ids are short, url-safe and generated server side when missing.
 ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}$")
 # An uploaded picture: "<aquarium id>/<file>.webp", relative to the images dir.
-_UPLOAD_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}/[A-Za-z0-9_-]{1,64}\.webp$")
+UPLOAD_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,39}/[A-Za-z0-9_-]{1,64}\.webp$")
 # A catalog picture (preset): served by the integration itself.
 _CATALOG_RE = re.compile(
     r"^(?:"
@@ -157,7 +157,7 @@ def _image(value: Any) -> str | None:
     """A view picture: an uploaded file or a catalog picture."""
     if value in (None, ""):
         return None
-    if isinstance(value, str) and (_UPLOAD_RE.match(value) or _CATALOG_RE.match(value)):
+    if isinstance(value, str) and (UPLOAD_RE.match(value) or _CATALOG_RE.match(value)):
         if ".." in value:
             raise vol.Invalid("invalid image path")
         return value
@@ -446,6 +446,11 @@ DOCUMENT_SCHEMA = vol.Schema(
         ),
         vol.Optional("preset"): vol.Any(None, vol.All(str, vol.Length(max=200))),
         vol.Optional("dimensions_cm"): vol.Any(None, DIMENSIONS_SCHEMA),
+        # Net water volume (L): tank + sump, without rock and sand. Shown by
+        # the water_volume sensor, read by dosing regulations (redsea).
+        vol.Optional("water_volume_l"): vol.Any(
+            None, vol.All(vol.Coerce(float), vol.Range(min=1, max=100000))
+        ),
         vol.Optional("photo_light", default="white"): vol.In(PHOTO_LIGHTS),
         vol.Optional("render", default=dict): RENDER_SCHEMA,
         vol.Optional("waters", default=dict): {_ident: WATER_SCHEMA},
@@ -639,7 +644,7 @@ def referenced_images(doc: dict[str, Any]) -> set[str]:
     return {
         view["image"]
         for view in doc.get("views", {}).values()
-        if view.get("image") and _UPLOAD_RE.match(view["image"])
+        if view.get("image") and UPLOAD_RE.match(view["image"])
     }
 
 
@@ -651,3 +656,14 @@ def feeding_points(doc: dict[str, Any]) -> list[dict[str, Any]]:
         for element in view.get("elements", [])
         if ROLE_FEEDING_POINT in element.get("roles", [])
     ]
+
+
+def placed_devices(doc: dict[str, Any]) -> list[str]:
+    """Device ids placed on the views of an aquarium, in order, once each."""
+    found: list[str] = []
+    for view in doc.get("views", {}).values():
+        for element in view.get("elements", []):
+            device_id = element.get("device_id")
+            if device_id and device_id not in found:
+                found.append(device_id)
+    return found

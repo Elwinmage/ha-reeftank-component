@@ -11,5 +11,5 @@
   "issue_tracker": "https://github.com/Elwinmage/ha-reeftank-component/issues",
   "requirements": [],
   "single_config_entry": true,
-  "version": "v0.1.0"
+  "version": "v0.1.1"
 }

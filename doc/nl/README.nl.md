@@ -4,7 +4,7 @@
   <img src="https://github.com/Elwinmage/ha-reeftank-component/raw/main/icon.png"  width="50%"/>
 </p>
 
-[![HACS Badge](https://img.shields.io/badge/HACS-Custom-41BDF5.svg?style=flat-square)](https://github.com/hacs/hacs)
+[![Marketplace Badge](https://img.shields.io/badge/Marketplace-Default-41BDF5.svg?style=flat-square)](https://github.com/hacs/default)
 [![IoT Class](https://img.shields.io/badge/IoT%20Class-Calculated-green?style=flat-square)](https://developers.home-assistant.io/docs/architecture_index/#branding)
 [![GH-release](https://img.shields.io/github/v/release/Elwinmage/ha-reeftank-component.svg?style=flat-square)](https://github.com/Elwinmage/ha-reeftank-component/releases)
 ![Installations](https://img.shields.io/badge/dynamic/json?label=Active%20Installs&query=estimated&cacheSeconds=3600&url=https%3A%2F%2Fraw.githubusercontent.com%2FElwinmage%2Fha-reeftank-component%2Fmain%2Fbadges%2Fstats.json&color=CE1126&logo=home-assistant)
@@ -81,7 +81,7 @@ De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
-    <td>Meldings-blueprints voor het hele ecosysteem: achterstallig onderhoud gevonden via het <code>reef_role</code>-contract, en apparaten die onbereikbaar zijn geworden. Acht talen.</td>
+    <td>Automatiserings-blueprints voor het hele ecosysteem: achterstallig onderhoud gevonden via het <code>reef_role</code>-contract, apparaten die onbereikbaar zijn geworden, een periodieke verwarmertest en relaisbewaking. Acht talen.</td>
     <td>alle drie de integraties</td>
   </tr>
   <tr>
@@ -111,13 +111,13 @@ Alles staat samen gedocumenteerd op de [ReefTech-projectpagina](https://elwinmag
 
 ### Directe installatie
 
-Klik hier om de repository direct in HACS te openen en klik op "Downloaden": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
+Klik hier om de repository direct in de Marketplace te openen en klik op "Installeren": [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=Elwinmage&repository=ha-reeftank-component&category=integration)
 
-### Zoeken in HACS
+### Zoeken in de Marketplace
 
-Of voeg `https://github.com/Elwinmage/ha-reeftank-component` toe als aangepaste repository (Integratie) en zoek naar "ReefTank".
+Of zoek naar "ReefTank" in *Instellingen > Marketplace*. Op een Home Assistant ouder dan 2026.11 werken dezelfde stappen in HACS.
 
-Herstart Home Assistant en voeg de integratie toe (één item, niets in te stellen): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
+Voeg daarna de integratie toe (één vermelding, niets te configureren; met HACS op een oudere Home Assistant eerst herstarten): [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=reeftank)
 
 De aquariumkaart zelf komt met [ha-reef-card](https://github.com/Elwinmage/ha-reef-card), dat u ook installeert.
 
@@ -140,7 +140,7 @@ render: static        # optional: static, light or full
 
 ## De scène-editor
 
-Een schermvullend venster, geopend vanuit de kaarteditor, met zes tabbladen (de kaart is nog niet in het Nederlands vertaald):
+Een schermvullend venster, geopend vanuit de kaarteditor, met zeven tabbladen (de kaart is nog niet in het Nederlands vertaald):
 
 | Tabblad | Wat u er doet |
 |---|---|
@@ -150,6 +150,7 @@ Een schermvullend venster, geopend vanuit de kaarteditor, met zes tabbladen (de 
 | **Light & flow** | De lampen die elk water verlichten en hun positie; de pompen die het water bewegen |
 | **Livestock** | Vissen (soort, aantal, grootte, thuis) en koralen (soort, grootte, kleuren, positie) |
 | **Feeding** | De entiteiten die een voedering vastleggen, en waar het voer valt |
+| **Monitoring** | De entiteiten voor pH, ORP, CO2 in de ruimte en KH-tests, wat een kalibratie aangeeft, de alarmdrempels en de status van de bewaking |
 
 ## Weergaveniveaus
 
@@ -212,6 +213,7 @@ Elk aquarium is een apparaat met:
 | `sensor.<aquarium>_kh_estimated` | Geschatte KH tussen twee tests (vereist een test en de CO2) |
 | `binary_sensor.<aquarium>_*` | De zes alarmen hierboven |
 | `switch.<aquarium>_pause_monitoring` | Stopt de analyse tijdelijk |
+| `sensor.<aquarium>_water_volume` | Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie |
 
 En het apparaat *ReefTank catalog*:
 

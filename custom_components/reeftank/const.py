@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import Final
 
 from homeassistant.const import Platform
@@ -52,7 +53,9 @@ DEFAULT_AUTO_UPDATE: Final = True
 # HTTP paths
 # ---------------------------------------------------------------------------
 
-URL_IMAGES: Final = "/reeftank/images"
+# Uploaded pictures are private: served by an authenticated view, reached
+# from <img> through signed URLs handed out by the WebSocket API.
+URL_IMAGES: Final = "/api/reeftank/images"
 URL_CATALOG_PACK: Final = "/reeftank/catalog/pack"
 URL_CATALOG_USER: Final = "/reeftank/catalog/user"
 URL_UPLOAD: Final = "/api/reeftank/upload/{aquarium_id}"
@@ -60,6 +63,9 @@ URL_UPLOAD: Final = "/api/reeftank/upload/{aquarium_id}"
 # ---------------------------------------------------------------------------
 # Uploads
 # ---------------------------------------------------------------------------
+
+# Lifetime of a signed picture URL; the card asks for fresh ones before then.
+IMAGE_URL_TTL: Final = timedelta(hours=24)
 
 UPLOAD_MAX_BYTES: Final = 20 * 1024 * 1024
 UPLOAD_MAX_EDGE: Final = 2560
@@ -148,6 +154,7 @@ KEY_ORP_LOW: Final = "orp_low"
 KEY_PROBE_SUSPECT: Final = "probe_suspect"
 KEY_KH_FAST_CHANGE: Final = "kh_fast_change"
 KEY_KH_ESTIMATED: Final = "kh_estimated"
+KEY_WATER_VOLUME: Final = "water_volume"
 
 # ---------------------------------------------------------------------------
 # Dispatcher signals

@@ -14,6 +14,14 @@
 - A hotspot opens a view (`goto`) or a device (`device_id`).
 - `render.fish_scale`: size of the fish against the tank, over their real size.
 - Services: `reeftank.monitoring_configure`, `reeftank.monitoring_reset`.
+- Aquarium documents: new optional `water_volume_l`, the net water volume in
+  litres (tank and sump, without rock and sand).
+- New `sensor.<aquarium>_water_volume` (L, unknown until set), with the
+  document's `cloud` and the devices placed on its views (`device_ids`) as
+  attributes: the redsea integration's ReefDose dose regulation reads the
+  volume of a doser's tank from it.
+- Uploaded pictures are private: served through signed URLs that the card
+  renews (`reeftank/images/sign`), no longer as public static files.
 
 # v0.1.0
 

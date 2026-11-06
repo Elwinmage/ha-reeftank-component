@@ -181,6 +181,17 @@
       },
       "ph_swing_24h": {
         "name": "Wahania pH (24 h)"
+      },
+      "water_volume": {
+        "name": "Objętość wody",
+        "state_attributes": {
+          "cloud": {
+            "name": "Akwarium w chmurze"
+          },
+          "device_ids": {
+            "name": "Urządzenia"
+          }
+        }
       }
     },
     "switch": {

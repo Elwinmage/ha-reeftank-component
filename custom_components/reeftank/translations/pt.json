@@ -181,6 +181,17 @@
       },
       "ph_swing_24h": {
         "name": "Amplitude do pH (24 h)"
+      },
+      "water_volume": {
+        "name": "Volume de água",
+        "state_attributes": {
+          "cloud": {
+            "name": "Aquário na nuvem"
+          },
+          "device_ids": {
+            "name": "Dispositivos"
+          }
+        }
       }
     },
     "switch": {
