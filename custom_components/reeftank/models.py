@@ -293,6 +293,9 @@ ELEMENT_SCHEMA = _with_id(
             vol.Coerce(float), vol.Range(min=0.2, max=5)
         ),
         vol.Optional("label", default=""): _text(MAX_NAME),
+        # Entity: draw the value without the label, in this colour
+        vol.Optional("hide_label", default=False): bool,
+        vol.Optional("text_color"): vol.Any(None, _hex_color),
         vol.Optional("roles", default=list): [vol.In([ROLE_FEEDING_POINT])],
         vol.Optional("source"): vol.Any(None, _ident),
     }

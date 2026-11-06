@@ -399,3 +399,20 @@ def test_placed_devices(document: dict[str, Any]) -> None:
     ]
     assert models.placed_devices(doc) == ["led1", "feeder1", "doser"]
     assert models.placed_devices({}) == []
+
+
+def test_entity_text_options() -> None:
+    """An entity can hide its label and have its own text colour."""
+    element = {"kind": "entity", "entity_id": "sensor.temp", "pos": [0.5, 0.5]}
+    view = {"elements": [{**element, "hide_label": True, "text_color": "#ff0000"}]}
+    doc = validate_document({"name": "T", "views": {"v1": view}})
+    stored = doc["views"]["v1"]["elements"][0]
+    assert stored["hide_label"] is True
+    assert stored["text_color"] == "#ff0000"
+
+    plain = validate_document({"name": "T", "views": {"v1": {"elements": [element]}}})
+    assert plain["views"]["v1"]["elements"][0]["hide_label"] is False
+
+    view["elements"][0]["text_color"] = "red"
+    with pytest.raises(vol.Invalid):
+        validate_document({"name": "T", "views": {"v1": view}})

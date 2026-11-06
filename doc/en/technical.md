@@ -187,7 +187,8 @@ One **aquarium** document per tank. Key rules:
         { "kind": "device", "device_id": "feeder1", "pos": [0.62, 0.08],
           "roles": ["feeding_point"], "source": "f1" },
         { "kind": "entity", "type": "common-sensor",
-          "entity_id": "sensor.temp", "pos": [0.85, 0.60] }
+          "entity_id": "sensor.temp", "pos": [0.85, 0.60],
+          "hide_label": false, "text_color": "#ffcc00" }
       ],
       "hotspots": [
         { "poly": [[0.1, 0.6], [0.9, 0.6], [0.9, 0.95], [0.1, 0.95]],

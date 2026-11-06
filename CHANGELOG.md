@@ -12,6 +12,7 @@
   for instance): `cause` of the pH alarm tells the KH, the CO2 and the probe
   apart; alarm when two tests differ too much; estimated KH with the CO2.
 - A hotspot opens a view (`goto`) or a device (`device_id`).
+- Elements: `hide_label` and `text_color`, for the text of an entity.
 - `render.fish_scale`: size of the fish against the tank, over their real size.
 - Services: `reeftank.monitoring_configure`, `reeftank.monitoring_reset`.
 - Aquarium documents: new optional `water_volume_l`, the net water volume in
