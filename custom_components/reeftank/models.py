@@ -56,6 +56,9 @@ _HEX_RE = re.compile(r"^#[0-9a-fA-F]{6}$")
 _DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
 
 ROLE_FEEDING_POINT = "feeding_point"
+#: A marker showing the common alarm of the reef (drawn by ha-reef-card)
+ROLE_ALARMS = "alarms"
+ELEMENT_ROLES = (ROLE_FEEDING_POINT, ROLE_ALARMS)
 ELEMENT_KINDS = ("device", "entity", "marker")
 LIVESTOCK_KINDS = ("fish", "invertebrate")
 PHOTO_LIGHTS = ("white", "blue")
@@ -296,7 +299,7 @@ ELEMENT_SCHEMA = _with_id(
         # Entity: draw the value without the label, in this colour
         vol.Optional("hide_label", default=False): bool,
         vol.Optional("text_color"): vol.Any(None, _hex_color),
-        vol.Optional("roles", default=list): [vol.In([ROLE_FEEDING_POINT])],
+        vol.Optional("roles", default=list): [vol.In(ELEMENT_ROLES)],
         vol.Optional("source"): vol.Any(None, _ident),
     }
 )

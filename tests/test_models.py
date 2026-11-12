@@ -416,3 +416,16 @@ def test_entity_text_options() -> None:
     view["elements"][0]["text_color"] = "red"
     with pytest.raises(vol.Invalid):
         validate_document({"name": "T", "views": {"v1": view}})
+
+
+def test_alarms_marker_role(document: dict[str, Any]) -> None:
+    """A marker can show the common alarm of the reef; other roles are refused."""
+    elements = document["views"]["front"]["elements"]
+    elements.append(
+        {"id": "alarms01", "kind": "marker", "pos": [0.9, 0.1], "roles": ["alarms"]}
+    )
+    doc = validate_document(document)
+    assert doc["views"]["front"]["elements"][-1]["roles"] == ["alarms"]
+    elements[-1]["roles"] = ["siren"]
+    with pytest.raises(vol.Invalid):
+        validate_document(document)
