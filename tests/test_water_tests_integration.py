@@ -40,6 +40,7 @@ async def test_water_test_service_records(
     # Found by redsea the same way as the water volume sensor, marked
     # unambiguously by its chemistry
     assert state.attributes["reef_parameter"] == "ca"
+    assert state.attributes["aquarium"] == "a1b2"
     assert "device_ids" in state.attributes
     assert "cloud" in state.attributes
 

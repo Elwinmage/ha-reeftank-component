@@ -38,13 +38,12 @@ from .const import (
 )
 
 # Recorded tests shown in a chemistry sensor's history attribute.
+_HISTORY_SHOWN = 50
 from .entity import MonitoringEntity, ReefTankEntity
 from .models import coral_counts, fish_counts, placed_devices
 
 if TYPE_CHECKING:
     from . import ReefTankConfigEntry, ReefTankData
-
-_HISTORY_SHOWN = 50
 
 
 async def async_setup_entry(
@@ -321,9 +320,12 @@ class ChemistrySensor(MonitoringEntity, SensorEntity):
         history = monitoring.tests_of(self._aquarium_id, self._parameter)
         self._attr_native_value = last[1] if last is not None else None
         self._attr_extra_state_attributes = {
-            # Marks the sensor to readers (redsea) unambiguously, whatever the
-            # entity id a short chemistry key (i, k) ends up with.
+            # Marks the sensor to readers (redsea, the card) unambiguously,
+            # whatever the entity id a short chemistry key (i, k) ends up with.
             "reef_parameter": self._parameter,
+            # The aquarium a recorded test is filed against (the water_test
+            # service resolves it).
+            "aquarium": self._aquarium_id,
             "cloud": self._doc.get("cloud"),
             "device_ids": placed_devices(self._doc),
             "tested_at": (
