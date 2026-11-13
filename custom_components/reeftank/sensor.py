@@ -38,12 +38,13 @@ from .const import (
 )
 
 # Recorded tests shown in a chemistry sensor's history attribute.
-_HISTORY_SHOWN = 50
 from .entity import MonitoringEntity, ReefTankEntity
 from .models import coral_counts, fish_counts, placed_devices
 
 if TYPE_CHECKING:
     from . import ReefTankConfigEntry, ReefTankData
+
+_HISTORY_SHOWN = 50
 
 
 async def async_setup_entry(
