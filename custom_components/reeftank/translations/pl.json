@@ -245,6 +245,20 @@
         "co2": "CO2",
         "kh": "Test KH"
       }
+    },
+    "water_test_parameter": {
+      "options": {
+        "kh": "Zasadowość (KH)",
+        "ca": "Wapń",
+        "mg": "Magnez",
+        "k": "Potas",
+        "sr": "Stront",
+        "i": "Jod",
+        "fe": "Żelazo",
+        "no3": "Azotan",
+        "po4": "Fosforan",
+        "salinity": "Zasolenie"
+      }
     }
   },
   "services": {
@@ -403,6 +417,28 @@
         "channel": {
           "name": "Pomiar",
           "description": "Pomiar do zapomnienia (wszystkie, gdy puste)."
+        }
+      }
+    },
+    "water_test": {
+      "name": "Zapisz test wody",
+      "description": "Zapisuje ręcznie wprowadzony wynik testu wody dla parametru chemicznego akwarium.",
+      "fields": {
+        "aquarium": {
+          "name": "Akwarium",
+          "description": "Nazwa, identyfikator lub identyfikator urządzenia akwarium."
+        },
+        "parameter": {
+          "name": "Parametr",
+          "description": "Parametr chemiczny, którego dotyczy wynik."
+        },
+        "value": {
+          "name": "Wartość",
+          "description": "Zmierzona wartość, w jednostce parametru."
+        },
+        "at": {
+          "name": "Zmierzono",
+          "description": "Kiedy wykonano test (teraz, jeśli puste)."
         }
       }
     }

@@ -23,6 +23,7 @@ from homeassistant.loader import async_get_integration
 from .compat import StaticPathConfig, find_device, vol
 from .const import (
     CATALOG_DEVICE_ID,
+    CHEMISTRIES,
     DATA_DIR,
     DOMAIN,
     IMAGES_DIR,
@@ -141,6 +142,8 @@ class ReefTankData:
             KEY_KH_ESTIMATED: "sensor",
             KEY_KH_FAST_CHANGE: "binary_sensor",
             KEY_MONITORING_PAUSE: "switch",
+            # One test sensor per chemistry (keyed by the parameter).
+            **{parameter: "sensor" for parameter in CHEMISTRIES},
         }
         return {
             key: ent_reg.async_get_entity_id(platform, DOMAIN, f"{aquarium_id}_{key}")

@@ -111,6 +111,58 @@ CHANNEL_KH: Final = "kh"
 # Those have a calibration and an analysis of their own; CO2 only explains.
 PROBE_CHANNELS: Final = (CHANNEL_PH, CHANNEL_ORP)
 
+# ---------------------------------------------------------------------------
+# Manual water tests (one sensor per chemistry)
+# ---------------------------------------------------------------------------
+
+# The aquarium is the canonical home of water-test results: one sensor per
+# chemistry, keyed by the parameter. The redsea integration reads a ReefDose
+# head's chemistry from these sensors (by the `_<parameter>` id suffix),
+# without depending on reeftank, exactly as it does for the water volume.
+# Keys and units follow the reeftech-catalog `parameters` section.
+TEST_UNITS: Final = {
+    "kh": "dKH",
+    "ca": "ppm",
+    "mg": "ppm",
+    "k": "ppm",
+    "sr": "ppm",
+    "i": "ppb",
+    "fe": "ppb",
+    "no3": "ppm",
+    "po4": "ppm",
+    "salinity": "ppt",
+}
+# Digits shown; also how a recorded value is rounded.
+TEST_DECIMALS: Final = {
+    "kh": 2,
+    "ca": 0,
+    "mg": 0,
+    "k": 0,
+    "sr": 1,
+    "i": 0,
+    "fe": 1,
+    "no3": 1,
+    "po4": 3,
+    "salinity": 0,
+}
+# Short label shown as the entity name: a universal chemistry symbol, so the
+# sensors need no per-locale translation.
+TEST_SYMBOLS: Final = {
+    "kh": "KH",
+    "ca": "Ca",
+    "mg": "Mg",
+    "k": "K",
+    "sr": "Sr",
+    "i": "I",
+    "fe": "Fe",
+    "no3": "NO3",
+    "po4": "PO4",
+    "salinity": "Salinity",
+}
+CHEMISTRIES: Final = tuple(TEST_UNITS)
+# Tests kept per chemistry: three months at one a day, a year and more weekly.
+TESTS_KEPT: Final = 100
+
 STATUS_NOT_CONFIGURED: Final = "not_configured"
 STATUS_LEARNING: Final = "learning"
 STATUS_PAUSED: Final = "paused"
@@ -182,6 +234,7 @@ SERVICE_LIVESTOCK_ADD: Final = "livestock_add"
 SERVICE_LIVESTOCK_REMOVE: Final = "livestock_remove"
 SERVICE_MONITORING_CONFIGURE: Final = "monitoring_configure"
 SERVICE_MONITORING_RESET: Final = "monitoring_reset"
+SERVICE_WATER_TEST: Final = "water_test"
 
 ATTR_AQUARIUM: Final = "aquarium"
 ATTR_SOURCE: Final = "source"
@@ -192,3 +245,6 @@ ATTR_SIZE_CM: Final = "size_cm"
 ATTR_NOTE: Final = "note"
 ATTR_LINE_ID: Final = "line_id"
 ATTR_CHANNEL: Final = "channel"
+ATTR_PARAMETER: Final = "parameter"
+ATTR_VALUE: Final = "value"
+ATTR_AT: Final = "at"

@@ -230,3 +230,40 @@ monitoring_reset:
             - orp
             - co2
             - kh
+
+water_test:
+  fields:
+    aquarium:
+      required: true
+      example: "Reefer 425"
+      selector:
+        text:
+    parameter:
+      required: true
+      selector:
+        select:
+          translation_key: water_test_parameter
+          options:
+            - kh
+            - ca
+            - mg
+            - k
+            - sr
+            - i
+            - fe
+            - no3
+            - po4
+            - salinity
+    value:
+      required: true
+      example: 8.2
+      selector:
+        number:
+          mode: box
+          min: 0
+          max: 2000
+          step: 0.001
+    at:
+      required: false
+      selector:
+        datetime:

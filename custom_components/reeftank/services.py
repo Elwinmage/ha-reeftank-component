@@ -13,16 +13,20 @@ from homeassistant.util import dt as dt_util
 from .compat import vol
 from .const import (
     ATTR_AQUARIUM,
+    ATTR_AT,
     ATTR_CHANNEL,
     ATTR_COUNT,
     ATTR_LINE_ID,
     ATTR_NOTE,
+    ATTR_PARAMETER,
     ATTR_SIZE_CM,
     ATTR_SOURCE,
     ATTR_SPECIES,
+    ATTR_VALUE,
     ATTR_WATER,
     CHANNEL_KH,
     CHANNELS,
+    CHEMISTRIES,
     DOMAIN,
     FEED_MANUAL,
     SERVICE_FEED,
@@ -30,6 +34,7 @@ from .const import (
     SERVICE_LIVESTOCK_REMOVE,
     SERVICE_MONITORING_CONFIGURE,
     SERVICE_MONITORING_RESET,
+    SERVICE_WATER_TEST,
 )
 from .feeding import default_kind
 from .models import (
@@ -92,6 +97,15 @@ RESET_SCHEMA = vol.Schema(
     {
         vol.Required(ATTR_AQUARIUM): cv.string,
         vol.Optional(ATTR_CHANNEL): vol.In((*CHANNELS, CHANNEL_KH)),
+    }
+)
+
+WATER_TEST_SCHEMA = vol.Schema(
+    {
+        vol.Required(ATTR_AQUARIUM): cv.string,
+        vol.Required(ATTR_PARAMETER): vol.In(CHEMISTRIES),
+        vol.Required(ATTR_VALUE): vol.Coerce(float),
+        vol.Optional(ATTR_AT): cv.datetime,
     }
 )
 
@@ -194,6 +208,15 @@ def async_register_services(hass: HomeAssistant) -> None:
         aquarium_id = _resolve(hass, data, call.data[ATTR_AQUARIUM])
         await data.monitoring.async_reset(aquarium_id, call.data.get(ATTR_CHANNEL))
 
+    async def handle_water_test(call: ServiceCall) -> None:
+        data = _runtime(hass)
+        aquarium_id = _resolve(hass, data, call.data[ATTR_AQUARIUM])
+        at = call.data.get(ATTR_AT)
+        at = dt_util.as_utc(at) if at is not None else dt_util.utcnow()
+        data.monitoring.async_record_test(
+            aquarium_id, call.data[ATTR_PARAMETER], call.data[ATTR_VALUE], at
+        )
+
     hass.services.async_register(DOMAIN, SERVICE_FEED, handle_feed, schema=FEED_SCHEMA)
     hass.services.async_register(
         DOMAIN, SERVICE_LIVESTOCK_ADD, handle_add, schema=ADD_SCHEMA
@@ -209,4 +232,7 @@ def async_register_services(hass: HomeAssistant) -> None:
     )
     hass.services.async_register(
         DOMAIN, SERVICE_MONITORING_RESET, handle_reset, schema=RESET_SCHEMA
+    )
+    hass.services.async_register(
+        DOMAIN, SERVICE_WATER_TEST, handle_water_test, schema=WATER_TEST_SCHEMA
     )

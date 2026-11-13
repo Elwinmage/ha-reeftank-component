@@ -18,6 +18,7 @@ from homeassistant.helpers.event import async_track_time_change
 from homeassistant.util import dt as dt_util
 
 from .const import (
+    CHEMISTRIES,
     KEY_CORALS,
     KEY_FEEDINGS_TODAY,
     KEY_FISH,
@@ -31,7 +32,13 @@ from .const import (
     SIGNAL_FEEDING,
     STATUS_SETTLING,
     STATUSES,
+    TEST_DECIMALS,
+    TEST_SYMBOLS,
+    TEST_UNITS,
 )
+
+# Recorded tests shown in a chemistry sensor's history attribute.
+_HISTORY_SHOWN = 50
 from .entity import MonitoringEntity, ReefTankEntity
 from .models import coral_counts, fish_counts, placed_devices
 
@@ -60,6 +67,10 @@ async def async_setup_entry(
                 OrpCompensatedSensor(data, aquarium_id),
                 KhEstimatedSensor(data, aquarium_id),
                 WaterVolumeSensor(data, aquarium_id),
+                *(
+                    ChemistrySensor(data, aquarium_id, parameter)
+                    for parameter in CHEMISTRIES
+                ),
             ]
         )
 
@@ -277,4 +288,54 @@ class WaterVolumeSensor(ReefTankEntity, SensorEntity):
         self._attr_extra_state_attributes = {
             "cloud": self._doc.get("cloud"),
             "device_ids": placed_devices(self._doc),
+        }
+
+
+class ChemistrySensor(MonitoringEntity, SensorEntity):
+    """Last hand-entered test of one chemistry: the aquarium's own value.
+
+    Like WaterVolumeSensor, it carries the aquarium's cloud link and placed
+    devices as attributes, so the redsea integration reads a ReefDose head's
+    chemistry here (by the ``_<parameter>`` id suffix) without depending on
+    reeftank. The ``measurements`` attribute is the recent history, in the
+    shape the monitoring and the card already read.
+    """
+
+    _attr_state_class = SensorStateClass.MEASUREMENT
+
+    def __init__(self, data: ReefTankData, aquarium_id: str, parameter: str) -> None:
+        """Create the sensor of one chemistry."""
+        self._parameter = parameter
+        self._attr_native_unit_of_measurement = TEST_UNITS[parameter]
+        self._attr_suggested_display_precision = TEST_DECIMALS[parameter]
+        super().__init__(data, aquarium_id, parameter)
+        # A universal symbol as the name: no per-locale translation needed.
+        self._attr_translation_key = None
+        self._attr_name = TEST_SYMBOLS[parameter]
+
+    def _update_from_document(self) -> None:
+        """Last test value as the state, history and links as attributes."""
+        monitoring = self._data.monitoring
+        last = monitoring.last_test(self._aquarium_id, self._parameter)
+        history = monitoring.tests_of(self._aquarium_id, self._parameter)
+        self._attr_native_value = last[1] if last is not None else None
+        self._attr_extra_state_attributes = {
+            # Marks the sensor to readers (redsea) unambiguously, whatever the
+            # entity id a short chemistry key (i, k) ends up with.
+            "reef_parameter": self._parameter,
+            "cloud": self._doc.get("cloud"),
+            "device_ids": placed_devices(self._doc),
+            "tested_at": (
+                dt_util.utc_from_timestamp(last[0]).isoformat()
+                if last is not None
+                else None
+            ),
+            "measurements": [
+                {
+                    "at": dt_util.utc_from_timestamp(at).isoformat(),
+                    "value": value,
+                    "parameter": self._parameter,
+                }
+                for at, value in history[-_HISTORY_SHOWN:]
+            ],
         }

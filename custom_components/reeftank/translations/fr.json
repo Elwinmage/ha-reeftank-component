@@ -245,6 +245,20 @@
         "co2": "CO2",
         "kh": "Test KH"
       }
+    },
+    "water_test_parameter": {
+      "options": {
+        "kh": "Alcalinité (KH)",
+        "ca": "Calcium",
+        "mg": "Magnésium",
+        "k": "Potassium",
+        "sr": "Strontium",
+        "i": "Iode",
+        "fe": "Fer",
+        "no3": "Nitrate",
+        "po4": "Phosphate",
+        "salinity": "Salinité"
+      }
     }
   },
   "services": {
@@ -403,6 +417,28 @@
         "channel": {
           "name": "Mesure",
           "description": "Mesure à oublier (toutes si vide)."
+        }
+      }
+    },
+    "water_test": {
+      "name": "Enregistrer un test d'eau",
+      "description": "Enregistre un résultat de test d'eau saisi à la main pour un paramètre chimique de l'aquarium.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Nom, id ou id d'appareil de l'aquarium."
+        },
+        "parameter": {
+          "name": "Paramètre",
+          "description": "Le paramètre chimique concerné par le résultat."
+        },
+        "value": {
+          "name": "Valeur",
+          "description": "La valeur mesurée, dans l'unité du paramètre."
+        },
+        "at": {
+          "name": "Mesuré le",
+          "description": "Quand le test a été réalisé (maintenant si vide)."
         }
       }
     }

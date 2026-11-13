@@ -245,6 +245,20 @@
         "co2": "CO2",
         "kh": "KH test"
       }
+    },
+    "water_test_parameter": {
+      "options": {
+        "kh": "Alkalinity (KH)",
+        "ca": "Calcium",
+        "mg": "Magnesium",
+        "k": "Potassium",
+        "sr": "Strontium",
+        "i": "Iodine",
+        "fe": "Iron",
+        "no3": "Nitrate",
+        "po4": "Phosphate",
+        "salinity": "Salinity"
+      }
     }
   },
   "services": {
@@ -403,6 +417,28 @@
         "channel": {
           "name": "Measure",
           "description": "Measure to forget (all of them when empty)."
+        }
+      }
+    },
+    "water_test": {
+      "name": "Record a water test",
+      "description": "Records a hand-entered water-test result for a chemistry of the aquarium.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, id or device id of the aquarium."
+        },
+        "parameter": {
+          "name": "Parameter",
+          "description": "The chemistry the result is for."
+        },
+        "value": {
+          "name": "Value",
+          "description": "The measured value, in the parameter's unit."
+        },
+        "at": {
+          "name": "Measured at",
+          "description": "When the test was taken (now when empty)."
         }
       }
     }

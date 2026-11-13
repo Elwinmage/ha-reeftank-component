@@ -245,6 +245,20 @@
         "co2": "CO2",
         "kh": "KH-Test"
       }
+    },
+    "water_test_parameter": {
+      "options": {
+        "kh": "Alkalinität (KH)",
+        "ca": "Calcium",
+        "mg": "Magnesium",
+        "k": "Kalium",
+        "sr": "Strontium",
+        "i": "Jod",
+        "fe": "Eisen",
+        "no3": "Nitrat",
+        "po4": "Phosphat",
+        "salinity": "Salzgehalt"
+      }
     }
   },
   "services": {
@@ -403,6 +417,28 @@
         "channel": {
           "name": "Messgröße",
           "description": "Zu verwerfende Messgröße (alle, wenn leer)."
+        }
+      }
+    },
+    "water_test": {
+      "name": "Wassertest aufzeichnen",
+      "description": "Zeichnet ein manuell eingegebenes Wassertest-Ergebnis für einen Wasserwert des Aquariums auf.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Name, ID oder Geräte-ID des Aquariums."
+        },
+        "parameter": {
+          "name": "Parameter",
+          "description": "Der Wasserwert, auf den sich das Ergebnis bezieht."
+        },
+        "value": {
+          "name": "Wert",
+          "description": "Der gemessene Wert, in der Einheit des Parameters."
+        },
+        "at": {
+          "name": "Gemessen am",
+          "description": "Wann der Test durchgeführt wurde (jetzt, wenn leer)."
         }
       }
     }

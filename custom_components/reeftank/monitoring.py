@@ -52,6 +52,7 @@ from .const import (
     STATUS_PAUSED,
     STATUS_READY,
     STATUS_SETTLING,
+    TESTS_KEPT,
 )
 
 if TYPE_CHECKING:
@@ -125,6 +126,26 @@ class Monitor:
     report: dict[str, Any] = field(default_factory=dict[str, Any])
     kh_entity: str | None = None
     kh_tests: list[KhTest] = field(default_factory=list[KhTest])
+    # Water tests recorded in the aquarium, by chemistry: (epoch, value) pairs.
+    # The canonical home of a hand-entered result, exposed one sensor each.
+    tests: dict[str, list[tuple[float, float]]] = field(
+        default_factory=dict[str, list[tuple[float, float]]]
+    )
+
+    def record_test(self, parameter: str, at: float, value: float, keep: int) -> None:
+        """Keep a recorded test, one value per timestamp, newest ``keep``."""
+        merged = dict(self.tests.get(parameter, []))
+        merged[at] = value
+        self.tests[parameter] = sorted(merged.items())[-keep:]
+
+    def recorded(self, parameter: str) -> list[tuple[float, float]]:
+        """The recorded tests of a chemistry (empty when none)."""
+        return self.tests.get(parameter, [])
+
+    def last_recorded(self, parameter: str) -> tuple[float, float] | None:
+        """The latest recorded test of a chemistry, None when none."""
+        series = self.tests.get(parameter)
+        return series[-1] if series else None
 
     def as_dict(self) -> dict[str, Any]:
         """Stored form."""
@@ -135,6 +156,10 @@ class Monitor:
             "report": self.report,
             "kh_entity": self.kh_entity,
             "kh_tests": [list(test) for test in self.kh_tests],
+            "tests": {
+                parameter: [list(test) for test in series]
+                for parameter, series in self.tests.items()
+            },
         }
 
     @classmethod
@@ -146,6 +171,7 @@ class Monitor:
             report=dict(data.get("report") or {}),
             kh_entity=data.get("kh_entity"),
             kh_tests=[(test[0], test[1]) for test in data.get("kh_tests") or []],
+            tests=_load_tests(data.get("tests")),
         )
         for channel, stored in (data.get("channels") or {}).items():
             monitor.channels[channel] = Channel.from_dict(stored)
@@ -283,6 +309,52 @@ class MonitoringManager:
         """Forget an aquarium that was deleted."""
         if self._monitors.pop(aquarium_id, None) is not None:
             self._schedule_save()
+
+    # -- Water tests ---------------------------------------------------------
+
+    @callback
+    def async_record_test(
+        self, aquarium_id: str, parameter: str, value: float, at: datetime
+    ) -> None:
+        """Record a hand-entered test result of a chemistry.
+
+        The result is the aquarium's, shared by chemistry; the matching
+        sensor refreshes at once so readers (the card, redsea) see it.
+        """
+        monitor = self._monitors.setdefault(aquarium_id, Monitor())
+        monitor.record_test(parameter, at.timestamp(), value, TESTS_KEPT)
+        self._schedule_save()
+        self._notify(aquarium_id)
+
+    @callback
+    def last_test(self, aquarium_id: str, parameter: str) -> tuple[float, float] | None:
+        """Latest test of a chemistry: (epoch, value), None when none.
+
+        A recorded result wins; KH falls back to the tests read from an
+        external entity, so a probe-less setup still has a value.
+        """
+        monitor = self._monitors.get(aquarium_id)
+        if monitor is None:
+            return None
+        recorded = monitor.last_recorded(parameter)
+        if recorded is not None:
+            return recorded
+        if parameter == CHANNEL_KH and monitor.kh_tests:
+            return monitor.kh_tests[-1]
+        return None
+
+    @callback
+    def tests_of(self, aquarium_id: str, parameter: str) -> list[tuple[float, float]]:
+        """The test history of a chemistry (recorded, else KH fallback)."""
+        monitor = self._monitors.get(aquarium_id)
+        if monitor is None:
+            return []
+        recorded = monitor.recorded(parameter)
+        if recorded:
+            return list(recorded)
+        if parameter == CHANNEL_KH:
+            return list(monitor.kh_tests)
+        return []
 
     # -- Sampling ------------------------------------------------------------
 
@@ -464,6 +536,24 @@ class MonitoringManager:
     @callback
     def _notify(self, aquarium_id: str) -> None:
         async_dispatcher_send(self._hass, SIGNAL_MONITORING.format(aquarium_id))
+
+
+def _load_tests(raw: Any) -> dict[str, list[tuple[float, float]]]:
+    """Recorded tests read back from the store, bad entries dropped."""
+    out: dict[str, list[tuple[float, float]]] = {}
+    if not isinstance(raw, dict):
+        return out
+    for parameter, series in cast(dict[str, Any], raw).items():
+        pairs = [
+            (float(item[0]), float(item[1]))
+            for item in series
+            if isinstance(item, (list, tuple))
+            and len(item) == 2
+            and all(isinstance(x, (int, float)) for x in item)
+        ]
+        if pairs:
+            out[str(parameter)] = sorted(pairs)
+    return out
 
 
 def _in_dkh(attributes: Mapping[str, Any]) -> bool:

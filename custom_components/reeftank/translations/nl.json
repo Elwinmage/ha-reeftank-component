@@ -245,6 +245,20 @@
         "co2": "CO2",
         "kh": "KH-test"
       }
+    },
+    "water_test_parameter": {
+      "options": {
+        "kh": "Alkaliniteit (KH)",
+        "ca": "Calcium",
+        "mg": "Magnesium",
+        "k": "Kalium",
+        "sr": "Strontium",
+        "i": "Jodium",
+        "fe": "IJzer",
+        "no3": "Nitraat",
+        "po4": "Fosfaat",
+        "salinity": "Zoutgehalte"
+      }
     }
   },
   "services": {
@@ -403,6 +417,28 @@
         "channel": {
           "name": "Meting",
           "description": "Te vergeten meting (alle als leeg)."
+        }
+      }
+    },
+    "water_test": {
+      "name": "Watertest vastleggen",
+      "description": "Legt een handmatig ingevoerd watertestresultaat vast voor een chemische waarde van het aquarium.",
+      "fields": {
+        "aquarium": {
+          "name": "Aquarium",
+          "description": "Naam, id of apparaat-id van het aquarium."
+        },
+        "parameter": {
+          "name": "Parameter",
+          "description": "De chemische waarde waarop het resultaat betrekking heeft."
+        },
+        "value": {
+          "name": "Waarde",
+          "description": "De gemeten waarde, in de eenheid van de parameter."
+        },
+        "at": {
+          "name": "Gemeten op",
+          "description": "Wanneer de test is uitgevoerd (nu indien leeg)."
         }
       }
     }
