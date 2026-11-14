@@ -59,6 +59,12 @@ De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in
     <td>ha-reef-card</td>
   </tr>
   <tr>
+    <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-vson-component/main/icon.png" width="64" alt="ha-vson-component" /></td>
+    <td>🐟<br /><a href="https://github.com/Elwinmage/ha-vson-component"><b>ha-vson-component</b></a></td>
+    <td>VSON automatische voederautomaten via de VSON-cloud-API: de WP8621-voederautomaat (voeren, accu, waarschuwing bij weinig voer) en generieke detectie van elk ander VSON-apparaat. De WP8621 kan ook volledig lokaal draaien op ESPHome.</td>
+    <td>ha-reef-card</td>
+  </tr>
+  <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-maintenance-component/main/icon.png" width="64" alt="ha-reef-maintenance-component" /></td>
     <td>🐙<br /><a href="https://github.com/Elwinmage/ha-reef-maintenance-component"><b>ha-reef-maintenance-component</b></a></td>
     <td>Schoonmaak- en slijtageopvolging voor apparatuur die Home Assistant niet kan uitlezen: stromingspompen, opvoerpompen, eiwitafschuimers, reactoren, alles wat u met de hand onderhoudt.</td>
@@ -68,7 +74,7 @@ De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-card/main/icon.png" width="64" alt="ha-reef-card" /></td>
     <td>🪸<br /><a href="https://github.com/Elwinmage/ha-reef-card"><b>ha-reef-card</b></a></td>
     <td>Interactieve grafische weergave van elk apparaat op uw dashboard, en de enige manier om geavanceerde schema's te bewerken. Leest de drie integraties via het gedeelde <code>reef_role</code>-contract, zonder configuratie aan de kaartzijde. Tekent ook de energiestromen van reefbeatEnergyBackup. De aquariumkaart brengt uw bak tot leven met ha-reeftank-component.</td>
-    <td>alle drie de integraties, en ha-reeftank-component voor het aquarium</td>
+    <td>alle vier de integraties, en ha-reeftank-component voor het aquarium</td>
   </tr>
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reeftank-component/main/icon.png" width="64" alt="ha-reeftank-component" /></td>
@@ -86,7 +92,7 @@ De ReefTech-projecten grijpen in elkaar: de integraties brengen uw apparatuur in
     <td><img src="https://raw.githubusercontent.com/Elwinmage/ha-reef-blueprints/main/icon.png" width="64" alt="ha-reef-blueprints" /></td>
     <td>🐬<br /><a href="https://github.com/Elwinmage/ha-reef-blueprints"><b>ha-reef-blueprints</b></a></td>
     <td>Automatiserings-blueprints voor het hele ecosysteem: achterstallig onderhoud gevonden via het <code>reef_role</code>-contract, apparaten die onbereikbaar zijn geworden, een periodieke verwarmertest en relaisbewaking. Acht talen.</td>
-    <td>alle drie de integraties</td>
+    <td>alle vier de integraties</td>
   </tr>
   <tr>
     <td><img src="https://raw.githubusercontent.com/Elwinmage/reefbeatEnergyBackup/main/icon.png" width="64" alt="reefbeatEnergyBackup" /></td>
