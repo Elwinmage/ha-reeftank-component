@@ -24,6 +24,7 @@ from .const import (
     SIGNAL_CATALOG_UPDATED,
     URL_CATALOG_PACK,
     URL_CATALOG_USER,
+    WATER_TYPES,
 )
 from .images import signed_image_urls
 from .models import referenced_images
@@ -67,6 +68,7 @@ def _summary(doc: dict[str, Any]) -> dict[str, Any]:
         "id": doc["id"],
         "name": doc["name"],
         "revision": doc["revision"],
+        "water_type": doc["water_type"],
         "preset": doc.get("preset"),
         "cloud": doc.get("cloud"),
         "render_level": doc["render"]["level"],
@@ -258,7 +260,13 @@ def ws_images_sign(
     )
 
 
-@websocket_command({vol.Required("type"): "reeftank/catalog"})
+@websocket_command(
+    {
+        vol.Required("type"): "reeftank/catalog",
+        # Only the species living in this water (an aquarium's `water_type`)
+        vol.Optional("water_type"): vol.In(WATER_TYPES),
+    }
+)
 @async_response
 async def ws_catalog(
     hass: HomeAssistant, connection: ActiveConnection, msg: dict[str, Any]
@@ -266,9 +274,10 @@ async def ws_catalog(
     """Return the merged asset catalog (downloaded pack + user entries).
 
     `pack` tells the installed release (null before the first download) and
-    whether an update is being installed.
+    whether an update is being installed. With `water_type`, only the species
+    living in that water are returned.
     """
-    from .catalog import load_catalog
+    from .catalog import filter_water_type, load_catalog
 
     data = _data(hass)
     if data is None:
@@ -281,6 +290,8 @@ async def ws_catalog(
         data.user_catalog_root,
         URL_CATALOG_USER,
     )
+    if "water_type" in msg:
+        catalog = filter_water_type(catalog, msg["water_type"])
     installed = data.updater.installed
     catalog["pack"] = {
         "version": installed.version if installed else None,

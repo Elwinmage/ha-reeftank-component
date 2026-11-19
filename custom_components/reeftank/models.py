@@ -32,12 +32,14 @@ from .const import (
     DEFAULT_PH_PROFILE_BAND,
     DEFAULT_PH_PROFILE_HOURS,
     DEFAULT_PH_SWING_PCT,
+    DEFAULT_WATER_TYPE,
     FEED_KINDS,
     RENDER_FULL,
     RENDER_LEVELS,
     SCHEMA_VERSION,
     URL_CATALOG_PACK,
     URL_CATALOG_USER,
+    WATER_TYPES,
 )
 
 # Ids are short, url-safe and generated server side when missing.
@@ -250,6 +252,21 @@ CORAL_SCHEMA = _with_id(
     }
 )
 
+PLANT_SCHEMA = _with_id(
+    {
+        vol.Required("species"): vol.All(str, vol.Length(min=1, max=MAX_NAME)),
+        vol.Optional("name", default=""): _text(MAX_NAME),
+        vol.Optional("view"): vol.Any(None, _ident),
+        vol.Optional("pos", default=[0.5, 0.8]): _point,
+        vol.Optional("z", default=0.5): _unit,
+        vol.Optional("size_cm", default=20.0): vol.All(
+            vol.Coerce(float), vol.Range(min=0.5, max=300)
+        ),
+        vol.Optional("added"): vol.Any(None, _date),
+        vol.Optional("note", default=""): _text(MAX_NOTE),
+    }
+)
+
 WATER_SCHEMA = vol.Schema(
     {
         vol.Optional("name", default=""): _text(MAX_NAME),
@@ -260,6 +277,7 @@ WATER_SCHEMA = vol.Schema(
         ),
         vol.Optional("livestock", default=list): [LIVESTOCK_SCHEMA],
         vol.Optional("corals", default=list): [CORAL_SCHEMA],
+        vol.Optional("plants", default=list): [PLANT_SCHEMA],
     }
 )
 
@@ -450,6 +468,8 @@ DOCUMENT_SCHEMA = vol.Schema(
                 }
             ),
         ),
+        # Marine, freshwater or brackish: filters the species offered
+        vol.Optional("water_type", default=DEFAULT_WATER_TYPE): vol.In(WATER_TYPES),
         vol.Optional("preset"): vol.Any(None, vol.All(str, vol.Length(max=200))),
         vol.Optional("dimensions_cm"): vol.Any(None, DIMENSIONS_SCHEMA),
         # Net water volume (L): tank + sump, without rock and sand. Shown by
@@ -504,11 +524,12 @@ def _check_links(doc: dict[str, Any]) -> None:
                 )
 
     for water_id, water in waters.items():
-        for coral in water["corals"]:
-            if coral.get("view") and coral["view"] not in views:
-                raise vol.Invalid(
-                    f"water {water_id!r}: coral on unknown view {coral['view']!r}"
-                )
+        for kind, items in (("coral", water["corals"]), ("plant", water["plants"])):
+            for item in items:
+                if item.get("view") and item["view"] not in views:
+                    raise vol.Invalid(
+                        f"water {water_id!r}: {kind} on unknown view {item['view']!r}"
+                    )
 
 
 def _check_unique_ids(doc: dict[str, Any]) -> None:
@@ -516,7 +537,7 @@ def _check_unique_ids(doc: dict[str, Any]) -> None:
     seen: set[str] = set()
     items: list[dict[str, Any]] = []
     for water in doc["waters"].values():
-        items += water["livestock"] + water["corals"]
+        items += water["livestock"] + water["corals"] + water["plants"]
     for view in doc["views"].values():
         items += view["decor"] + view["elements"] + view["hotspots"]
     items += doc["feeding"]["sources"]
@@ -571,6 +592,27 @@ def coral_counts(doc: dict[str, Any]) -> dict[str, int]:
         for coral in water.get("corals", []):
             counts[coral.get("name") or coral["species"]] += 1
     return dict(sorted(counts.items()))
+
+
+def plant_counts(doc: dict[str, Any]) -> dict[str, int]:
+    """Number of plants per species, all waters."""
+    counts: Counter[str] = Counter()
+    for water in doc.get("waters", {}).values():
+        for plant in water.get("plants", []):
+            counts[plant.get("name") or plant["species"]] += 1
+    return dict(sorted(counts.items()))
+
+
+def fits_water_type(species: dict[str, Any], water_type: str) -> bool:
+    """Whether a catalog species lives in the water of an aquarium.
+
+    A species that does not say (the user catalog, a pack older than the
+    water types) is a marine one.
+    """
+    types = species.get("water_types")
+    if not isinstance(types, list) or not types:
+        types = [DEFAULT_WATER_TYPE]
+    return water_type in types
 
 
 def livestock_add(

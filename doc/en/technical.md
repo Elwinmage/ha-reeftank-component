@@ -112,6 +112,12 @@ One **aquarium** document per tank. Key rules:
 
 - **Waters** (main tank, sump…) are separate from **views** (pictures). Two
   views showing the same tank share its livestock and lights.
+- **`water_type`** (`marine`, `freshwater` or `brackish`; `marine` for a
+  document saved before it existed) is the water of the tank. The card asks
+  the catalog only for the species living in it (`reeftank/catalog` with
+  `water_type`); a species lists the waters it lives in (`water_types`) and a
+  species that does not say is a marine one. A water may hold `plants`, placed
+  like corals (`view`, `pos`, `z`, `size_cm`), without a recolour.
 - **Livestock is the real inventory** (source of truth); rendering derives
   from it and may be capped.
 - All picture coordinates are **normalised to the image** (`0..1`), so a photo
@@ -126,6 +132,7 @@ One **aquarium** document per tank. Key rules:
   "id": "a1b2",
   "name": "Reefer 425",
   "cloud": { "provider": "redsea", "uid": "00000000-…" },
+  "water_type": "marine",
   "preset": "reefer-425-g2",
   "dimensions_cm": { "length": 121.9, "width": 60.9, "height": 40.6 },
   "water_volume_l": 425,
@@ -152,6 +159,10 @@ One **aquarium** document per tank. Key rules:
           "pos": [0.42, 0.71], "z": 0.5, "size_cm": 10,
           "palette": ["#5c2d91", "#9be564", "#2a7fff"],
           "added": "2026-05-02" }
+      ],
+      "plants": [
+        { "id": "p1", "species": "anubias_barteri", "view": "front",
+          "pos": [0.2, 0.8], "z": 0.4, "size_cm": 20 }
       ]
     },
     "sump": {
@@ -305,13 +316,13 @@ produced by the scripts of reeftank-catalog in their final format.
 
 | Command | Payload | Returns |
 |---|---|---|
-| `reeftank/aquarium/list` | — | `[{id, name, revision, preset, cloud, render_level, views}]` |
+| `reeftank/aquarium/list` | — | `[{id, name, revision, water_type, preset, cloud, render_level, views}]` |
 | `reeftank/aquarium/get` | `{aquarium_id}` | `{document, entities, images, images_ttl}` |
 | `reeftank/aquarium/subscribe` | `{aquarium_id}` | the same payload now and on every change; `{deleted: true}` |
 | `reeftank/aquarium/save` (admin) | `{document, expected_revision?}` | `{document, entities, images, images_ttl}`; error `conflict` when the revision moved, `invalid_format` |
 | `reeftank/aquarium/delete` (admin) | `{aquarium_id}` | — (removes device, entities, pictures) |
 | `reeftank/images/sign` | `{paths: ["<aquarium_id>/<file>.webp", …]}` (≤ 64) | `{path: signed_url}`; invalid paths left out |
-| `reeftank/catalog` | — | merged catalog (downloaded + user), asset names turned into URLs; `pack: {version, updating}` |
+| `reeftank/catalog` | `{water_type?}` | merged catalog (downloaded + user), asset names turned into URLs; `pack: {version, updating}`. With `water_type` (`marine`, `freshwater`, `brackish`), only the species living in that water (`defaults`, textures and presets are kept) |
 | `reeftank/catalog/subscribe` | — | an event `{version}` each time a catalog release is installed |
 
 `entities` gives the entity ids of the aquarium's own entities (§6), so the
@@ -712,6 +723,19 @@ catalog/
       euphyllia_glabrescens.shade.webp
       euphyllia_glabrescens.mask.png
       thumb.webp
+  plants/
+    anubias_barteri/
+      species.json      # zone: background | midground | foreground |
+                        # floating | epiphyte; atlas optional
+  invertebrates/
+    neocaridina_davidi/
+      species.json      # role (detritivore, algae_eater, ...), movement
+                        # (ground, glass, decor, sessile, swim)
+  defaults/
+    unknown_fish/       # picture of a species that has none: a black fish "?"
+      species.json
+      unknown_fish.webp
+      thumb.webp
   textures/
     live_rock/
       texture.json      # {"role": "rock" | "sand", "image": "live_rock.webp",
@@ -719,12 +743,18 @@ catalog/
       live_rock.webp    # tileable
 ```
 
+A species may have **no picture** yet: its descriptor has no `atlas` and the
+catalog says `has_image: false`. The card then draws the fish of `defaults/
+unknown_fish` (a black fish with a white "?") and offers to vote for the
+species' picture. A species with a picture made from a single photo has
+`degraded: true` and its `source` (author, license).
+
 Folders are scanned on every `reeftank/catalog` call (no index to keep up to
 date); a folder name is the entry id. Two catalogs are merged:
 
 - the **downloaded** one, `/config/reeftank/pack/`, from the releases of
   [reeftank-catalog](https://github.com/Elwinmage/reeftank-catalog) (fish,
-  corals and textures);
+  corals, plants, invertebrates, default pictures and textures);
 - the **user** one, `/config/reeftank/catalog/` (same layout), whose entries
   override downloaded ones with the same id.
 

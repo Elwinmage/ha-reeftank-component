@@ -51,6 +51,9 @@ MANIFEST_FORMAT = 1
 PACK_KINDS: dict[str, str] = {
     "fish": "species.json",
     "corals": "species.json",
+    "plants": "species.json",
+    "invertebrates": "species.json",
+    "defaults": "species.json",
     "textures": "texture.json",
 }
 ALLOWED_SUFFIXES = (".json", ".webp", ".png")
@@ -81,7 +84,7 @@ class PackEntry:
 
     @property
     def kind(self) -> str:
-        """`fish`, `corals` or `textures`."""
+        """`fish`, `corals`, `plants`, `invertebrates`, `defaults` or `textures`."""
         return self.key.split("/", 1)[0]
 
     @property

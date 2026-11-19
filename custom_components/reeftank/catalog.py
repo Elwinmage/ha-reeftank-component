@@ -11,9 +11,19 @@ Layout (one folder per entry, named after its id):
     catalog/
       fish/<id>/species.json      + atlas pictures
       corals/<id>/species.json    + shade / mask atlases
+      plants/<id>/species.json    + atlas pictures (optional)
+      invertebrates/<id>/species.json
+                                  + atlas pictures (optional)
+      defaults/<id>/species.json  + the picture shown for a species that has
+                                    none (`unknown_fish`: a black fish "?")
       textures/<id>/texture.json  + a tileable picture (rock, sand) for the
                                     views drawn instead of their photo
       presets/<id>/preset.json    + view pictures
+
+A species may have no picture yet: its descriptor has no `atlas` and the
+catalog tells it (`has_image`: false), so that the card draws the default
+picture. `water_types` (marine, freshwater, brackish) says where a species
+lives; `filter_water_type` keeps those of one water.
 
 Asset file names in the descriptors are relative to their folder; the
 catalog returned to the card has them turned into URLs.
@@ -27,14 +37,22 @@ import re
 from pathlib import Path
 from typing import Any
 
+from .models import fits_water_type
+
 _LOGGER = logging.getLogger(__name__)
 
 KINDS: dict[str, str] = {
     "fish": "species.json",
     "corals": "species.json",
+    "plants": "species.json",
+    "invertebrates": "species.json",
+    "defaults": "species.json",
     "textures": "texture.json",
     "presets": "preset.json",
 }
+
+#: Kinds of species (the others are assets: defaults, textures, presets)
+SPECIES_KINDS = ("fish", "corals", "plants", "invertebrates")
 
 _ID_RE = re.compile(r"^[a-z0-9][a-z0-9_-]{0,79}$")
 _FILE_RE = re.compile(r"^[A-Za-z0-9_@.-]{1,120}$")
@@ -94,6 +112,8 @@ def scan_catalog(root: Path, base_url: str, source: str) -> dict[str, dict[str, 
                 continue
             entry["id"] = entry_dir.name
             entry["source"] = source
+            if kind in SPECIES_KINDS:
+                entry["has_image"] = bool(entry.get("atlas"))
             _resolve_assets(entry, base_url, kind)
             result[kind][entry_dir.name] = entry
     return result
@@ -113,3 +133,20 @@ def load_catalog(
         entries = {**pack[kind], **user[kind]}
         merged[kind] = [entries[k] for k in sorted(entries)]
     return merged
+
+
+def filter_water_type(
+    catalog: dict[str, list[dict[str, Any]]], water_type: str
+) -> dict[str, list[dict[str, Any]]]:
+    """The catalog with only the species living in a water.
+
+    Defaults, textures and presets are kept whole.
+    """
+    out = dict(catalog)
+    for kind in SPECIES_KINDS:
+        out[kind] = [
+            entry
+            for entry in catalog.get(kind, [])
+            if fits_water_type(entry, water_type)
+        ]
+    return out

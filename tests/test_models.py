@@ -13,9 +13,11 @@ from custom_components.reeftank.models import (
     coral_counts,
     feeding_points,
     fish_counts,
+    fits_water_type,
     livestock_add,
     livestock_counts,
     livestock_remove,
+    plant_counts,
     referenced_images,
     validate_document,
 )
@@ -261,6 +263,14 @@ def test_light_needs_a_target() -> None:
             "unknown view",
         ),
         (
+            lambda d: (
+                d["waters"]["main"]
+                .setdefault("plants", [])
+                .append({"species": "anubias", "view": "ghost"})
+            ),
+            "plant on unknown view",
+        ),
+        (
             lambda d: d["waters"]["main"]["livestock"][1].update(id="l1"),
             "duplicate id",
         ),
@@ -429,3 +439,49 @@ def test_alarms_marker_role(document: dict[str, Any]) -> None:
     elements[-1]["roles"] = ["siren"]
     with pytest.raises(vol.Invalid):
         validate_document(document)
+
+
+def test_water_type(document: dict[str, Any]) -> None:
+    # a document saved before the water types is a marine tank
+    assert validate_document(document)["water_type"] == "marine"
+    for water in ("freshwater", "brackish", "marine"):
+        assert validate_document({**document, "water_type": water})["water_type"] == (
+            water
+        )
+    with pytest.raises(vol.Invalid):
+        validate_document({**document, "water_type": "lake"})
+
+
+def test_plants(document: dict[str, Any]) -> None:
+    document["water_type"] = "freshwater"
+    document["waters"]["main"]["plants"] = [
+        {"species": "anubias_barteri", "pos": [0.3, 0.7]},
+        {"id": "p2", "species": "anubias_barteri", "name": "My anubias"},
+        {"species": "vallisneria_spiralis", "view": "front", "size_cm": 45},
+    ]
+    doc = validate_document(document)
+    plants = doc["waters"]["main"]["plants"]
+    assert plants[0]["size_cm"] == 20.0 and plants[0]["id"]
+    assert plants[2]["view"] == "front"
+    assert plant_counts(doc) == {
+        "My anubias": 1,
+        "anubias_barteri": 1,
+        "vallisneria_spiralis": 1,
+    }
+    assert plant_counts({}) == {}
+    # a document without plants gets an empty list
+    assert (
+        validate_document({"name": "x", "waters": {"main": {}}})["waters"]["main"][
+            "plants"
+        ]
+        == []
+    )
+
+
+def test_species_fit_the_water() -> None:
+    assert fits_water_type({"water_types": ["freshwater", "brackish"]}, "brackish")
+    assert not fits_water_type({"water_types": ["freshwater"]}, "marine")
+    # a species that does not say is a marine one
+    assert fits_water_type({}, "marine") and not fits_water_type({}, "freshwater")
+    assert fits_water_type({"water_types": []}, "marine")
+    assert not fits_water_type({"water_types": "marine"}, "freshwater")

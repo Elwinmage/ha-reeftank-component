@@ -21,6 +21,7 @@ async def test_list_get_catalog(
             "id": "a1b2",
             "name": "Reefer 425",
             "revision": 1,
+            "water_type": "marine",
             "preset": None,
             "cloud": None,
             "render_level": "full",
@@ -53,6 +54,15 @@ async def test_list_get_catalog(
     # nothing downloaded yet (GitHub unreachable in the tests)
     assert msg["result"]["fish"] == []
     assert msg["result"]["pack"] == {"version": None, "updating": False}
+    assert msg["result"]["plants"] == [] and msg["result"]["defaults"] == []
+
+    # only the species of one water
+    await ws.send_json_auto_id({"type": "reeftank/catalog", "water_type": "brackish"})
+    msg = await ws.receive_json()
+    assert msg["success"] and msg["result"]["invertebrates"] == []
+    await ws.send_json_auto_id({"type": "reeftank/catalog", "water_type": "lake"})
+    msg = await ws.receive_json()
+    assert not msg["success"]
 
 
 async def test_subscribe(

@@ -289,6 +289,7 @@ class WaterVolumeSensor(ReefTankEntity, SensorEntity):
         self._attr_extra_state_attributes = {
             "cloud": self._doc.get("cloud"),
             "device_ids": placed_devices(self._doc),
+            "water_type": self._doc.get("water_type"),
         }
 
 

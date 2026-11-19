@@ -112,6 +112,7 @@ async def test_water_volume_sensor(
     assert volume.attributes["device_class"] == "volume_storage"
     assert volume.attributes["cloud"] is None
     assert volume.attributes["device_ids"] == ["led1", "feeder1"]
+    assert volume.attributes["water_type"] == "marine"
 
     doc = entry.runtime_data.store.get("a1b2")
     assert doc is not None

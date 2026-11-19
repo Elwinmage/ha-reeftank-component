@@ -1,5 +1,18 @@
 # Unreleased
 
+- Freshwater and brackish aquariums: new `water_type` on the aquarium
+  document (`marine`, `freshwater`, `brackish`; `marine` by default, so
+  existing aquariums do not change). `reeftank/aquarium/list` returns it and
+  the water volume sensor carries it as an attribute.
+- `reeftank/catalog` takes an optional `water_type`: only the species living
+  in that water come back.
+- Catalog: new kinds `plants` and `invertebrates`, and `defaults` (the default
+  "?" fish shown for a species without picture). A species without picture
+  says `has_image: false`.
+- A water of an aquarium may hold `plants`.
+- The catalog pack accepts these kinds: a release that holds them needs this
+  version (`min_integration` of its manifest).
+
 - Water monitoring: pH and ORP (and optionally the CO2 of the room) sampled
   every 5 minutes from any entity, and compared with the tank's own last 14
   days. Alarms: pH below its usual level, wider pH swing, disturbed day

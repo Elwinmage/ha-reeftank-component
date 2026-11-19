@@ -25,6 +25,12 @@ MODEL: Final = "Aquarium"
 # Storage
 # ---------------------------------------------------------------------------
 
+# Water an aquarium holds; it filters the species of the catalog (each species
+# lists the waters it lives in, `water_types`). Documents saved before it was
+# introduced are marine tanks.
+WATER_TYPES: Final = ("marine", "freshwater", "brackish")
+DEFAULT_WATER_TYPE: Final = "marine"
+
 # Version of the stored aquarium documents (the `version` field of each one).
 SCHEMA_VERSION: Final = 1
 

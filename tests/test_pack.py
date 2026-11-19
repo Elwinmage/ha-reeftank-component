@@ -165,3 +165,16 @@ def test_stage_and_commit(tmp_path: Path) -> None:
     assert (
         json.loads((tmp_path / "fresh" / "manifest.json").read_text())["version"] == "2"
     )
+
+
+def test_new_kinds_install(tmp_path: Path) -> None:
+    """Plants, invertebrates and the default pictures come in a pack."""
+    kinds = ("plants", "invertebrates", "defaults")
+    manifest, blobs = release(
+        "1", {f"{kind}/x": {"species.json": "{}"} for kind in kinds}
+    )
+    parsed = parse_manifest(manifest)
+    assert sorted(item.kind for item in parsed.entries.values()) == sorted(kinds)
+    for item in parsed.entries.values():
+        pack.extract_entry(blobs[item.file], item.kind, tmp_path / item.kind)
+        assert (tmp_path / item.kind / "species.json").is_file()
