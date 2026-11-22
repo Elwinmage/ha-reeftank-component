@@ -22,6 +22,7 @@
 - [16. Development](#16-development)
 - [17. Open points](#17-open-points)
 - [18. Monitoring](#18-monitoring)
+- [19. House View](#19-house-view)
 
 ## 1. Overview
 
@@ -344,6 +345,7 @@ exist yet: the editor gives a new aquarium its id before saving it.
 | `reeftank.livestock_remove` | `aquarium`, `line_id` or `species`, `count?` | Decreases a line (losses, rehoming); removes it at 0 |
 | `reeftank.monitoring_configure` | `aquarium`, any field of `monitoring` (§18) | Changes the fields given |
 | `reeftank.monitoring_reset` | `aquarium`, `channel?` | Forgets the history, of one measure or all |
+| `reeftank.water_test` | `aquarium`, `parameter`, `value`, `at?` | Records a water test of a chemistry (`kh`, `ca`, `mg`, `k`, `sr`, `i`, `fe`, `no3`, `po4`, `salinity`), now or at `at` |
 
 `aquarium` is the aquarium's id, its name or its device id.
 
@@ -385,6 +387,7 @@ removed with it (unique ids derived from the aquarium id).
 | `binary_sensor.<tank>_*` | The six alarms (§18); unknown while they cannot be told | Figures explaining each one |
 | `switch.<tank>_pause_monitoring` | On during a pause; turns off by itself | `until` |
 | `sensor.<tank>_water_volume` | `water_volume_l` (L), unknown when unset | `cloud` (the document's), `device_ids` (devices placed on the views) |
+| `sensor.<tank>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Last test of the chemistry, in its unit (dKH, ppm, ppb, ppt); unknown before a first test | `reef_parameter`, `aquarium`, `tested_at`, `measurements` (the recent tests), `cloud`, `device_ids` |
 
 - The population history comes for free from the recorder on the count
   sensors.
@@ -395,6 +398,13 @@ removed with it (unique ids derived from the aquarium id).
   aquarium of the doser.
 - `event.<tank>_feeding` is an `EventEntity`: its state *is* the last trigger
   time, restored across restarts, usable in automations.
+- The chemistry sensors hold the tests entered by hand (`reeftank.water_test`,
+  or the card), one sensor per chemistry and not per dosing head: the last 100
+  tests of each are kept. Their name is the symbol of the chemistry (KH, Ca…),
+  the same in every language; a reader finds them by the `reef_parameter`
+  attribute rather than by their entity id. Like `water_volume`, they carry
+  `cloud` and `device_ids`, so the redsea integration reads the chemistry of
+  a ReefDose head here without depending on reeftank.
 
 The catalog has its own device, *ReefTank catalog*:
 
@@ -985,3 +995,29 @@ Changing a measure's entity forgets its history.
 - Readings taken during a calibration are only recognised afterwards, through
   the calibration date, and only with a calibration entity set.
 - A KH alarm comes at the pace of the tests: it confirms, it does not detect.
+
+## 19. House View
+
+[House View](https://github.com/Elwinmage/ha-house-view-component) (integration
+`house_view` and its card) draws the home in 3D on a dashboard. It shows the
+aquariums of reeftank on their tank, with nothing declared on either side:
+reeftank knows nothing of House View, which only uses what §5 and §6 already
+give to any card.
+
+| What House View does | What it reads or uses |
+|---|---|
+| Lists the aquariums when its editor offers to add one | `reeftank/aquarium/list` (`id`, `name`); no answer means no reeftank, and only its other zones are offered |
+| Sizes the zone of an aquarium | `dimensions_cm` of the document (`reeftank/aquarium/get`): `length` × `height` for a zone on a wall (the front), `length` × `width` on a floor (the top). Without dimensions the zone is sized by hand |
+| Offers the view shown on the zone | `views` of the document, `default_view` first |
+| Draws the aquarium on its zone, and in a window on a tap | A `reef-aquarium-card` element of ha-reef-card, configured with `{aquarium, view?}`: the card subscribes to the aquarium as on a dashboard (`reeftank/aquarium/subscribe`), at the render level of the aquarium |
+| Counts the alarms of the tank on its alarm badge | The six `binary_sensor.<tank>_*` of §18: their device class is `problem`, the kind House View collects by itself |
+
+- The aquarium card is the one of the dashboards: a change saved in its scene
+  editor shows in House View at once, and the picture on the zone can be
+  switched off per zone (the zone then only opens the window).
+- Without ha-reef-card the zone stays, and House View says the card is missing.
+- In the demo home of House View the entities are simulated, but the aquarium
+  card is given the real `hass`: its devices and entities are not part of the
+  simulated home.
+
+A demo of House View: <https://youtu.be/MyXz5AVbtJI>.

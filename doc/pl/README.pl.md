@@ -116,6 +116,9 @@ Wszystkie są udokumentowane razem na [stronie projektu ReefTech](https://elwinm
 - **Urządzenia i encje** umieszczane na obrazie jako miniatury lub obrysowane na nim, klikalne; strefy otwierające inny obraz (sump w szafce)
 - **Karmienie**: karmniki, skróty Red Sea lub usługa rejestrują każde karmienie; ryby płyną do punktu karmienia
 - **Inwentarz**: liczba ryb i koralowców jako sensory, z historią
+- **Morskie, słodkowodne lub słonawe**: wybierz wodę zbiornika, edytor proponuje tylko gatunki, które w niej żyją
+- **Testy wody**: KH, Ca, Mg, NO3, PO4… wprowadzane z karty lub przez usługę, przechowywane dla każdego parametru jako sensory z historią
+- **W Twoim domu**: z [House View](https://github.com/Elwinmage/ha-house-view-component) akwarium pokazuje się na żywo na swoim miejscu w widoku 3D Twojego domu
 
 ## Instalacja
 
@@ -154,7 +157,7 @@ Pełnoekranowe okno, otwierane z edytora karty, z siedmioma zakładkami:
 
 | Zakładka | Co się w niej robi |
 |---|---|
-| **Akwarium** | Nazwa, wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania, ciemność wody w nocy |
+| **Akwarium** | Nazwa, woda (morska, słodka lub słonawa), wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania, ciemność wody w nocy |
 | **Widoki** | Obrazy; dla każdej wody: obrys, linia piasku (przód i tył), skały i ich głębokość, strefy klikalne, rysowane tło i jego tekstury |
 | **Urządzenia** | Twoje urządzenia i encje według pięter i obszarów, przeciągane na obraz |
 | **Światło i przepływ** | Lampy oświetlające każdą wodę i ich położenie; pompy poruszające wodę |
@@ -224,6 +227,7 @@ Każde akwarium jest urządzeniem z:
 | `binary_sensor.<aquarium>_*` | Sześć powyższych alarmów |
 | `switch.<aquarium>_pause_monitoring` | Wstrzymuje analizę |
 | `sensor.<aquarium>_water_volume` | Objętość wody netto (L), odczytywana przez regulację dozowania ReefDose integracji redsea |
+| `sensor.<aquarium>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Ostatni test wody danego parametru (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, zasolenie), jego data i ostatnie wyniki w atrybutach; odczytywany przez regulację dozowania ReefDose integracji redsea |
 
 Oraz urządzenie *ReefTank catalog*:
 
@@ -241,6 +245,7 @@ Oraz urządzenie *ReefTank catalog*:
 | `reeftank.livestock_remove` | Usuwa zwierzęta (straty, oddanie) |
 | `reeftank.monitoring_configure` | Wybiera monitorowane encje i progi |
 | `reeftank.monitoring_reset` | Zapomina historię, aby uczyć się od nowa (nowa sonda) |
+| `reeftank.water_test` | Rejestruje wynik testu wody (parametr, wartość, data, jeśli nie teraz) |
 
 `aquarium` to nazwa, id lub id urządzenia akwarium.
 
@@ -252,6 +257,14 @@ data:
   count: 3
 ```
 
+```yaml
+action: reeftank.water_test
+data:
+  aquarium: Reefer 425
+  parameter: kh
+  value: 8.2
+```
+
 ## Katalog gatunków
 
 Ryby, koralowce i tekstury pochodzą z [katalogu ReefTank](https://github.com/Elwinmage/reeftank-catalog), pobieranego przy pierwszym uruchomieniu (github.com musi być raz osiągalny), a potem aktualizowanego:
@@ -261,6 +274,21 @@ Ryby, koralowce i tekstury pochodzą z [katalogu ReefTank](https://github.com/El
 - pobierane jest tylko to, co się zmieniło, a przerwana aktualizacja zostawia poprzedni katalog bez zmian.
 
 Własne gatunki umieść w `<config>/reeftank/catalog/` (taki sam układ jak katalog): pojawią się w edytorze bez ponownego uruchamiania.
+
+## W House View
+
+[House View](https://github.com/Elwinmage/ha-house-view-component) rysuje Twój dom w 3D na pulpicie: plan na jego terenie, światła, pogodę, pory roku. Z zainstalowanym ReefTank Twoje akwaria zajmują w nim swoje miejsce:
+
+- **Strefa wielkości zbiornika**: w edytorze House View *Strefy do dotykania* → *Dodaj akwarium* kładzie prostokąt na ścianie (przód zbiornika) lub na podłodze (jego góra), o wymiarach z zakładki **Akwarium**
+- **Na żywo na swoim miejscu**: strefa pokazuje kartę akwarium z poruszającymi się rybami, w wybranym widoku (inaczej w domyślnym)
+- **Dotknięcie** strefy otwiera widok akwarium w oknie, z jego urządzeniami i encjami
+- **Alarmy**: alarmy monitorowania wody pojawiają się w znaczniku alarmów House View, bez żadnych ustawień
+
+Po stronie ReefTank nie trzeba nic konfigurować: House View sam znajduje akwaria. Karta akwarium z [ha-reef-card](https://github.com/Elwinmage/ha-reef-card) musi być zainstalowana.
+
+House View w akcji:
+
+[![Obejrzyj wideo](https://img.youtube.com/vi/MyXz5AVbtJI/0.jpg)](https://www.youtube.com/watch?v=MyXz5AVbtJI)
 
 ## Dokumentacja techniczna
 

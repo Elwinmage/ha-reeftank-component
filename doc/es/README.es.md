@@ -116,6 +116,9 @@ Todos están documentados juntos en la [página del proyecto ReefTech](https://e
 - **Dispositivos y entidades** colocados en la imagen como miniaturas, o contorneados en ella, con clic; zonas que abren otra imagen (el sump en el mueble)
 - **Alimentación**: comederos, atajos Red Sea o un servicio registran cada alimentación; los peces acuden al punto de alimentación
 - **Inventario**: número de peces y corales como sensores, con su historial
+- **Marino, de agua dulce o salobre**: elija el agua del acuario, el editor solo ofrece las especies que viven en ella
+- **Pruebas de agua**: KH, Ca, Mg, NO3, PO4… introducidas desde la tarjeta o con un servicio, guardadas por parámetro como sensores con su historial
+- **En su casa**: con [House View](https://github.com/Elwinmage/ha-house-view-component), el acuario se muestra en directo en su sitio en la vista 3D de su vivienda
 
 ## Instalación
 
@@ -154,7 +157,7 @@ Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con siet
 
 | Pestaña | Qué se hace en ella |
 |---|---|
-| **Acuario** | Nombre, dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado, oscuridad del agua de noche |
+| **Acuario** | Nombre, agua (marina, dulce o salobre), dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado, oscuridad del agua de noche |
 | **Vistas** | Las imágenes; para cada agua: contorno, línea de arena (delante y detrás), rocas y su profundidad, zonas clicables, fondo dibujado y sus texturas |
 | **Dispositivos** | Sus dispositivos y entidades por planta y zona, arrastrados sobre la imagen |
 | **Luz y corriente** | Las lámparas que iluminan cada agua y su posición; las bombas que mueven el agua |
@@ -224,6 +227,7 @@ Cada acuario es un dispositivo con:
 | `binary_sensor.<aquarium>_*` | Las seis alarmas anteriores |
 | `switch.<aquarium>_pause_monitoring` | Suspende el análisis |
 | `sensor.<aquarium>_water_volume` | Volumen de agua neto (L), leído por la regulación de dosificación ReefDose de la integración redsea |
+| `sensor.<aquarium>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Última prueba de agua del parámetro (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinidad), su fecha y los resultados recientes en los atributos; leído por la regulación de dosificación ReefDose de la integración redsea |
 
 Y el dispositivo *ReefTank catalog*:
 
@@ -241,6 +245,7 @@ Y el dispositivo *ReefTank catalog*:
 | `reeftank.livestock_remove` | Retira animales (bajas, cesiones) |
 | `reeftank.monitoring_configure` | Elige las entidades vigiladas y los umbrales |
 | `reeftank.monitoring_reset` | Olvida el historial para volver a aprender (sonda nueva) |
+| `reeftank.water_test` | Registra el resultado de una prueba de agua (parámetro, valor, fecha si no es ahora) |
 
 `aquarium` es el nombre, el id o el id de dispositivo del acuario.
 
@@ -252,6 +257,14 @@ data:
   count: 3
 ```
 
+```yaml
+action: reeftank.water_test
+data:
+  aquarium: Reefer 425
+  parameter: kh
+  value: 8.2
+```
+
 ## Catálogo de especies
 
 Peces, corales y texturas vienen del [catálogo ReefTank](https://github.com/Elwinmage/reeftank-catalog), descargado en el primer arranque (github.com debe ser accesible una vez) y luego mantenido al día:
@@ -261,6 +274,21 @@ Peces, corales y texturas vienen del [catálogo ReefTank](https://github.com/Elw
 - solo se descarga lo que ha cambiado, y una actualización interrumpida deja el catálogo anterior en su sitio.
 
 Sus propias especies van en `<config>/reeftank/catalog/` (misma organización que el catálogo): aparecen en el editor sin reiniciar.
+
+## En House View
+
+[House View](https://github.com/Elwinmage/ha-house-view-component) dibuja su vivienda en 3D en el panel: su plano sobre su terreno, las luces, el tiempo, las estaciones. Con ReefTank instalado, sus acuarios ocupan su lugar en ella:
+
+- **Una zona del tamaño del acuario**: en el editor de House View, *Zonas pulsables* → *Añadir un acuario* coloca un rectángulo en una pared (el frontal del acuario) o en un suelo (su parte superior), con el tamaño de las dimensiones de la pestaña **Acuario**
+- **En directo en su sitio**: la zona muestra la tarjeta de acuario, con los peces en movimiento, en la vista que elija (su vista predeterminada si no)
+- **Un toque** en la zona abre la vista del acuario en una ventana, con sus dispositivos y entidades
+- **Alarmas**: las alarmas de la vigilancia del agua aparecen en el indicador de alarmas de House View, sin configurar nada
+
+Nada que configurar del lado de ReefTank: House View encuentra los acuarios por sí solo. La tarjeta de acuario de [ha-reef-card](https://github.com/Elwinmage/ha-reef-card) debe estar instalada.
+
+House View en acción:
+
+[![Ver el video](https://img.youtube.com/vi/MyXz5AVbtJI/0.jpg)](https://www.youtube.com/watch?v=MyXz5AVbtJI)
 
 ## Referencia técnica
 

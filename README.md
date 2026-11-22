@@ -116,6 +116,9 @@ All of them are documented together on the [ReefTech project page](https://elwin
 - **Devices and entities** dropped on the picture as thumbnails, or outlined on it, clickable; zones that open another picture (the sump in the cabinet)
 - **Feeding**: feeders, Red Sea shortcuts or a service record each feeding; the fish rush to the feeding point
 - **Inventory**: fish and coral counts as sensors, with their history
+- **Marine, freshwater or brackish**: choose the water of the tank, the editor only offers the species living in it
+- **Water tests**: KH, Ca, Mg, NO3, PO4… entered from the card or by a service, kept per parameter as sensors with their history
+- **In your house**: with [House View](https://github.com/Elwinmage/ha-house-view-component), the aquarium shows live on its tank in the 3D view of your home
 
 ## Installation
 
@@ -154,7 +157,7 @@ A full-screen dialog, opened from the card editor, with seven tabs:
 
 | Tab | What you do there |
 |---|---|
-| **Aquarium** | Name, dimensions, the matching cloud aquarium, light the photos were taken under, render level, water darkness at night |
+| **Aquarium** | Name, water (marine, freshwater or brackish), dimensions, the matching cloud aquarium, light the photos were taken under, render level, water darkness at night |
 | **Views** | Pictures; for each water: outline, sand line (front and back), rocks with their depth, clickable zones, drawn background and its textures |
 | **Devices** | Your devices and entities by floor and area, dragged onto the picture |
 | **Light & flow** | Lamps lighting each water and their position; pumps that make the water move |
@@ -224,6 +227,7 @@ Each aquarium is a device with:
 | `binary_sensor.<aquarium>_*` | The six alarms above |
 | `switch.<aquarium>_pause_monitoring` | Suspends the analysis |
 | `sensor.<aquarium>_water_volume` | Net water volume (L), read by the ReefDose dose regulation of the redsea integration |
+| `sensor.<aquarium>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Last water test of the parameter (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinity), its date and recent results in the attributes; read by the ReefDose dose regulation of the redsea integration |
 
 And the *ReefTank catalog* device:
 
@@ -241,6 +245,7 @@ And the *ReefTank catalog* device:
 | `reeftank.livestock_remove` | Removes animals (losses, rehoming) |
 | `reeftank.monitoring_configure` | Chooses the monitored entities and the thresholds |
 | `reeftank.monitoring_reset` | Forgets the history to learn again (new probe) |
+| `reeftank.water_test` | Records the result of a water test (parameter, value, date if not now) |
 
 `aquarium` is the aquarium's name, id or device id.
 
@@ -252,6 +257,14 @@ data:
   count: 3
 ```
 
+```yaml
+action: reeftank.water_test
+data:
+  aquarium: Reefer 425
+  parameter: kh
+  value: 8.2
+```
+
 ## Species catalog
 
 Fish, corals and textures come from the [ReefTank catalog](https://github.com/Elwinmage/reeftank-catalog), downloaded on the first start (github.com must be reachable once), then kept up to date:
@@ -261,6 +274,21 @@ Fish, corals and textures come from the [ReefTank catalog](https://github.com/El
 - only what changed is downloaded, and an interrupted update leaves the previous catalog in place.
 
 Your own species go in `<config>/reeftank/catalog/` (same layout as the catalog): they appear in the editor without restarting.
+
+## In House View
+
+[House View](https://github.com/Elwinmage/ha-house-view-component) draws your home in 3D on the dashboard: your plan on its terrain, lights, weather, seasons. With ReefTank installed, your aquariums take their place in it:
+
+- **A zone at the size of the tank**: in the editor of House View, *Clickable zones* → *Add an aquarium* puts a rectangle on a wall (the front of the tank) or on a floor (its top), sized from the dimensions of the **Aquarium** tab
+- **Live on its tank**: the zone shows the aquarium card, fish moving, in the view you choose (its default view otherwise)
+- **A tap** on the zone opens the aquarium view in a window, with its devices and entities
+- **Alarms**: the water monitoring alarms raise the alarm badge of House View, with nothing to set
+
+Nothing to configure on the ReefTank side: House View finds the aquariums by itself. The aquarium card of [ha-reef-card](https://github.com/Elwinmage/ha-reef-card) must be installed.
+
+House View in action:
+
+[![Watch the video](https://img.youtube.com/vi/MyXz5AVbtJI/0.jpg)](https://www.youtube.com/watch?v=MyXz5AVbtJI)
 
 ## Technical reference
 

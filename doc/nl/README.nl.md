@@ -116,6 +116,9 @@ Alles staat samen gedocumenteerd op de [ReefTech-projectpagina](https://elwinmag
 - **Apparaten en entiteiten** als miniaturen op de afbeelding geplaatst, of erop omlijnd, klikbaar; zones die een andere afbeelding openen (de sump in de kast)
 - **Voederen**: voederautomaten, Red Sea-snelkoppelingen of een dienst leggen elke voedering vast; de vissen haasten zich naar het voederpunt
 - **Inventaris**: aantal vissen en koralen als sensoren, met hun geschiedenis
+- **Zee-, zoet- of brakwater**: kies het water van uw bak, de editor biedt alleen de soorten aan die erin leven
+- **Watertests**: KH, Ca, Mg, NO3, PO4… ingevoerd via de kaart of een dienst, per parameter bewaard als sensoren met hun geschiedenis
+- **In uw huis**: met [House View](https://github.com/Elwinmage/ha-house-view-component) verschijnt het aquarium live op zijn plek in de 3D-weergave van uw woning
 
 ## Installatie
 
@@ -154,7 +157,7 @@ Een schermvullend venster, geopend vanuit de kaarteditor, met zeven tabbladen (d
 
 | Tabblad | Wat u er doet |
 |---|---|
-| **Aquarium** | Naam, afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau, duisternis van het water 's nachts |
+| **Aquarium** | Naam, water (zee-, zoet- of brakwater), afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau, duisternis van het water 's nachts |
 | **Views** | De afbeeldingen; per water: omtrek, zandlijn (voor en achter), stenen met hun diepte, klikbare zones, getekende achtergrond en zijn texturen |
 | **Devices** | Uw apparaten en entiteiten per verdieping en ruimte, naar de afbeelding gesleept |
 | **Light & flow** | De lampen die elk water verlichten en hun positie; de pompen die het water bewegen |
@@ -224,6 +227,7 @@ Elk aquarium is een apparaat met:
 | `binary_sensor.<aquarium>_*` | De zes alarmen hierboven |
 | `switch.<aquarium>_pause_monitoring` | Stopt de analyse tijdelijk |
 | `sensor.<aquarium>_water_volume` | Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie |
+| `sensor.<aquarium>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Laatste watertest van de parameter (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, saliniteit), met datum en recente resultaten in de attributen; gelezen door de ReefDose-doseerregeling van de redsea-integratie |
 
 En het apparaat *ReefTank catalog*:
 
@@ -241,6 +245,7 @@ En het apparaat *ReefTank catalog*:
 | `reeftank.livestock_remove` | Verwijdert dieren (verlies, weggegeven) |
 | `reeftank.monitoring_configure` | Kiest de bewaakte entiteiten en de drempels |
 | `reeftank.monitoring_reset` | Vergeet de geschiedenis om opnieuw te leren (nieuwe sonde) |
+| `reeftank.water_test` | Legt het resultaat van een watertest vast (parameter, waarde, datum als het niet nu is) |
 
 `aquarium` is de naam, het id of het apparaat-id van het aquarium.
 
@@ -252,6 +257,14 @@ data:
   count: 3
 ```
 
+```yaml
+action: reeftank.water_test
+data:
+  aquarium: Reefer 425
+  parameter: kh
+  value: 8.2
+```
+
 ## Soortencatalogus
 
 Vissen, koralen en texturen komen uit de [ReefTank-catalogus](https://github.com/Elwinmage/reeftank-catalog), gedownload bij de eerste start (github.com moet één keer bereikbaar zijn) en daarna bijgehouden:
@@ -261,6 +274,21 @@ Vissen, koralen en texturen komen uit de [ReefTank-catalogus](https://github.com
 - alleen wat gewijzigd is wordt gedownload, en een onderbroken update laat de vorige catalogus staan.
 
 Uw eigen soorten horen in `<config>/reeftank/catalog/` (zelfde indeling als de catalogus): ze verschijnen in de editor zonder herstart.
+
+## In House View
+
+[House View](https://github.com/Elwinmage/ha-house-view-component) tekent uw woning in 3D op het dashboard: uw plattegrond op zijn terrein, de lampen, het weer, de seizoenen. Met ReefTank geïnstalleerd krijgen uw aquaria er hun plek in:
+
+- **Een zone op maat van de bak**: in de editor van House View plaatst *Klikbare zones* → *Een aquarium toevoegen* een rechthoek op een muur (de voorkant van de bak) of op een vloer (de bovenkant), met de afmetingen van het tabblad **Aquarium**
+- **Live op zijn plek**: de zone toont de aquariumkaart, met bewegende vissen, in de weergave van uw keuze (anders de standaardweergave)
+- **Een tik** op de zone opent de aquariumweergave in een venster, met haar apparaten en entiteiten
+- **Alarmen**: de alarmen van de waterbewaking verschijnen in de alarmbadge van House View, zonder iets in te stellen
+
+Aan de kant van ReefTank valt niets in te stellen: House View vindt de aquaria vanzelf. De aquariumkaart van [ha-reef-card](https://github.com/Elwinmage/ha-reef-card) moet geïnstalleerd zijn.
+
+House View in actie:
+
+[![Bekijk de video](https://img.youtube.com/vi/MyXz5AVbtJI/0.jpg)](https://www.youtube.com/watch?v=MyXz5AVbtJI)
 
 ## Technische referentie
 

@@ -28,10 +28,13 @@ RAW = f"https://raw.githubusercontent.com/{OWNER}/{NAME}/main"
 CARD = f"https://github.com/{OWNER}/ha-reef-card"
 CATALOG = f"https://github.com/{OWNER}/reeftank-catalog"
 SITE = "https://elwinmage.github.io/reeftank/"
+HOUSE = f"https://github.com/{OWNER}/ha-house-view-component"
 TECH = "doc/en/technical.md"
 PREVIEW = "doc/img/preview.webp"
 #: Demo video of the aquarium card
 VIDEO = "ZtYobmQZf9k"
+#: Demo video of House View, where an aquarium shows on its tank
+HOUSE_VIDEO = "MyXz5AVbtJI"
 
 # Flag, language code, and the path the flag links to. English is the root
 # README; the rest live under doc/<lang>/.
@@ -116,6 +119,14 @@ data:
   count: 3
 ```"""
 
+WATER_TEST_YAML = """```yaml
+action: reeftank.water_test
+data:
+  aquarium: Reefer 425
+  parameter: kh
+  value: 8.2
+```"""
+
 DEV_SH = """```bash
 pip install -r requirements.test.txt
 pytest -q --cov=custom_components.reeftank --cov-config=.coveragerc
@@ -153,6 +164,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Devices and entities** dropped on the picture as thumbnails, or outlined on it, clickable; zones that open another picture (the sump in the cabinet)",
         "f7": "**Feeding**: feeders, Red Sea shortcuts or a service record each feeding; the fish rush to the feeding point",
         "f8": "**Inventory**: fish and coral counts as sensors, with their history",
+        "f9": "**Marine, freshwater or brackish**: choose the water of the tank, the editor only offers the species living in it",
+        "f10": "**Water tests**: KH, Ca, Mg, NO3, PO4… entered from the card or by a service, kept per parameter as sensors with their history",
+        "f11": "**In your house**: with [House View]({house}), the aquarium shows live on its tank in the 3D view of your home",
         "install_title": "Installation",
         "install_direct_title": "Direct installation",
         "install_direct_body": 'Click here to open the repository directly in the Marketplace and click "Install":',
@@ -171,7 +185,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "A full-screen dialog, opened from the card editor, with seven tabs:",
         "h_tab": "Tab",
         "h_what": "What you do there",
-        "w_aquarium": "Name, dimensions, the matching cloud aquarium, light the photos were taken under, render level, water darkness at night",
+        "w_aquarium": "Name, water (marine, freshwater or brackish), dimensions, the matching cloud aquarium, light the photos were taken under, render level, water darkness at night",
         "w_views": "Pictures; for each water: outline, sand line (front and back), rocks with their depth, clickable zones, drawn background and its textures",
         "w_devices": "Your devices and entities by floor and area, dragged onto the picture",
         "w_lights": "Lamps lighting each water and their position; pumps that make the water move",
@@ -205,6 +219,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Suspends the analysis",
         "sv_configure": "Chooses the monitored entities and the thresholds",
         "sv_reset": "Forgets the history to learn again (new probe)",
+        "sv_test": "Records the result of a water test (parameter, value, date if not now)",
         "entities_title": "Entities",
         "entities_body": "Each aquarium is a device with:",
         "h_entity": "Entity",
@@ -214,6 +229,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Last feeding, with its kind (feeder, shortcut, manual) and source",
         "e_today": "Feedings since midnight",
         "e_volume": "Net water volume (L), read by the ReefDose dose regulation of the redsea integration",
+        "e_tests": "Last water test of the parameter (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinity), its date and recent results in the attributes; read by the ReefDose dose regulation of the redsea integration",
         "entities_catalog": "And the *ReefTank catalog* device:",
         "e_update": "Installed and latest catalog release",
         "e_button": "Checks for a new release right away",
@@ -230,6 +246,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` checks right away instead of waiting for the next check (every 12 hours);",
         "c3": "only what changed is downloaded, and an interrupted update leaves the previous catalog in place.",
         "catalog_own": "Your own species go in `<config>/reeftank/catalog/` (same layout as the catalog): they appear in the editor without restarting.",
+        "hv_title": "In House View",
+        "hv_body": "[House View]({house}) draws your home in 3D on the dashboard: your plan on its terrain, lights, weather, seasons. With ReefTank installed, your aquariums take their place in it:",
+        "hv1": "**A zone at the size of the tank**: in the editor of House View, *{zones}* → *{add}* puts a rectangle on a wall (the front of the tank) or on a floor (its top), sized from the dimensions of the **{aquarium}** tab",
+        "hv2": "**Live on its tank**: the zone shows the aquarium card, fish moving, in the view you choose (its default view otherwise)",
+        "hv3": "**A tap** on the zone opens the aquarium view in a window, with its devices and entities",
+        "hv4": "**Alarms**: the water monitoring alarms raise the alarm badge of House View, with nothing to set",
+        "hv_note": "Nothing to configure on the ReefTank side: House View finds the aquariums by itself. The aquarium card of [ha-reef-card]({card}) must be installed.",
+        "hv_video": "House View in action:",
         "tech_title": "Technical reference",
         "tech_body": "Data model, WebSocket API, rendering pipeline, fish behaviour, sprite format and catalog updates: [technical reference]({tech}) (in English).",
         "dev_title": "Development",
@@ -262,6 +286,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Appareils et entités** déposés sur l'image en miniature, ou détourés dessus, cliquables ; zones qui ouvrent une autre image (la décante dans le meuble)",
         "f7": "**Nourrissage** : nourrisseurs, raccourcis Red Sea ou un service enregistrent chaque nourrissage ; les poissons se ruent vers le point de nourrissage",
         "f8": "**Inventaire** : nombre de poissons et de coraux en capteurs, avec leur historique",
+        "f9": "**Eau de mer, douce ou saumâtre** : choisissez l'eau du bac, l'éditeur ne propose que les espèces qui y vivent",
+        "f10": "**Tests d'eau** : KH, Ca, Mg, NO3, PO4… saisis depuis la carte ou par un service, gardés par paramètre en capteurs avec leur historique",
+        "f11": "**Dans votre maison** : avec [House View]({house}), l'aquarium s'affiche en direct sur son bac dans la vue 3D de votre logement",
         "install_title": "Installation",
         "install_direct_title": "Installation directe",
         "install_direct_body": "Cliquez ici pour ouvrir directement le dépôt dans la Marketplace et cliquez sur « Installer » :",
@@ -280,7 +307,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Une fenêtre plein écran, ouverte depuis l'éditeur de la carte, en sept onglets :",
         "h_tab": "Onglet",
         "h_what": "Ce qu'on y fait",
-        "w_aquarium": "Nom, dimensions, l'aquarium du cloud correspondant, lumière sous laquelle les photos ont été prises, niveau de rendu, obscurité de l'eau la nuit",
+        "w_aquarium": "Nom, eau (marine, douce ou saumâtre), dimensions, l'aquarium du cloud correspondant, lumière sous laquelle les photos ont été prises, niveau de rendu, obscurité de l'eau la nuit",
         "w_views": "Les images ; pour chaque eau : contour, ligne de sable (avant et arrière), roches et leur profondeur, zones cliquables, fond dessiné et ses textures",
         "w_devices": "Vos appareils et entités par étage et par pièce, glissés sur l'image",
         "w_lights": "Les lampes qui éclairent chaque eau et leur position ; les pompes qui font bouger l'eau",
@@ -314,6 +341,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Suspend l'analyse",
         "sv_configure": "Choisit les entités surveillées et les seuils",
         "sv_reset": "Oublie l'historique pour réapprendre (nouvelle sonde)",
+        "sv_test": "Enregistre le résultat d'un test d'eau (paramètre, valeur, date si ce n'est pas maintenant)",
         "entities_title": "Entités",
         "entities_body": "Chaque aquarium est un appareil avec :",
         "h_entity": "Entité",
@@ -323,6 +351,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Dernier nourrissage, avec son type (nourrisseur, raccourci, manuel) et sa source",
         "e_today": "Nourrissages depuis minuit",
         "e_volume": "Volume d'eau net (L), lu par la régulation du dosage ReefDose de l'intégration redsea",
+        "e_tests": "Dernier test d'eau du paramètre (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinité), sa date et les résultats récents dans les attributs ; lu par la régulation du dosage ReefDose de l'intégration redsea",
         "entities_catalog": "Et l'appareil *ReefTank catalog* :",
         "e_update": "Version du catalogue installée et dernière publiée",
         "e_button": "Vérifie tout de suite si une nouvelle version existe",
@@ -339,6 +368,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` vérifie tout de suite au lieu d'attendre la prochaine vérification (toutes les 12 heures) ;",
         "c3": "seul ce qui a changé est téléchargé, et une mise à jour interrompue laisse le catalogue précédent en place.",
         "catalog_own": "Vos propres espèces vont dans `<config>/reeftank/catalog/` (même organisation que le catalogue) : elles apparaissent dans l'éditeur sans redémarrer.",
+        "hv_title": "Dans House View",
+        "hv_body": "[House View]({house}) dessine votre logement en 3D sur le tableau de bord : votre plan sur son terrain, les lumières, la météo, les saisons. Avec ReefTank installé, vos aquariums y prennent leur place :",
+        "hv1": "**Une zone à la taille du bac** : dans l'éditeur de House View, *{zones}* → *{add}* pose un rectangle sur un mur (la face avant du bac) ou sur un sol (son dessus), à la taille donnée par les dimensions de l'onglet **{aquarium}**",
+        "hv2": "**En direct sur son bac** : la zone affiche la carte aquarium, poissons animés, dans la vue de votre choix (sa vue par défaut sinon)",
+        "hv3": "**Un clic** sur la zone ouvre la vue de l'aquarium dans une fenêtre, avec ses appareils et ses entités",
+        "hv4": "**Alarmes** : les alarmes de la surveillance de l'eau remontent dans le badge d'alarme de House View, sans rien régler",
+        "hv_note": "Rien à configurer côté ReefTank : House View trouve les aquariums tout seul. La carte aquarium de [ha-reef-card]({card}) doit être installée.",
+        "hv_video": "House View en action :",
         "tech_title": "Référence technique",
         "tech_body": "Modèle de données, API WebSocket, chaîne de rendu, comportement des poissons, format des sprites et mises à jour du catalogue : [référence technique]({tech}) (en anglais).",
         "dev_title": "Développement",
@@ -371,6 +408,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Geräte und Entitäten** als Miniaturen auf dem Bild abgelegt oder darauf umrandet, anklickbar; Zonen, die ein anderes Bild öffnen (das Technikbecken im Schrank)",
         "f7": "**Fütterung**: Futterautomaten, Red-Sea-Kurzbefehle oder ein Dienst protokollieren jede Fütterung; die Fische eilen zur Futterstelle",
         "f8": "**Bestand**: Anzahl der Fische und Korallen als Sensoren, mit Verlauf",
+        "f9": "**Meer-, Süß- oder Brackwasser**: Wählen Sie das Wasser des Beckens, der Editor bietet nur die Arten an, die darin leben",
+        "f10": "**Wassertests**: KH, Ca, Mg, NO3, PO4… über die Karte oder einen Dienst erfasst, pro Parameter als Sensoren mit Verlauf aufbewahrt",
+        "f11": "**In Ihrem Haus**: Mit [House View]({house}) erscheint das Aquarium live an seinem Platz in der 3D-Ansicht Ihres Zuhauses",
         "install_title": "Installation",
         "install_direct_title": "Direkte Installation",
         "install_direct_body": "Klicken Sie hier, um das Repository direkt im Marketplace zu öffnen, und klicken Sie auf „Installieren“:",
@@ -389,7 +429,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Ein Vollbilddialog, aus dem Karteneditor geöffnet, mit sieben Reitern:",
         "h_tab": "Reiter",
         "h_what": "Was man dort macht",
-        "w_aquarium": "Name, Maße, das passende Cloud-Aquarium, Licht, unter dem die Fotos entstanden, Darstellungsstufe, Dunkelheit des Wassers nachts",
+        "w_aquarium": "Name, Wasser (Meer-, Süß- oder Brackwasser), Maße, das passende Cloud-Aquarium, Licht, unter dem die Fotos entstanden, Darstellungsstufe, Dunkelheit des Wassers nachts",
         "w_views": "Bilder; für jedes Wasser: Umriss, Sandlinie (vorne und hinten), Steine mit ihrer Tiefe, anklickbare Zonen, gezeichneter Hintergrund und seine Texturen",
         "w_devices": "Ihre Geräte und Entitäten nach Etage und Bereich, auf das Bild gezogen",
         "w_lights": "Lampen, die jedes Wasser beleuchten, und ihre Position; Pumpen, die das Wasser bewegen",
@@ -423,6 +463,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Setzt die Analyse aus",
         "sv_configure": "Wählt die überwachten Entitäten und die Schwellen",
         "sv_reset": "Verwirft den Verlauf, um neu zu lernen (neue Sonde)",
+        "sv_test": "Erfasst das Ergebnis eines Wassertests (Parameter, Wert, Datum, falls nicht jetzt)",
         "entities_title": "Entitäten",
         "entities_body": "Jedes Aquarium ist ein Gerät mit:",
         "h_entity": "Entität",
@@ -432,6 +473,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Letzte Fütterung, mit Art (Futterautomat, Kurzbefehl, manuell) und Quelle",
         "e_today": "Fütterungen seit Mitternacht",
         "e_volume": "Netto-Wasservolumen (L), von der ReefDose-Dosierregelung der redsea-Integration gelesen",
+        "e_tests": "Letzter Wassertest des Parameters (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, Salinität), Datum und jüngste Ergebnisse in den Attributen; von der ReefDose-Dosierregelung der redsea-Integration gelesen",
         "entities_catalog": "Und das Gerät *ReefTank catalog*:",
         "e_update": "Installierte und neueste Katalogversion",
         "e_button": "Prüft sofort, ob eine neue Version vorliegt",
@@ -448,6 +490,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` prüft sofort, statt auf die nächste Prüfung (alle 12 Stunden) zu warten;",
         "c3": "nur Geändertes wird heruntergeladen, und ein abgebrochenes Update lässt den bisherigen Katalog unangetastet.",
         "catalog_own": "Eigene Arten gehören nach `<config>/reeftank/catalog/` (gleicher Aufbau wie der Katalog): sie erscheinen ohne Neustart im Editor.",
+        "hv_title": "In House View",
+        "hv_body": "[House View]({house}) zeichnet Ihr Zuhause in 3D auf dem Dashboard: Ihren Plan auf seinem Gelände, Lichter, Wetter, Jahreszeiten. Mit installiertem ReefTank nehmen Ihre Aquarien darin ihren Platz ein:",
+        "hv1": "**Eine Zone in der Größe des Beckens**: Im Editor von House View legt *{zones}* → *{add}* ein Rechteck auf eine Wand (die Front des Beckens) oder einen Boden (seine Oberseite), in der Größe der Maße des Tabs **{aquarium}**",
+        "hv2": "**Live an seinem Platz**: Die Zone zeigt die Aquariumkarte mit bewegten Fischen, in der Ansicht Ihrer Wahl (sonst in der Standardansicht)",
+        "hv3": "**Ein Tippen** auf die Zone öffnet die Aquarienansicht in einem Fenster, mit ihren Geräten und Entitäten",
+        "hv4": "**Alarme**: Die Alarme der Wasserüberwachung erscheinen im Alarm-Badge von House View, ohne etwas einzustellen",
+        "hv_note": "Auf der ReefTank-Seite ist nichts einzustellen: House View findet die Aquarien selbst. Die Aquariumkarte von [ha-reef-card]({card}) muss installiert sein.",
+        "hv_video": "House View in Aktion:",
         "tech_title": "Technische Referenz",
         "tech_body": "Datenmodell, WebSocket-API, Render-Pipeline, Fischverhalten, Sprite-Format und Katalog-Updates: [technische Referenz]({tech}) (auf Englisch).",
         "dev_title": "Entwicklung",
@@ -480,6 +530,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Dispositivos y entidades** colocados en la imagen como miniaturas, o contorneados en ella, con clic; zonas que abren otra imagen (el sump en el mueble)",
         "f7": "**Alimentación**: comederos, atajos Red Sea o un servicio registran cada alimentación; los peces acuden al punto de alimentación",
         "f8": "**Inventario**: número de peces y corales como sensores, con su historial",
+        "f9": "**Marino, de agua dulce o salobre**: elija el agua del acuario, el editor solo ofrece las especies que viven en ella",
+        "f10": "**Pruebas de agua**: KH, Ca, Mg, NO3, PO4… introducidas desde la tarjeta o con un servicio, guardadas por parámetro como sensores con su historial",
+        "f11": "**En su casa**: con [House View]({house}), el acuario se muestra en directo en su sitio en la vista 3D de su vivienda",
         "install_title": "Instalación",
         "install_direct_title": "Instalación directa",
         "install_direct_body": "Haga clic aquí para abrir el repositorio directamente en el Marketplace y pulse «Instalar»:",
@@ -498,7 +551,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Un diálogo a pantalla completa, abierto desde el editor de la tarjeta, con siete pestañas:",
         "h_tab": "Pestaña",
         "h_what": "Qué se hace en ella",
-        "w_aquarium": "Nombre, dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado, oscuridad del agua de noche",
+        "w_aquarium": "Nombre, agua (marina, dulce o salobre), dimensiones, el acuario de la nube correspondiente, luz con la que se tomaron las fotos, nivel de renderizado, oscuridad del agua de noche",
         "w_views": "Las imágenes; para cada agua: contorno, línea de arena (delante y detrás), rocas y su profundidad, zonas clicables, fondo dibujado y sus texturas",
         "w_devices": "Sus dispositivos y entidades por planta y zona, arrastrados sobre la imagen",
         "w_lights": "Las lámparas que iluminan cada agua y su posición; las bombas que mueven el agua",
@@ -532,6 +585,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Suspende el análisis",
         "sv_configure": "Elige las entidades vigiladas y los umbrales",
         "sv_reset": "Olvida el historial para volver a aprender (sonda nueva)",
+        "sv_test": "Registra el resultado de una prueba de agua (parámetro, valor, fecha si no es ahora)",
         "entities_title": "Entidades",
         "entities_body": "Cada acuario es un dispositivo con:",
         "h_entity": "Entidad",
@@ -541,6 +595,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Última alimentación, con su tipo (comedero, atajo, manual) y su fuente",
         "e_today": "Alimentaciones desde medianoche",
         "e_volume": "Volumen de agua neto (L), leído por la regulación de dosificación ReefDose de la integración redsea",
+        "e_tests": "Última prueba de agua del parámetro (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinidad), su fecha y los resultados recientes en los atributos; leído por la regulación de dosificación ReefDose de la integración redsea",
         "entities_catalog": "Y el dispositivo *ReefTank catalog*:",
         "e_update": "Versión del catálogo instalada y última publicada",
         "e_button": "Comprueba al momento si hay una versión nueva",
@@ -557,6 +612,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` comprueba al momento en lugar de esperar a la próxima comprobación (cada 12 horas);",
         "c3": "solo se descarga lo que ha cambiado, y una actualización interrumpida deja el catálogo anterior en su sitio.",
         "catalog_own": "Sus propias especies van en `<config>/reeftank/catalog/` (misma organización que el catálogo): aparecen en el editor sin reiniciar.",
+        "hv_title": "En House View",
+        "hv_body": "[House View]({house}) dibuja su vivienda en 3D en el panel: su plano sobre su terreno, las luces, el tiempo, las estaciones. Con ReefTank instalado, sus acuarios ocupan su lugar en ella:",
+        "hv1": "**Una zona del tamaño del acuario**: en el editor de House View, *{zones}* → *{add}* coloca un rectángulo en una pared (el frontal del acuario) o en un suelo (su parte superior), con el tamaño de las dimensiones de la pestaña **{aquarium}**",
+        "hv2": "**En directo en su sitio**: la zona muestra la tarjeta de acuario, con los peces en movimiento, en la vista que elija (su vista predeterminada si no)",
+        "hv3": "**Un toque** en la zona abre la vista del acuario en una ventana, con sus dispositivos y entidades",
+        "hv4": "**Alarmas**: las alarmas de la vigilancia del agua aparecen en el indicador de alarmas de House View, sin configurar nada",
+        "hv_note": "Nada que configurar del lado de ReefTank: House View encuentra los acuarios por sí solo. La tarjeta de acuario de [ha-reef-card]({card}) debe estar instalada.",
+        "hv_video": "House View en acción:",
         "tech_title": "Referencia técnica",
         "tech_body": "Modelo de datos, API WebSocket, cadena de renderizado, comportamiento de los peces, formato de sprites y actualizaciones del catálogo: [referencia técnica]({tech}) (en inglés).",
         "dev_title": "Desarrollo",
@@ -589,6 +652,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Dispositivi ed entità** posati sull'immagine come miniature, o contornati su di essa, cliccabili; zone che aprono un'altra immagine (la sump nel mobile)",
         "f7": "**Alimentazione**: alimentatori, scorciatoie Red Sea o un servizio registrano ogni alimentazione; i pesci accorrono al punto di alimentazione",
         "f8": "**Inventario**: numero di pesci e coralli come sensori, con la loro cronologia",
+        "f9": "**Marino, d'acqua dolce o salmastra**: scegliete l'acqua della vasca, l'editor propone solo le specie che ci vivono",
+        "f10": "**Test dell'acqua**: KH, Ca, Mg, NO3, PO4… inseriti dalla scheda o con un servizio, conservati per parametro come sensori con la loro cronologia",
+        "f11": "**Nella vostra casa**: con [House View]({house}), l'acquario si mostra dal vivo al suo posto nella vista 3D della vostra abitazione",
         "install_title": "Installazione",
         "install_direct_title": "Installazione diretta",
         "install_direct_body": "Fate clic qui per aprire il repository direttamente nel Marketplace, poi su «Installa»:",
@@ -607,7 +673,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Una finestra a schermo intero, aperta dall'editor della scheda, con sette schede:",
         "h_tab": "Scheda",
         "h_what": "Cosa si fa",
-        "w_aquarium": "Nome, dimensioni, l'acquario cloud corrispondente, luce con cui sono state scattate le foto, livello di resa, oscurità dell'acqua di notte",
+        "w_aquarium": "Nome, acqua (marina, dolce o salmastra), dimensioni, l'acquario cloud corrispondente, luce con cui sono state scattate le foto, livello di resa, oscurità dell'acqua di notte",
         "w_views": "Le immagini; per ogni acqua: contorno, linea della sabbia (davanti e dietro), rocce e loro profondità, zone cliccabili, sfondo disegnato e sue texture",
         "w_devices": "I vostri dispositivi ed entità per piano e area, trascinati sull'immagine",
         "w_lights": "Le lampade che illuminano ogni acqua e la loro posizione; le pompe che muovono l'acqua",
@@ -641,6 +707,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Sospende l'analisi",
         "sv_configure": "Sceglie le entità monitorate e le soglie",
         "sv_reset": "Dimentica lo storico per imparare di nuovo (nuova sonda)",
+        "sv_test": "Registra il risultato di un test dell'acqua (parametro, valore, data se non è adesso)",
         "entities_title": "Entità",
         "entities_body": "Ogni acquario è un dispositivo con:",
         "h_entity": "Entità",
@@ -650,6 +717,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Ultima alimentazione, con tipo (alimentatore, scorciatoia, manuale) e fonte",
         "e_today": "Alimentazioni dalla mezzanotte",
         "e_volume": "Volume d'acqua netto (L), letto dalla regolazione del dosaggio ReefDose dell'integrazione redsea",
+        "e_tests": "Ultimo test dell'acqua del parametro (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinità), con data e risultati recenti negli attributi; letto dalla regolazione del dosaggio ReefDose dell'integrazione redsea",
         "entities_catalog": "E il dispositivo *ReefTank catalog*:",
         "e_update": "Versione del catalogo installata e ultima pubblicata",
         "e_button": "Controlla subito se c'è una nuova versione",
@@ -666,6 +734,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` controlla subito invece di attendere il prossimo controllo (ogni 12 ore);",
         "c3": "si scarica solo ciò che è cambiato, e un aggiornamento interrotto lascia il catalogo precedente al suo posto.",
         "catalog_own": "Le vostre specie vanno in `<config>/reeftank/catalog/` (stessa struttura del catalogo): compaiono nell'editor senza riavviare.",
+        "hv_title": "In House View",
+        "hv_body": "[House View]({house}) disegna la vostra abitazione in 3D sulla dashboard: la pianta sul suo terreno, le luci, il meteo, le stagioni. Con ReefTank installato, i vostri acquari vi prendono posto:",
+        "hv1": "**Una zona grande come la vasca**: nell'editor di House View, *{zones}* → *{add}* posa un rettangolo su una parete (il fronte della vasca) o su un pavimento (il suo lato superiore), delle dimensioni indicate nella scheda **{aquarium}**",
+        "hv2": "**Dal vivo al suo posto**: la zona mostra la scheda acquario, con i pesci in movimento, nella vista scelta (altrimenti quella predefinita)",
+        "hv3": "**Un tocco** sulla zona apre la vista dell'acquario in una finestra, con i suoi dispositivi e le sue entità",
+        "hv4": "**Allarmi**: gli allarmi del monitoraggio dell'acqua compaiono nel badge degli allarmi di House View, senza nulla da impostare",
+        "hv_note": "Nulla da configurare dal lato di ReefTank: House View trova gli acquari da solo. La scheda acquario di [ha-reef-card]({card}) deve essere installata.",
+        "hv_video": "House View in azione:",
         "tech_title": "Riferimento tecnico",
         "tech_body": "Modello dei dati, API WebSocket, pipeline di resa, comportamento dei pesci, formato degli sprite e aggiornamenti del catalogo: [riferimento tecnico]({tech}) (in inglese).",
         "dev_title": "Sviluppo",
@@ -698,6 +774,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Apparaten en entiteiten** als miniaturen op de afbeelding geplaatst, of erop omlijnd, klikbaar; zones die een andere afbeelding openen (de sump in de kast)",
         "f7": "**Voederen**: voederautomaten, Red Sea-snelkoppelingen of een dienst leggen elke voedering vast; de vissen haasten zich naar het voederpunt",
         "f8": "**Inventaris**: aantal vissen en koralen als sensoren, met hun geschiedenis",
+        "f9": "**Zee-, zoet- of brakwater**: kies het water van uw bak, de editor biedt alleen de soorten aan die erin leven",
+        "f10": "**Watertests**: KH, Ca, Mg, NO3, PO4… ingevoerd via de kaart of een dienst, per parameter bewaard als sensoren met hun geschiedenis",
+        "f11": "**In uw huis**: met [House View]({house}) verschijnt het aquarium live op zijn plek in de 3D-weergave van uw woning",
         "install_title": "Installatie",
         "install_direct_title": "Directe installatie",
         "install_direct_body": 'Klik hier om de repository direct in de Marketplace te openen en klik op "Installeren":',
@@ -716,7 +795,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Een schermvullend venster, geopend vanuit de kaarteditor, met zeven tabbladen (de kaart is nog niet in het Nederlands vertaald):",
         "h_tab": "Tabblad",
         "h_what": "Wat u er doet",
-        "w_aquarium": "Naam, afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau, duisternis van het water 's nachts",
+        "w_aquarium": "Naam, water (zee-, zoet- of brakwater), afmetingen, het bijbehorende cloudaquarium, licht waaronder de foto's genomen zijn, weergaveniveau, duisternis van het water 's nachts",
         "w_views": "De afbeeldingen; per water: omtrek, zandlijn (voor en achter), stenen met hun diepte, klikbare zones, getekende achtergrond en zijn texturen",
         "w_devices": "Uw apparaten en entiteiten per verdieping en ruimte, naar de afbeelding gesleept",
         "w_lights": "De lampen die elk water verlichten en hun positie; de pompen die het water bewegen",
@@ -750,6 +829,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Stopt de analyse tijdelijk",
         "sv_configure": "Kiest de bewaakte entiteiten en de drempels",
         "sv_reset": "Vergeet de geschiedenis om opnieuw te leren (nieuwe sonde)",
+        "sv_test": "Legt het resultaat van een watertest vast (parameter, waarde, datum als het niet nu is)",
         "entities_title": "Entiteiten",
         "entities_body": "Elk aquarium is een apparaat met:",
         "h_entity": "Entiteit",
@@ -759,6 +839,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Laatste voedering, met soort (automaat, snelkoppeling, handmatig) en bron",
         "e_today": "Voederingen sinds middernacht",
         "e_volume": "Netto watervolume (L), gelezen door de ReefDose-doseerregeling van de redsea-integratie",
+        "e_tests": "Laatste watertest van de parameter (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, saliniteit), met datum en recente resultaten in de attributen; gelezen door de ReefDose-doseerregeling van de redsea-integratie",
         "entities_catalog": "En het apparaat *ReefTank catalog*:",
         "e_update": "Geïnstalleerde en nieuwste catalogusversie",
         "e_button": "Controleert meteen of er een nieuwe versie is",
@@ -775,6 +856,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` controleert meteen in plaats van te wachten op de volgende controle (elke 12 uur);",
         "c3": "alleen wat gewijzigd is wordt gedownload, en een onderbroken update laat de vorige catalogus staan.",
         "catalog_own": "Uw eigen soorten horen in `<config>/reeftank/catalog/` (zelfde indeling als de catalogus): ze verschijnen in de editor zonder herstart.",
+        "hv_title": "In House View",
+        "hv_body": "[House View]({house}) tekent uw woning in 3D op het dashboard: uw plattegrond op zijn terrein, de lampen, het weer, de seizoenen. Met ReefTank geïnstalleerd krijgen uw aquaria er hun plek in:",
+        "hv1": "**Een zone op maat van de bak**: in de editor van House View plaatst *{zones}* → *{add}* een rechthoek op een muur (de voorkant van de bak) of op een vloer (de bovenkant), met de afmetingen van het tabblad **{aquarium}**",
+        "hv2": "**Live op zijn plek**: de zone toont de aquariumkaart, met bewegende vissen, in de weergave van uw keuze (anders de standaardweergave)",
+        "hv3": "**Een tik** op de zone opent de aquariumweergave in een venster, met haar apparaten en entiteiten",
+        "hv4": "**Alarmen**: de alarmen van de waterbewaking verschijnen in de alarmbadge van House View, zonder iets in te stellen",
+        "hv_note": "Aan de kant van ReefTank valt niets in te stellen: House View vindt de aquaria vanzelf. De aquariumkaart van [ha-reef-card]({card}) moet geïnstalleerd zijn.",
+        "hv_video": "House View in actie:",
         "tech_title": "Technische referentie",
         "tech_body": "Datamodel, WebSocket-API, weergaveketen, visgedrag, spriteformaat en catalogusupdates: [technische referentie]({tech}) (in het Engels).",
         "dev_title": "Ontwikkeling",
@@ -807,6 +896,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Urządzenia i encje** umieszczane na obrazie jako miniatury lub obrysowane na nim, klikalne; strefy otwierające inny obraz (sump w szafce)",
         "f7": "**Karmienie**: karmniki, skróty Red Sea lub usługa rejestrują każde karmienie; ryby płyną do punktu karmienia",
         "f8": "**Inwentarz**: liczba ryb i koralowców jako sensory, z historią",
+        "f9": "**Morskie, słodkowodne lub słonawe**: wybierz wodę zbiornika, edytor proponuje tylko gatunki, które w niej żyją",
+        "f10": "**Testy wody**: KH, Ca, Mg, NO3, PO4… wprowadzane z karty lub przez usługę, przechowywane dla każdego parametru jako sensory z historią",
+        "f11": "**W Twoim domu**: z [House View]({house}) akwarium pokazuje się na żywo na swoim miejscu w widoku 3D Twojego domu",
         "install_title": "Instalacja",
         "install_direct_title": "Instalacja bezpośrednia",
         "install_direct_body": "Kliknij tutaj, aby otworzyć repozytorium bezpośrednio w Marketplace, i kliknij „Zainstaluj”:",
@@ -825,7 +917,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Pełnoekranowe okno, otwierane z edytora karty, z siedmioma zakładkami:",
         "h_tab": "Zakładka",
         "h_what": "Co się w niej robi",
-        "w_aquarium": "Nazwa, wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania, ciemność wody w nocy",
+        "w_aquarium": "Nazwa, woda (morska, słodka lub słonawa), wymiary, odpowiadające akwarium w chmurze, światło, przy którym zrobiono zdjęcia, poziom renderowania, ciemność wody w nocy",
         "w_views": "Obrazy; dla każdej wody: obrys, linia piasku (przód i tył), skały i ich głębokość, strefy klikalne, rysowane tło i jego tekstury",
         "w_devices": "Twoje urządzenia i encje według pięter i obszarów, przeciągane na obraz",
         "w_lights": "Lampy oświetlające każdą wodę i ich położenie; pompy poruszające wodę",
@@ -859,6 +951,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Wstrzymuje analizę",
         "sv_configure": "Wybiera monitorowane encje i progi",
         "sv_reset": "Zapomina historię, aby uczyć się od nowa (nowa sonda)",
+        "sv_test": "Rejestruje wynik testu wody (parametr, wartość, data, jeśli nie teraz)",
         "entities_title": "Encje",
         "entities_body": "Każde akwarium jest urządzeniem z:",
         "h_entity": "Encja",
@@ -868,6 +961,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Ostatnie karmienie, z rodzajem (karmnik, skrót, ręczne) i źródłem",
         "e_today": "Karmienia od północy",
         "e_volume": "Objętość wody netto (L), odczytywana przez regulację dozowania ReefDose integracji redsea",
+        "e_tests": "Ostatni test wody danego parametru (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, zasolenie), jego data i ostatnie wyniki w atrybutach; odczytywany przez regulację dozowania ReefDose integracji redsea",
         "entities_catalog": "Oraz urządzenie *ReefTank catalog*:",
         "e_update": "Zainstalowana i najnowsza wersja katalogu",
         "e_button": "Od razu sprawdza, czy jest nowa wersja",
@@ -884,6 +978,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` sprawdza od razu, zamiast czekać na następne sprawdzenie (co 12 godzin);",
         "c3": "pobierane jest tylko to, co się zmieniło, a przerwana aktualizacja zostawia poprzedni katalog bez zmian.",
         "catalog_own": "Własne gatunki umieść w `<config>/reeftank/catalog/` (taki sam układ jak katalog): pojawią się w edytorze bez ponownego uruchamiania.",
+        "hv_title": "W House View",
+        "hv_body": "[House View]({house}) rysuje Twój dom w 3D na pulpicie: plan na jego terenie, światła, pogodę, pory roku. Z zainstalowanym ReefTank Twoje akwaria zajmują w nim swoje miejsce:",
+        "hv1": "**Strefa wielkości zbiornika**: w edytorze House View *{zones}* → *{add}* kładzie prostokąt na ścianie (przód zbiornika) lub na podłodze (jego góra), o wymiarach z zakładki **{aquarium}**",
+        "hv2": "**Na żywo na swoim miejscu**: strefa pokazuje kartę akwarium z poruszającymi się rybami, w wybranym widoku (inaczej w domyślnym)",
+        "hv3": "**Dotknięcie** strefy otwiera widok akwarium w oknie, z jego urządzeniami i encjami",
+        "hv4": "**Alarmy**: alarmy monitorowania wody pojawiają się w znaczniku alarmów House View, bez żadnych ustawień",
+        "hv_note": "Po stronie ReefTank nie trzeba nic konfigurować: House View sam znajduje akwaria. Karta akwarium z [ha-reef-card]({card}) musi być zainstalowana.",
+        "hv_video": "House View w akcji:",
         "tech_title": "Dokumentacja techniczna",
         "tech_body": "Model danych, API WebSocket, potok renderowania, zachowanie ryb, format sprite'ów i aktualizacje katalogu: [dokumentacja techniczna]({tech}) (po angielsku).",
         "dev_title": "Rozwój",
@@ -916,6 +1018,9 @@ T: dict[str, dict[str, str]] = {
         "f6": "**Dispositivos e entidades** colocados na imagem como miniaturas, ou contornados nela, clicáveis; zonas que abrem outra imagem (a sump no móvel)",
         "f7": "**Alimentação**: alimentadores, atalhos Red Sea ou um serviço registam cada alimentação; os peixes correm para o ponto de alimentação",
         "f8": "**Inventário**: número de peixes e corais como sensores, com o seu histórico",
+        "f9": "**Marinho, de água doce ou salobra**: escolha a água do aquário, o editor só propõe as espécies que nela vivem",
+        "f10": "**Testes de água**: KH, Ca, Mg, NO3, PO4… introduzidos a partir do cartão ou por um serviço, guardados por parâmetro como sensores com o seu histórico",
+        "f11": "**Na sua casa**: com o [House View]({house}), o aquário aparece em direto no seu lugar na vista 3D da sua habitação",
         "install_title": "Instalação",
         "install_direct_title": "Instalação direta",
         "install_direct_body": "Clique aqui para abrir o repositório diretamente no Marketplace e clique em «Instalar»:",
@@ -934,7 +1039,7 @@ T: dict[str, dict[str, str]] = {
         "editor_body": "Uma janela em ecrã inteiro, aberta a partir do editor do cartão, com sete separadores:",
         "h_tab": "Separador",
         "h_what": "O que se faz lá",
-        "w_aquarium": "Nome, dimensões, o aquário da nuvem correspondente, luz com que as fotos foram tiradas, nível de renderização, escuridão da água à noite",
+        "w_aquarium": "Nome, água (marinha, doce ou salobra), dimensões, o aquário da nuvem correspondente, luz com que as fotos foram tiradas, nível de renderização, escuridão da água à noite",
         "w_views": "As imagens; para cada água: contorno, linha da areia (frente e fundo), rochas e a sua profundidade, zonas clicáveis, fundo desenhado e as suas texturas",
         "w_devices": "Os seus dispositivos e entidades por piso e divisão, arrastados para a imagem",
         "w_lights": "As lâmpadas que iluminam cada água e a sua posição; as bombas que movem a água",
@@ -968,6 +1073,7 @@ T: dict[str, dict[str, str]] = {
         "e_pause": "Suspende a análise",
         "sv_configure": "Escolhe as entidades monitorizadas e os limiares",
         "sv_reset": "Esquece o histórico para voltar a aprender (sonda nova)",
+        "sv_test": "Regista o resultado de um teste de água (parâmetro, valor, data se não for agora)",
         "entities_title": "Entidades",
         "entities_body": "Cada aquário é um dispositivo com:",
         "h_entity": "Entidade",
@@ -977,6 +1083,7 @@ T: dict[str, dict[str, str]] = {
         "e_feeding": "Última alimentação, com o tipo (alimentador, atalho, manual) e a fonte",
         "e_today": "Alimentações desde a meia-noite",
         "e_volume": "Volume de água líquido (L), lido pela regulação da dosagem ReefDose da integração redsea",
+        "e_tests": "Último teste de água do parâmetro (KH, Ca, Mg, K, Sr, I, Fe, NO3, PO4, salinidade), a sua data e os resultados recentes nos atributos; lido pela regulação da dosagem ReefDose da integração redsea",
         "entities_catalog": "E o dispositivo *ReefTank catalog*:",
         "e_update": "Versão do catálogo instalada e mais recente",
         "e_button": "Verifica de imediato se há uma versão nova",
@@ -993,6 +1100,14 @@ T: dict[str, dict[str, str]] = {
         "c2": "`button.reeftank_catalog_check_for_updates` verifica de imediato em vez de esperar pela próxima verificação (a cada 12 horas);",
         "c3": "só é transferido o que mudou, e uma atualização interrompida deixa o catálogo anterior no lugar.",
         "catalog_own": "As suas próprias espécies vão para `<config>/reeftank/catalog/` (mesma organização do catálogo): aparecem no editor sem reiniciar.",
+        "hv_title": "No House View",
+        "hv_body": "O [House View]({house}) desenha a sua habitação em 3D no painel: a sua planta no seu terreno, as luzes, o tempo, as estações. Com o ReefTank instalado, os seus aquários ocupam nele o seu lugar:",
+        "hv1": "**Uma zona do tamanho do aquário**: no editor do House View, *{zones}* → *{add}* coloca um retângulo numa parede (a frente do aquário) ou num chão (o seu topo), com o tamanho das dimensões do separador **{aquarium}**",
+        "hv2": "**Em direto no seu lugar**: a zona mostra o cartão de aquário, com os peixes em movimento, na vista que escolher (caso contrário, a vista predefinida)",
+        "hv3": "**Um toque** na zona abre a vista do aquário numa janela, com os seus dispositivos e entidades",
+        "hv4": "**Alarmes**: os alarmes da monitorização da água aparecem no indicador de alarmes do House View, sem nada a configurar",
+        "hv_note": "Nada a configurar do lado do ReefTank: o House View encontra os aquários sozinho. O cartão de aquário do [ha-reef-card]({card}) tem de estar instalado.",
+        "hv_video": "O House View em ação:",
         "tech_title": "Referência técnica",
         "tech_body": "Modelo de dados, API WebSocket, cadeia de renderização, comportamento dos peixes, formato dos sprites e atualizações do catálogo: [referência técnica]({tech}) (em inglês).",
         "dev_title": "Desenvolvimento",
@@ -1105,6 +1220,19 @@ UI: dict[str, dict[str, str]] = {
 }
 UI["nl"] = UI["en"]
 
+# Labels of the House View editor, as that card shows them: its clickable
+# zones section and the button adding an aquarium.
+HOUSE_UI: dict[str, tuple[str, str]] = {
+    "en": ("Clickable zones", "Add an aquarium"),
+    "fr": ("Zones cliquables", "Ajouter un aquarium"),
+    "de": ("Antippbare Zonen", "Aquarium hinzufügen"),
+    "es": ("Zonas pulsables", "Añadir un acuario"),
+    "it": ("Zone toccabili", "Aggiungi un acquario"),
+    "nl": ("Klikbare zones", "Een aquarium toevoegen"),
+    "pl": ("Strefy do dotykania", "Dodaj akwarium"),
+    "pt": ("Zonas tocáveis", "Adicionar um aquário"),
+}
+
 ECOSYSTEM_START = "<!-- ecosystem:start -->"
 ECOSYSTEM_END = "<!-- ecosystem:end -->"
 
@@ -1129,7 +1257,7 @@ class _Keep(dict[str, str]):
 
 def fill(text: str) -> str:
     """Resolve the links shared by every language."""
-    return text.format_map(_Keep(catalog=CATALOG, card=CARD, repo=REPO))
+    return text.format_map(_Keep(catalog=CATALOG, card=CARD, repo=REPO, house=HOUSE))
 
 
 def render(code: str) -> str:
@@ -1154,7 +1282,17 @@ def render(code: str) -> str:
         ("feeding", "w_feeding"),
         ("monitoring", "w_monitoring"),
     ]
-    features = "\n".join(f"- {t[f'f{i}']}" for i in range(1, 9))
+    features = "\n".join(f"- {t[f'f{i}']}" for i in range(1, 12))
+    zones, add = HOUSE_UI[code]
+    house = "\n".join(
+        f"- {line}"
+        for line in (
+            t["hv1"].format(zones=zones, add=add, aquarium=ui["aquarium"]),
+            t["hv2"],
+            t["hv3"],
+            t["hv4"],
+        )
+    )
     start = "\n".join(f"{i}. {s}" for i, s in enumerate(steps, 1))
     tab_rows = "\n".join(f"| **{ui[tab]}** | {t[what]} |" for tab, what in tabs)
     level_rows = "\n".join(
@@ -1268,6 +1406,7 @@ def render(code: str) -> str:
 | `binary_sensor.<aquarium>_*` | {t["e_alarms"]} |
 | `switch.<aquarium>_pause_monitoring` | {t["e_pause"]} |
 | `sensor.<aquarium>_water_volume` | {t["e_volume"]} |
+| `sensor.<aquarium>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | {t["e_tests"]} |
 
 {t["entities_catalog"]}
 
@@ -1285,10 +1424,13 @@ def render(code: str) -> str:
 | `reeftank.livestock_remove` | {t["sv_remove"]} |
 | `reeftank.monitoring_configure` | {t["sv_configure"]} |
 | `reeftank.monitoring_reset` | {t["sv_reset"]} |
+| `reeftank.water_test` | {t["sv_test"]} |
 
 {t["services_note"]}
 
 {SERVICE_YAML}
+
+{WATER_TEST_YAML}
 
 ## {t["catalog_title"]}
 
@@ -1299,6 +1441,18 @@ def render(code: str) -> str:
 - {t["c3"]}
 
 {t["catalog_own"]}
+
+## {t["hv_title"]}
+
+{t["hv_body"]}
+
+{house}
+
+{t["hv_note"]}
+
+{t["hv_video"]}
+
+[![{t["video_alt"]}](https://img.youtube.com/vi/{HOUSE_VIDEO}/0.jpg)](https://www.youtube.com/watch?v={HOUSE_VIDEO})
 
 ## {t["tech_title"]}
 
