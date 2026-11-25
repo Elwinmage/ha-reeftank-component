@@ -251,6 +251,7 @@ water_test:
             - sr
             - i
             - fe
+            - no2
             - no3
             - po4
             - salinity

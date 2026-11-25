@@ -1,5 +1,9 @@
 # Unreleased
 
+- Water tests: new `no2` chemistry (nitrite, ppm), like the others a
+  sensor of its own and an option of the `water_test` action. It has no
+  regulation entry in the catalog, so no ReefDose head can be set to it.
+
 - Freshwater and brackish aquariums: new `water_type` on the aquarium
   document (`marine`, `freshwater`, `brackish`; `marine` by default, so
   existing aquariums do not change). `reeftank/aquarium/list` returns it and

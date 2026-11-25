@@ -387,7 +387,7 @@ removed with it (unique ids derived from the aquarium id).
 | `binary_sensor.<tank>_*` | The six alarms (§18); unknown while they cannot be told | Figures explaining each one |
 | `switch.<tank>_pause_monitoring` | On during a pause; turns off by itself | `until` |
 | `sensor.<tank>_water_volume` | `water_volume_l` (L), unknown when unset | `cloud` (the document's), `device_ids` (devices placed on the views) |
-| `sensor.<tank>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no3`, `_po4`, `_salinity` | Last test of the chemistry, in its unit (dKH, ppm, ppb, ppt); unknown before a first test | `reef_parameter`, `aquarium`, `tested_at`, `measurements` (the recent tests), `cloud`, `device_ids` |
+| `sensor.<tank>_kh`, `_ca`, `_mg`, `_k`, `_sr`, `_i`, `_fe`, `_no2`, `_no3`, `_po4`, `_salinity` | Last test of the chemistry, in its unit (dKH, ppm, ppb, ppt); unknown before a first test | `reef_parameter`, `aquarium`, `tested_at`, `measurements` (the recent tests), `cloud`, `device_ids` |
 
 - The population history comes for free from the recorder on the count
   sensors.
